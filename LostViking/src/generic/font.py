@@ -1,0 +1,62 @@
+import pygame, os
+from GLOBAL import *
+from pygame.compat import geterror
+
+main_dir = os.path.split(os.path.abspath(__file__))[0]
+font_dir = os.path.join(main_dir, 'font')
+
+
+def load_font(name, size):
+    class NoneFont:
+        def render(self):
+            print("--无字体")
+            return pygame.Surface((0, 0))
+
+    if not pygame.font or not pygame.font.get_init():
+        print("--Font未启动,%s加载失败！" % name)
+        return NoneFont()
+    fullname = os.path.join(font_dir, name)
+    try:
+        font = pygame.font.Font(fullname, size)
+        print('--字体%s加载成功！' % name)
+    except pygame.error:
+        print('！！--找不到字体: %s' % fullname)
+        raise SystemExit(str(geterror()))
+    return font
+
+
+class myFont:
+    def __init__(self, screen, font, text='', position=(0, 0), antialias=True, color=WHITE, background=None):
+        self.font = font
+        self.antialias = antialias
+        self.color = color
+        self.background = background
+        self.text = text
+        self.screen = screen
+        self.render = self.font.render(self.text, self.antialias, self.color, self.background)
+        self.rect = self.render.get_rect()
+        self.rect.move_ip(position)
+
+    def blit(self):
+        self.screen.blit(self.render, (self.rect[0], self.rect[1]))
+
+    def move_center(self, center_positon):
+        self.rect.center = center_positon
+
+    def move(self, position):
+        self.rect.move_ip(position)
+
+    def change_text(self, text):
+        self.text = text
+        self.rendering()
+
+    def change_font(self, font):
+        self.font = font
+        self.rendering()
+
+    def change_color(self, color):
+        self.color = color
+        self.rendering()
+
+    def rendering(self):
+        self.render = self.font.render(self.text, self.antialias, self.color, self.background)
