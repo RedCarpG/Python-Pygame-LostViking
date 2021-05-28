@@ -1,16 +1,19 @@
-import pygame, sys
-from pygame.locals import *
-import traceback
+import sys
 
-if not pygame.font: print("Warning, fonts disabled!")
-if not pygame.mixer: print("Warning, sounds disabled!")
+import pygame
 
-from myPlane import *
-from GLOBAL import *
-from sound import *
-from LostViking.src.generic.font import *
-from supply import *
-from Lever1 import *
+from LostViking.src.Lever1 import Shield
+from LostViking.src.entity.myPlane import MyPlane, Nuclear_Bomb
+from LostViking.src.entity.supply import Supply, SUPPLY_TYPE
+from LostViking.src.generic.font import load_font, myFont
+from LostViking.src.GLOBAL import *
+
+if not pygame.font:
+    print("Warning, fonts disabled!")
+if not pygame.mixer:
+    print("Warning, sounds disabled!")
+
+from src.Lever1 import *
 
 
 def col(a, b):
@@ -73,22 +76,30 @@ class Enter:
             clock.tick(10)
 
 
-class Game:
-    # 定义事件
+class LostViking(object):
+    # Events
     PLAYER_SHOOT = USEREVENT
     NUCLEAR_LAUNCH = USEREVENT + 1
     CREATE_SUPPLY = USEREVENT + 2
+    #
+    if pygame.get_init():
+        SCREEN = pygame.display.set_mode(SCREEN.SIZE, DOUBLEBUF)
+        CLOCK = pygame.time.Clock()  # Init clock
+    else:
+        raise Exception("Pygame not initialized!")
+    #
+    BACKGROUND = None
 
-    def __init__(self, screen):
-        #  ---------------------- 初始化 ---------------------- #
-        self.screen = screen  # 初始化 屏幕
-        # -* 初始化 字体样式 *-
-        self.score_font = load_font("arialbd.ttf", 30)  # 分数 字体
-        # self.life_font = load_font("arialbd.ttf", 30)   # 生命 字体
+    # -* Fonts  *-
+    FONTS = {"score_font": load_font("arialbd.ttf", 30),
+             "life_font": load_font("arialbd.ttf", 30)}
+
+    #  ---------------------- Init ---------------------- #
+    def __init__(self):
         # -* 初始化 组 *-
         # · 功能道具 组
-        self.supplies = pygame.sprite.Group()
-        self.bomb = pygame.sprite.GroupSingle()
+        self.group_supply = pygame.sprite.Group()
+        self.bomb = pygame.sprite.GroupSingle(None)
         self.shields = Shield.SHIELDS
         # · 敌方飞机组，存储所有敌方飞机
         self.enemies = Enemy.ENEMYS
@@ -96,26 +107,27 @@ class Game:
         self.enemies_hit = Enemy.ENEMYS_HIT
         self.enemies_die = Enemy.ENEMYS_DIE
         self.boss = Enemy.BOSS
-        self.players = pygame.sprite.GroupSingle()
+        self.players = pygame.sprite.GroupSingle(None)
         self.player_bullets = MyPlane.PLAYER_Bullets
+
         # -* 设置时钟 *-
         pygame.time.set_timer(self.CREATE_SUPPLY, 10000)
-        # -* 定义退出游戏条件 *-
-        self.running = True
+
         # -* 加载音乐 *-
-        # Main.MUSIC = ['bgm2.ogg', 'bgm.ogg']
+        # MUSIC = ['bgm2.ogg', 'bgm.ogg']
         # load_music(Main.MUSIC, MAIN_VOLUME)
+        load_music(['bgm2.ogg', 'bgm.ogg'], MAIN_VOLUME)
         pygame.mixer.music.play(1)
         # -* 加载背景 *-
-        Main.BACKGROUND = load_image("Space.png")
+        self.BACKGROUND = load_image("Space.png")
 
         # -* 加载图片和音频
         LOAD_IMAGE()
         LOAD_SOUNDS()
         # · 显示分数和道具 文字
-        self.score_text = myFont(self.screen, self.score_font, ("Score: " + str(G.SCORE)), (0, 30), color=WHITE)
-        self.life_text = myFont(self.screen, self.score_font, ("Life: " + str(G.LIFE)), (0, 60), color=WHITE)
-        self.bomb_text = myFont(self.screen, self.score_font, ("Bomb: " + str(G.BOMB)), (0, 90), color=WHITE)
+        self.score_text = myFont(self.SCREEN, self.FONTS["score_font"], ("Score: " + str(G.SCORE)), (0, 30), color=WHITE)
+        self.life_text = myFont(self.SCREEN, self.FONTS["score_font"], ("Life: " + str(G.LIFE)), (0, 60), color=WHITE)
+        self.bomb_text = myFont(self.SCREEN, self.FONTS["score_font"], ("Bomb: " + str(G.BOMB)), (0, 90), color=WHITE)
         # 生成我方飞机
         self.player_number = 1
         if self.player_number == 1:
@@ -206,11 +218,11 @@ class Game:
             elif event.type == self.CREATE_SUPPLY:
                 n = random.randint(1, 10)
                 if n < 3:
-                    self.supplies.add(Supply.create(SUPPLY_TYPE(0)))
+                    self.group_supply.add(Supply.create(SUPPLY_TYPE(0)))
                 elif n > 8:
-                    self.supplies.add(Supply.create(SUPPLY_TYPE(2)))
+                    self.group_supply.add(Supply.create(SUPPLY_TYPE(2)))
                 else:
-                    self.supplies.add(Supply.create(SUPPLY_TYPE(1)))
+                    self.group_supply.add(Supply.create(SUPPLY_TYPE(1)))
 
         # 检测用户键盘操�?
         key_pressed = pygame.key.get_pressed()
@@ -224,7 +236,7 @@ class Game:
             self.player.moveRight()
 
     def Collide(self):
-        supply_get = pygame.sprite.spritecollideany(self.player, self.supplies)
+        supply_get = pygame.sprite.spritecollideany(self.player, self.group_supply)
         if supply_get != None:
             if pygame.sprite.collide_circle_ratio(0.65)(self.player, supply_get):
                 supply_get.catched(self.player)
@@ -294,7 +306,7 @@ class Game:
         self.life_text.blit()
         self.bomb_text.blit()
         #
-        self.supplies.draw(self.screen)
+        self.group_supply.draw(self.screen)
         self.player_bullets.draw(self.screen)
         self.enemy_bullets.draw(self.screen)
         self.bomb.draw(self.screen)
@@ -306,7 +318,7 @@ class Game:
         #
 
     def Update(self, ticks):
-        self.supplies.update()
+        self.group_supply.update()
         self.player.update(ticks)
         self.enemy_bullets.update()
         self.player_bullets.update()
@@ -319,25 +331,6 @@ class Game:
             each.change_image()
         # 显示
         pygame.display.flip()
-
-
-class Main:
-    MUSIC = ['bgm2.ogg', 'bgm.ogg']
-    BACKGROUND = None
-
-    # 初始化游戏
-    def __init__(self):
-        # 初始化ppygame
-        pygame.init()
-        pygame.mixer.init()
-        pygame.font.init()
-        # 窗口标题
-        pygame.display.set_caption("LOST VIKING")
-        # 加载音乐
-        load_music(Main.MUSIC, MAIN_VOLUME)
-
-        self.screen = pygame.display.set_mode(SCREEN.SIZE, DOUBLEBUF)
-        self.clock = pygame.time.Clock()  # 初始化 时钟
 
     def begin_animation(self):
 
@@ -363,7 +356,7 @@ class Main:
                 self.screen.blit(BG2, BG2_rect)
             if BG is not None:
                 self.screen.blit(BG, BG_rect)
-            # 绘制我方飞机   
+            # 绘制我方飞机
             self.player.blit()
 
             if init_speed < BG_SPEED:
@@ -400,17 +393,24 @@ class Main:
             # 帧数设置
             self.clock.tick(60)
 
-    def game(self):
-        e = Enter()
-        e.enter(self.screen, self.clock)
-        # self.begin_animation()
-        g = Game(self.screen)
-        g.play(self.clock)
+
+def init():
+    # Init Pygame
+    pygame.init()
+    pygame.mixer.init()
+    pygame.font.init()
+
+    pygame.display.set_caption("LOST VIKING")
 
 
 def main():
-    m = Main()
-    m.game()
+    init()
+    game = LostViking()
+    game.play()
+
+
+def end():
+    pygame.quit()
 
 
 if __name__ == "__main__":
@@ -418,7 +418,8 @@ if __name__ == "__main__":
         main()
     except SystemExit:
         pass
-    except:
+    except (ValueError, Exception):
+        print(traceback.format_exc())
         traceback.print_exc()
         pygame.quit()
         input()

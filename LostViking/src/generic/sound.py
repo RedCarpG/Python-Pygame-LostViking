@@ -7,28 +7,28 @@ sound_dir = os.path.join(main_dir, 'sound')
 
 def load_sound(name, volume):
     class NoneSound:
-        def play(self): print("--无音频")
+        def play(self): print("-- No sound file")
 
     if not pygame.mixer or not pygame.mixer.get_init():
-        print("--Mixer未启动,%s加载失败！" % name)
+        print("-- Mixer hasn't initialized, failed loading sound！")
         return NoneSound()
     fullname = os.path.join(sound_dir, name)
     try:
         sound = pygame.mixer.Sound(fullname)
         sound.set_volume(volume)
-        print("--音频%s加载成功！" % name)
+        print("-- Sound {} loaded successfully！".format(name))
     except pygame.error:
-        print('！！--找不到音乐: %s' % fullname)
+        print('!!-- Can not find audio file : {}'.format(fullname))
         raise SystemExit(str(geterror()))
     return sound
 
 
 def load_music(name, volume):
     class NoneSound:
-        def play(self): print("--无音乐")
+        def play(self): print("-- No music file")
 
     if not pygame.mixer or not pygame.mixer.get_init():
-        print("--Mixer未启动,音乐加载失败！")
+        print("-- Mixer hasn't initialized, failed loading music！")
         return NoneSound()
     if isinstance(name, list):
         fullname = []
@@ -39,13 +39,13 @@ def load_music(name, volume):
     try:
         if isinstance(name, list):
             pygame.mixer.music.load(fullname[0])
-            print("--音乐%s加载成功！" % name[0])
+            print("-- Music {} loaded successfully！".format(name[0]))
             for each_name in fullname[1:]:
                 pygame.mixer.music.queue(each_name)
         else:
             pygame.mixer.music.load(fullname)
-            print("--音乐%s加载成功！" % name)
+            print("-- Music {} loaded successfully！".format(name))
         pygame.mixer.music.set_volume(volume)
     except pygame.error:
-        print('!!--找不到音效: %s' % fullname)
+        print('!!-- Can not find audio file : {}'.format(fullname))
         raise SystemExit(str(geterror()))
