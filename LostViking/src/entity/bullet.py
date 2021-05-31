@@ -1,4 +1,4 @@
-from GLOBAL import *
+from LostViking.src.GLOBAL import *
 from LostViking.src.generic.image import *
 import math
 import abc

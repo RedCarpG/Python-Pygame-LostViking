@@ -4,7 +4,7 @@ import abc
 import random
 import math
 from GLOBAL import *
-from myPlane import PLAYER_BULLET
+from player_plane import PlayerBulletType
 
 
 class SUPPLY_TYPE(Enum):
@@ -80,7 +80,7 @@ class Supply_Bullet1(Supply):
         self.image = SUPPLY_IMAGE["Bullet"]
 
     def catched(self, player):
-        player.setBullet(PLAYER_BULLET.Bullet1)
+        player.set_bullet(PlayerBulletType.Bullet1)
         self.kill()
 
 

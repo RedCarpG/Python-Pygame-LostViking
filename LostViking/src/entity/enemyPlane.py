@@ -2,15 +2,17 @@ from LostViking.src.generic.image import *
 from LostViking.src.generic.sound import *
 import math
 import abc
-from GLOBAL import SCREEN
-from mytime import *
+from LostViking.src.GLOBAL import SCREEN
+from LostViking.src.generic.mytime import *
 
 
 class Enemy(pygame.sprite.Sprite):
-    ENEMYS = pygame.sprite.Group()
-    ENEMYS_HIT = pygame.sprite.Group()
-    ENEMYS_DIE = pygame.sprite.Group()
+
+    Enemy_G = pygame.sprite.Group()
+    EnemyHit_G = pygame.sprite.Group()
+    EnemyDie_G = pygame.sprite.Group()
     BOSS = pygame.sprite.GroupSingle()
+
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):

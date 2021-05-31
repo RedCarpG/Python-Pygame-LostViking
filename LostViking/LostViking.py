@@ -2,11 +2,11 @@ import sys
 
 import pygame
 
-from LostViking.src.Lever1 import Shield
-from LostViking.src.entity.myPlane import MyPlane, Nuclear_Bomb
-from LostViking.src.entity.supply import Supply, SUPPLY_TYPE
-from LostViking.src.generic.font import load_font, myFont
-from LostViking.src.GLOBAL import *
+from src.Lever1 import Shield
+from src.entity.player_plane import MyPlane, PlayerNucBomb
+from src.entity.supply import Supply, SUPPLY_TYPE
+from src.generic.font import load_font, myFont
+from src.GLOBAL import *
 
 if not pygame.font:
     print("Warning, fonts disabled!")
@@ -90,44 +90,49 @@ class LostViking(object):
     #
     BACKGROUND = None
 
-    # -* Fonts  *-
-    FONTS = {"score_font": load_font("arialbd.ttf", 30),
-             "life_font": load_font("arialbd.ttf", 30)}
+    # Fonts Group
+    Text_G = {}
+    # Player
 
     #  ---------------------- Init ---------------------- #
     def __init__(self):
-        # -* 初始化 组 *-
-        # · 功能道具 组
-        self.group_supply = pygame.sprite.Group()
-        self.bomb = pygame.sprite.GroupSingle(None)
-        self.shields = Shield.SHIELDS
-        # · 敌方飞机组，存储所有敌方飞机
-        self.enemies = Enemy.ENEMYS
-        self.enemy_bullets = Bullet.BULLETS
-        self.enemies_hit = Enemy.ENEMYS_HIT
-        self.enemies_die = Enemy.ENEMYS_DIE
-        self.boss = Enemy.BOSS
-        self.players = pygame.sprite.GroupSingle(None)
-        self.player_bullets = MyPlane.PLAYER_Bullets
+        # --- Init Groups ---
+        # Item groups
+        #self.group_supply = pygame.sprite.Group()
+        #self.bomb = pygame.sprite.GroupSingle(None)
+        #self.shields = Shield.SHIELDS
+        # · Text Groups
 
-        # -* 设置时钟 *-
+        fonts = {"score_font": load_font("arialbd.ttf", 30),
+                 "life_font": load_font("arialbd.ttf", 30)}
+        self.Text_G = {
+            'score_text': myFont(self.SCREEN, fonts["score_font"],
+                                 ("Score: " + str(G.SCORE)), (0, 30), color=WHITE),
+            'life_text': myFont(self.SCREEN, fonts["score_font"],
+                                ("Life: " + str(G.LIFE)), (0, 60), color=WHITE),
+            'bomb_text': myFont(self.SCREEN, fonts["score_font"],
+                                ("Bomb: " + str(G.BOMB)), (0, 90), color=WHITE)
+        }
+        # Enemy groups
+        self.enemies_hit = Enemy.EnemyHit_G
+        self.enemies_die = Enemy.EnemyDie_G
+        self.boss = Enemy.BOSS
+        self.player_bullets = MyPlane.Player_Bullet_G
+
+        # -* Set Timer *-
         pygame.time.set_timer(self.CREATE_SUPPLY, 10000)
 
-        # -* 加载音乐 *-
+        # --- Load Music ---
         # MUSIC = ['bgm2.ogg', 'bgm.ogg']
         # load_music(Main.MUSIC, MAIN_VOLUME)
         load_music(['bgm2.ogg', 'bgm.ogg'], MAIN_VOLUME)
         pygame.mixer.music.play(1)
-        # -* 加载背景 *-
+        # Load BG
         self.BACKGROUND = load_image("Space.png")
 
-        # -* 加载图片和音频
+        # -* Load Images and Sounds
         LOAD_IMAGE()
         LOAD_SOUNDS()
-        # · 显示分数和道具 文字
-        self.score_text = myFont(self.SCREEN, self.FONTS["score_font"], ("Score: " + str(G.SCORE)), (0, 30), color=WHITE)
-        self.life_text = myFont(self.SCREEN, self.FONTS["score_font"], ("Life: " + str(G.LIFE)), (0, 60), color=WHITE)
-        self.bomb_text = myFont(self.SCREEN, self.FONTS["score_font"], ("Bomb: " + str(G.BOMB)), (0, 90), color=WHITE)
         # 生成我方飞机
         self.player_number = 1
         if self.player_number == 1:
@@ -172,7 +177,7 @@ class LostViking(object):
                             self.bomb_text.change_text("Bomb: " + str(G.BOMB))
                             SOUNDS["NuclearLaunch_Detected"].stop()
                             SOUNDS["NuclearLaunch_Detected"].play()
-                            nuclear_bomb = Nuclear_Bomb(self.player.rect.center)
+                            nuclear_bomb = PlayerNucBomb(self.player.rect.center)
                             self.bomb.add(nuclear_bomb)
                     else:
                         SOUNDS["Error"].stop()
@@ -227,13 +232,13 @@ class LostViking(object):
         # 检测用户键盘操�?
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_w] or key_pressed[K_UP]:
-            self.player.moveUp()
+            self.player.move_up()
         if key_pressed[K_s] or key_pressed[K_DOWN]:
-            self.player.moveBack()
+            self.player.move_back()
         if key_pressed[K_a] or key_pressed[K_LEFT]:
-            self.player.moveLeft()
+            self.player.move_left()
         if key_pressed[K_d] or key_pressed[K_RIGHT]:
-            self.player.moveRight()
+            self.player.move_right()
 
     def Collide(self):
         supply_get = pygame.sprite.spritecollideany(self.player, self.group_supply)
@@ -246,7 +251,7 @@ class LostViking(object):
                 elif supply_get.type == SUPPLY_TYPE.Life:
                     self.life_text.change_text("Life: " + str(G.LIFE))
 
-        if self.player.active and not self.player.invicible_flag:
+        if self.player.active and not self.player.invincible_flag:
             bullet_hit = pygame.sprite.spritecollideany(self.player, self.enemy_bullets)
             if bullet_hit != None:
                 if pygame.sprite.collide_rect_ratio(0.65)(self.player, bullet_hit):
@@ -388,9 +393,9 @@ class LostViking(object):
             elif end_flag == 0:
                 begin = False
             DELAY = (DELAY - 1) % 100
-            # 显示
+            # Display
             pygame.display.flip()
-            # 帧数设置
+            # Frame rate
             self.clock.tick(60)
 
 
