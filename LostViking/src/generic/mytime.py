@@ -1,32 +1,35 @@
-
-class Time_Group():
+class TimeGroup(object):
     times = []
+
     @classmethod
-    def append(cls,mytime):
-        cls.times.append(mytime)
+    def append(cls, my_time):
+        cls.times.append(my_time)
+
     @classmethod
     def tick(cls):
         for each in cls.times:
             each.tick()
+
     @classmethod
-    def remove(cls,mytime):
-        cls.times.remove(mytime)
+    def remove(cls, my_time):
+        cls.times.remove(my_time)
 
-class MYTIME():
-    def __init__(self,T=0, initTime=0, StartAtOnce=False):
-        self.maxTime = T
-        if StartAtOnce:
-            self.Time = T
-        else: 
-            self.Time = initTime
-        Time_Group.append(self)
 
-    def setMaxTime(self,T):
-        self.maxTime = T
+class MyTime(object):
+    def __init__(self, t=0, init_time=0, start_at_once=False):
+        self.maxTime = t
+        if start_at_once:
+            self.Time = t
+        else:
+            self.Time = init_time
+        TimeGroup.append(self)
 
-    def getTime(self):
+    def set_max_time(self, t):
+        self.maxTime = t
+
+    def get_time(self):
         return self.Time
-        
+
     def tick(self):
         self.Time += 1
         return self.Time
@@ -41,33 +44,40 @@ class MYTIME():
         self.Time = 0
 
     def __del__(self):
-        Time_Group.remove(self)
+        TimeGroup.remove(self)
 
-class MYTIME2(MYTIME):
-    def __init__(self,T=0, initTime=0, StartAtOnce=False):
-        MYTIME.__init__(self,T,initTime,StartAtOnce)
+
+class MyTime2(MyTime):
+    def __init__(self, t=0, init_time=0, start_at_once=False):
+        MyTime.__init__(self, t, init_time, start_at_once)
         self.count = 0
+
     def check(self):
         if self.Time >= self.maxTime:
-            self.count+=1
+            self.count += 1
             self.reset()
             return True
         return False
-    def checkCount(self,count):
+
+    def check_count(self, count):
         if self.count >= count:
             self.count = 0
             return True
         return False
-    def resetCount(self):
+
+    def reset_count(self):
         self.count = 0
 
+
 def main():
-    t = MYTIME(10)
-    t2 = MYTIME(10)
+    t = MyTime(10)
+    t2 = MyTime(10)
     t.begin()
-    print(t.getTime())
-    print(Time_Group.times)
-    Time_Group.tick()
-    print(t.getTime())
+    print(t.get_time())
+    print(TimeGroup.times)
+    TimeGroup.tick()
+    print(t.get_time())
+
+
 if __name__ == "__main__":
     main()

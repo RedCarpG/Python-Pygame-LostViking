@@ -25,8 +25,8 @@ class Enemy_Carrier(Enemy_Boss):
         self.move_flag = False
         self.attack1_interval = MYTIME(2000, 1850)
         self.attack2_interval = MYTIME(1800, 900)
-        self.sendI_interval = MYTIME2(25)
-        self.shoot_interval = MYTIME2(25)
+        self.sendI_interval = MyTime2(25)
+        self.shoot_interval = MyTime2(25)
         self.speedY = 9
         self.speedX = 0
         self.directionX = 1
@@ -65,7 +65,7 @@ class Enemy_Carrier(Enemy_Boss):
             if self.sendI_interval.check() and Enemy_Interceptor.NUM < 9:
                 add_enemy_Interceptor(self.rect.center)
 
-            if self.sendI_interval.checkCount(9):
+            if self.sendI_interval.check_count(9):
                 self.attack1_flag = False
             self.sendI_interval.tick()
 
@@ -91,7 +91,7 @@ class Enemy_Carrier(Enemy_Boss):
                             angle -= 180
                 Bullet.BULLETS.add(Bullet_Phoenix((self.rect.center[0] + 10, self.rect.center[1] + 100), angle + 2))
                 Bullet.BULLETS.add(Bullet_Phoenix((self.rect.center[0] - 10, self.rect.center[1] + 100), angle - 2))
-            if self.shoot_interval.checkCount(self.CARRIER_BULLET_NUMBER):
+            if self.shoot_interval.check_count(self.CARRIER_BULLET_NUMBER):
                 self.attack2_flag = False
             self.shoot_interval.tick()
 

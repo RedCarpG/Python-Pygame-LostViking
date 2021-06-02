@@ -11,7 +11,7 @@ class Enemy(pygame.sprite.Sprite):
     Enemy_G = pygame.sprite.Group()
     EnemyHit_G = pygame.sprite.Group()
     EnemyDie_G = pygame.sprite.Group()
-    BOSS = pygame.sprite.GroupSingle()
+    BOSS = pygame.sprite.GroupSingle(None)
 
     __metaclass__ = abc.ABCMeta
 
@@ -23,6 +23,7 @@ class EnemyI(Enemy):
 
     def __init__(self, position):
         Enemy.__init__(self)
+        self.health = None
         self.image_switch = 0
         self.image = self.main_image[0]
         self.rect = self.image.get_rect()
@@ -32,7 +33,7 @@ class EnemyI(Enemy):
         self.image_switch_interval = MYTIME(1)
         self.death_time = MYTIME(6)
         self.speed = [0, 0]
-        self.ENEMYS.add(self)
+        Enemy.Enemy_G.add(self)
 
     def update(self):
         self.change_image()
@@ -240,6 +241,7 @@ class Enemy_Boss(Enemy):
     def __init__(self):
         Enemy.__init__(self)
         self.image_switch = 0
+        self.mainImage = None
         self.image = self.mainImage[0]
         self.rect = self.image.get_rect()
         self.rect.center = [SCREEN.get_w() // 2, -self.rect.height]
