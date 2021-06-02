@@ -144,7 +144,7 @@ class LostViking(object):
     def play(self, clock):
         # 主循�?
         while self.running:
-            clock.tick(60)
+            clock.tick(30)
             ticks = pygame.time.get_ticks()
 
             self.Events()

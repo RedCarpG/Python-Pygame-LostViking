@@ -18,7 +18,7 @@ BG_SPEED = 25
 
 # Screen
 class SCREEN(object):
-    SIZE = WIDTH, HEIGHT = (1500, 1000)
+    SIZE = WIDTH, HEIGHT = (400, 500)
 
     @classmethod
     def change_screen_size(cls, width, height):
