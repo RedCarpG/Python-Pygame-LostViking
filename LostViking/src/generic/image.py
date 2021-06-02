@@ -11,16 +11,16 @@ def load_image(name, color_key=None, alpha=None, scale=None):
     fullname = os.path.join(image_dir, name)
     try:
         image = pygame.image.load(fullname)
-        print('--图片%s加载成功！' % name)
+        print('-- Success: Image load {}'.format(name))
     except pygame.error:
-        print('！！--找不到图片:', fullname)
+        print('!!! Error: Can not find image {}'.format(fullname))
         raise SystemExit(str(geterror()))
     image = image.convert()
     if scale is not None:
         image = pygame.transform.smoothscale(image,
                                              (int(image.get_height() * scale[0]), int(image.get_width() * scale[1])))
     if color_key is not None:
-        if color_key is -1:
+        if color_key == -1:
             color_key = image.get_at((0, 0))
         image.set_colorkey(color_key, pygame.RLEACCEL)
     if alpha is not None:
@@ -32,16 +32,16 @@ def load_image_alpha(name, color_key=None, alpha=None, scale=None):
     fullname = os.path.join(image_dir, name)
     try:
         image = pygame.image.load(fullname)
-        print('--图片%s加载成功！' % name)
+        print('-- Success: Alpha image load {}'.format(name))
     except pygame.error:
-        print('！！--找不到图片:', fullname)
+        print('!!! Error: Can not find image {}'.format(fullname))
         raise SystemExit(str(geterror()))
     image = image.convert_alpha()
     if scale is not None:
         image = pygame.transform.smoothscale(image,
                                              (int(image.get_height() * scale[0]), int(image.get_width() * scale[1])))
     if color_key is not None:
-        if color_key is -1:
+        if color_key == -1:
             color_key = image.get_at((0, 0))
         image.set_colorkey(color_key, RLEACCEL)
     if alpha is not None:
