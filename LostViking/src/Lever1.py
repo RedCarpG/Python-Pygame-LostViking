@@ -57,7 +57,7 @@ class Enemy_Carrier(Enemy_Boss):
             self.attack2_interval.tick()
             if self.attack2_interval.check():
                 self.attack2_flag = True
-            if self.rect.left < 0 or self.rect.right > SCREEN.getW():
+            if self.rect.left < 0 or self.rect.right > SCREEN.get_w():
                 self.directionX = -self.directionX
 
     def attack(self, point):
@@ -107,7 +107,7 @@ class Enemy_Interceptor(EnemyII):
     INTERCEPTOR_MaxSpeed = 10.0
     INTERCEPTOR_Score = 500
     NUM = 0
-    mainImage = []
+    main_image = []
     crashImage = []
 
     def __init__(self, pos, path):
@@ -166,7 +166,7 @@ class Enemy_Interceptor(EnemyII):
                     self.rotate_flag = True
                     self.attack_flag = True
 
-        if self.rect.top < 0 or self.rect.bottom > SCREEN.getH() - SCREEN.getH() / 3 or self.rect.left < 0 or self.rect.right > SCREEN.getW():
+        if self.rect.top < 0 or self.rect.bottom > SCREEN.getH() - SCREEN.getH() / 3 or self.rect.left < 0 or self.rect.right > SCREEN.get_w():
             if self.rect.top < 0:
                 self.rect.top = 0
                 self.path[0][1] = -self.path[0][1]
@@ -176,9 +176,9 @@ class Enemy_Interceptor(EnemyII):
             if self.rect.left < 0:
                 self.rect.left = 0
                 self.path[0][0] = -self.path[0][0]
-            elif self.rect.right > SCREEN.getW():
-                self.rect.right = SCREEN.getW()
-                self.path[0][0] = 2 * SCREEN.getW() - self.path[0][0]
+            elif self.rect.right > SCREEN.get_w():
+                self.rect.right = SCREEN.get_w()
+                self.path[0][0] = 2 * SCREEN.get_w() - self.path[0][0]
             self.rotate(self.path[0])
 
     def shoot(self, point):
@@ -428,7 +428,7 @@ class Level1():
 # 生成敌机
 def add_enemy_Scout(num):
     for i in range(num):
-        x = random.randint(50, SCREEN.getW() - 50)
+        x = random.randint(50, SCREEN.get_w() - 50)
         y = random.randint(-0.5 * SCREEN.getH(), 0 - 100)
 
         scout = Enemy_Scout([x, y])
@@ -436,7 +436,7 @@ def add_enemy_Scout(num):
 
 
 def add_enemy_Phoenix():
-    x1 = SCREEN.getW() + 200
+    x1 = SCREEN.get_w() + 200
     x2 = - 200
     y = 200
     phoenix1 = Enemy_Phoenix((x1, y), -1)
@@ -464,8 +464,8 @@ def main():
     # 初始化Pygame
     pygame.init()
     clock = pygame.time.Clock()
-    SCREEN.ChangeScreenSize(800, 800)
-    screen = pygame.display.set_mode((SCREEN.getW(), SCREEN.getW()))
+    SCREEN.change_screen_size(800, 800)
+    screen = pygame.display.set_mode((SCREEN.get_w(), SCREEN.get_w()))
     # 加载图片音效
     LOAD_IMAGE_LEVER1()
     LOAD_SOUNDS()

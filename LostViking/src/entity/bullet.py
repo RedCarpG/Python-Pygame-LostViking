@@ -40,7 +40,7 @@ class Bullet(pygame.sprite.Sprite):
     def whenkill(self):
         if self.rect.top > SCREEN.getH() \
                 or self.rect.bottom < 50 or self.rect.right < 0 \
-                or self.rect.left > SCREEN.getW():
+                or self.rect.left > SCREEN.get_w():
             return True
         return False
 

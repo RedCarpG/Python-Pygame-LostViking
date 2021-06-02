@@ -24,7 +24,7 @@ class EnemyI(Enemy):
     def __init__(self, position):
         Enemy.__init__(self)
         self.image_switch = 0
-        self.image = self.mainImage[0]
+        self.image = self.main_image[0]
         self.rect = self.image.get_rect()
         self.active = True
         self.score = 0
@@ -36,7 +36,7 @@ class EnemyI(Enemy):
 
     def update(self):
         self.change_image()
-        if self.rect.top < SCREEN.getH():
+        if self.rect.top < SCREEN.get_h():
             self.rect.top += self.speed[1]
 
     def hit(self, damage=100):
@@ -46,15 +46,15 @@ class EnemyI(Enemy):
 
     def destroy(self):
         self.image_switch = 0
-        self.mainImage = self.crashImage
+        self.main_image = self.crashImage
         self.destroySound.stop()
         self.destroySound.play()
 
     def change_image(self):
         self.image_switch_interval.tick()
         if self.image_switch_interval.check():
-            self.image_switch = (self.image_switch + 1) % len(self.mainImage)
-            self.image = self.mainImage[self.image_switch]
+            self.image_switch = (self.image_switch + 1) % len(self.main_image)
+            self.image = self.main_image[self.image_switch]
 
     def setPos(self, point):
         self.rect.center = point
@@ -75,8 +75,8 @@ class EnemyII(EnemyI):
     def change_image(self):
         self.image_switch_interval.tick()
         if self.image_switch_interval.check():
-            self.image_switch = (self.image_switch + 1) % len(self.mainImage)
-            self.image = pygame.transform.rotate(self.mainImage[self.image_switch], self.angle)
+            self.image_switch = (self.image_switch + 1) % len(self.main_image)
+            self.image = pygame.transform.rotate(self.main_image[self.image_switch], self.angle)
 
     def update(self):
         self.change_image()
@@ -105,7 +105,7 @@ class EnemyII(EnemyI):
         angle = angle * math.pi / 180
         self.speed = [float(self.MaxSpeed * math.sin(angle)), float(self.MaxSpeed * math.cos(angle))]
         temp = self.rect.center
-        self.image = pygame.transform.rotate(self.mainImage[self.image_switch], self.angle)
+        self.image = pygame.transform.rotate(self.main_image[self.image_switch], self.angle)
 
         self.rect = self.image.get_rect()
         self.rect.center = temp
@@ -115,7 +115,7 @@ class EnemyII(EnemyI):
         angle = angle * math.pi / 180
         self.speed = [float(self.MaxSpeed * math.sin(angle)), float(self.MaxSpeed * math.cos(angle))]
         temp = self.rect.center
-        self.image = pygame.transform.rotate(self.mainImage[self.image_switch], self.angle)
+        self.image = pygame.transform.rotate(self.main_image[self.image_switch], self.angle)
 
         self.rect = self.image.get_rect()
         self.rect.center = temp
@@ -151,9 +151,9 @@ class EnemyIII(EnemyI):
     def change_image(self):
         self.image_switch_interval.tick()
         if self.image_switch_interval.check():
-            self.image_switch = (self.image_switch + 1) % len(self.mainImage)
+            self.image_switch = (self.image_switch + 1) % len(self.main_image)
             temp = self.rect.center
-            self.image = pygame.transform.rotate(self.mainImage[self.image_switch], self.angle)
+            self.image = pygame.transform.rotate(self.main_image[self.image_switch], self.angle)
 
             self.rect = self.image.get_rect()
             self.rect.center = temp
@@ -242,7 +242,7 @@ class Enemy_Boss(Enemy):
         self.image_switch = 0
         self.image = self.mainImage[0]
         self.rect = self.image.get_rect()
-        self.rect.center = [SCREEN.getW() // 2, -self.rect.height]
+        self.rect.center = [SCREEN.get_w() // 2, -self.rect.height]
         self.active = True
         self.image_switch
         self.maxHealth = self.BOSS_MaxHealth

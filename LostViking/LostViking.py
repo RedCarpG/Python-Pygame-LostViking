@@ -131,7 +131,7 @@ class LostViking(object):
         self.BACKGROUND = load_image("Space.png")
 
         # -* Load Images and Sounds
-        LOAD_IMAGE()
+        global_load_image()
         LOAD_SOUNDS()
         # 生成我方飞机
         self.player_number = 1
@@ -187,21 +187,21 @@ class LostViking(object):
                 if event.key == K_SPACE:
                     pygame.time.set_timer(self.PLAYER_SHOOT, 0)
                 if event.key == K_w:
-                    self.player.move_flag[1] = False
+                    self.player.move_flag_y[1] = False
                 if event.key == K_s:
-                    self.player.move_flag[1] = False
+                    self.player.move_flag_y[1] = False
                 if event.key == K_a:
-                    self.player.move_flag[0] = False
+                    self.player.move_flag_y[0] = False
                 if event.key == K_d:
-                    self.player.move_flag[0] = False
+                    self.player.move_flag_y[0] = False
                 if event.key == K_UP:
-                    self.player.move_flag[1] = False
+                    self.player.move_flag_y[1] = False
                 if event.key == K_DOWN:
-                    self.player.move_flag[1] = False
+                    self.player.move_flag_y[1] = False
                 if event.key == K_LEFT:
-                    self.player.move_flag[0] = False
+                    self.player.move_flag_y[0] = False
                 if event.key == K_RIGHT:
-                    self.player.move_flag[0] = False
+                    self.player.move_flag_y[0] = False
 
             elif event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -251,7 +251,7 @@ class LostViking(object):
                 elif supply_get.type == SUPPLY_TYPE.Life:
                     self.life_text.change_text("Life: " + str(G.LIFE))
 
-        if self.player.active and not self.player.invincible_flag:
+        if self.player.is_active and not self.player.is_invincible:
             bullet_hit = pygame.sprite.spritecollideany(self.player, self.enemy_bullets)
             if bullet_hit != None:
                 if pygame.sprite.collide_rect_ratio(0.65)(self.player, bullet_hit):
@@ -274,7 +274,7 @@ class LostViking(object):
         if len(self.enemies_hit) > 0:
             for each in self.enemies_hit:
                 each.hit()
-                if not each.active:
+                if not each.is_active:
                     G.SCORE += each.score
                     each.destroy()
                     each.kill()
@@ -282,12 +282,12 @@ class LostViking(object):
                 self.enemies_hit.remove(each)
 
         if len(self.bomb) > 0:
-            if self.bomb.sprite.active and self.bomb.sprite.explode_flag:
-                self.bomb.sprite.active = False
+            if self.bomb.sprite.is_active and self.bomb.sprite.explode_flag:
+                self.bomb.sprite.is_active = False
                 for each in self.enemies:
-                    if each.rect.bottom > 0 and each.active:
+                    if each.rect.bottom > 0 and each.is_active:
                         each.hit(800)
-                        if not each.active:
+                        if not each.is_active:
                             G.SCORE += each.score
                             each.destroy()
                             each.kill()
@@ -302,9 +302,9 @@ class LostViking(object):
         self.screen.fill(BLACK)
         self.screen.blit(Main.BACKGROUND, (0, 0))
         if self.boss.sprite:
-            pygame.draw.rect(self.screen, (100, 200, 100, 180), Rect(0, 0, SCREEN.getW(), 25), 3)
+            pygame.draw.rect(self.screen, (100, 200, 100, 180), Rect(0, 0, SCREEN.get_w(), 25), 3)
             pygame.draw.rect(self.screen, (100, 200, 100, 180),
-                             Rect(0, 0, SCREEN.getW() * self.boss.sprite.health / self.boss.sprite.maxHealth, 25))
+                             Rect(0, 0, SCREEN.get_w() * self.boss.sprite.health / self.boss.sprite.maxHealth, 25))
 
         # 绘制字体
         self.score_text.blit()
@@ -331,7 +331,7 @@ class LostViking(object):
         self.bomb.update()
 
         for each in self.enemies_die:
-            if each.image_switch == len(each.mainImage) - 1:
+            if each.image_switch == len(each.main_image) - 1:
                 each.kill()
             each.change_image()
         # 显示

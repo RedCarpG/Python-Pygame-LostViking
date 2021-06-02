@@ -18,7 +18,7 @@ class Supply(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.setImage()
         self.rect = self.image.get_rect()
-        self.width = [0, SCREEN.getW() - self.rect.width]
+        self.width = [0, SCREEN.get_w() - self.rect.width]
         self.height = [SCREEN.getH() // 3, 2 * SCREEN.getH() // 3]
         self.setPos(position)
         self.speed = [2, 2]
@@ -29,7 +29,7 @@ class Supply(pygame.sprite.Sprite):
 
     def setPos(self, point=[-1, -1]):
         if point == [-1, -1]:
-            self.rect.left, self.rect.top = [random.randint(0, SCREEN.getW() - self.rect.width),
+            self.rect.left, self.rect.top = [random.randint(0, SCREEN.get_w() - self.rect.width),
                                              random.randint(-1 * SCREEN.getH(), 0 - self.rect.height)]
         else:
             self.rect.left, self.rect.top = point
@@ -80,7 +80,7 @@ class Supply_Bullet1(Supply):
         self.image = SUPPLY_IMAGE["Bullet"]
 
     def catched(self, player):
-        player.set_bullet(PlayerBulletType.Bullet1)
+        player.set_bullet_type(PlayerBulletType.Bullet1)
         self.kill()
 
 
