@@ -7,11 +7,6 @@ PLAYER_IMAGE = {}
 
 # 主音量
 MAIN_VOLUME = 1
-# 颜色
-GRAY = (128, 128, 128)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-
 # 背景卷动速度
 BG_SPEED = 25
 
@@ -68,10 +63,10 @@ class RESOURCES(object):
         RESOURCES.SUPPLY_IMAGE.clear()
 
         RESOURCES.load_viking_image()
-        RESOURCES.SUPPLY_IMAGE.setdefault("Life", load_image_alpha("Supply/bullet.png"))
-        RESOURCES.SUPPLY_IMAGE.setdefault("Bomb", load_image_alpha("Supply/bomb.png"))
-        RESOURCES.SUPPLY_IMAGE.setdefault("Bullet", load_image_alpha("Supply/bullet.png"))
-        RESOURCES.BULLET_IMAGE.setdefault("Viking_Bullet", load_image_alpha("MyPlane/bullet.png"))
+        RESOURCES.SUPPLY_IMAGE.setdefault("Life", _load_image_alpha("Supply/bullet.png"))
+        RESOURCES.SUPPLY_IMAGE.setdefault("Bomb", _load_image_alpha("Supply/bomb.png"))
+        RESOURCES.SUPPLY_IMAGE.setdefault("Bullet", _load_image_alpha("Supply/bullet.png"))
+        RESOURCES.BULLET_IMAGE.setdefault("Viking_Bullet", _load_image_alpha("MyPlane/bullet.png"))
 
     @classmethod
     def global_load_image_level1(cls):
@@ -79,34 +74,34 @@ class RESOURCES(object):
         RESOURCES.CARRIER_IMAGE.clear()
         RESOURCES.INTERCEPTOR_IMAGE.clear()
 
-        RESOURCES.BULLET_IMAGE.setdefault("Phoenix_Bullet", load_image_alpha("Enemy/bullet.png"))
-        RESOURCES.BULLET_IMAGE.setdefault("Phoenix_Laser", load_image_alpha("Enemy/laser.png"))
-        RESOURCES.PHOENIX_IMAGE.setdefault("Normal", [load_image_alpha("Enemy\Enemy_Phoenix1.png"),
-                                                      load_image_alpha("Enemy\Enemy_Phoenix2.png")])
-        RESOURCES.PHOENIX_IMAGE.setdefault("Stop", [load_image_alpha("Enemy\Enemy_Phoenix_Stop1.png"),
-                                                    load_image_alpha("Enemy\Enemy_Phoenix_Stop2.png")])
-        RESOURCES.PHOENIX_IMAGE.setdefault("Shield", [load_image_alpha("Enemy\Sheild1.png"),
-                                                      load_image_alpha("Enemy\Sheild2.png"),
-                                                      load_image_alpha("Enemy\Sheild3.png"),
-                                                      load_image_alpha("Enemy\Sheild4.png"),
-                                                      load_image_alpha("Enemy\Sheild5.png")])
-        RESOURCES.PHOENIX_IMAGE.setdefault("Destroy", [load_image_alpha("Enemy\Destroy_Phoenix1.png"),
-                                                       load_image_alpha("Enemy\Destroy_Phoenix2.png"),
-                                                       load_image_alpha("Enemy\Destroy_Phoenix3.png"),
-                                                       load_image_alpha("Enemy\Destroy_Phoenix4.png"),
-                                                       load_image_alpha("Enemy\Destroy_Phoenix5.png"),
-                                                       load_image_alpha("Enemy\Destroy_Phoenix6.png")])
-        RESOURCES.PHOENIX_IMAGE.setdefault("Attack", [load_image_alpha("Enemy\Enemy_Phoenix_AttakLight1.png"),
-                                                      load_image_alpha("Enemy\Enemy_Phoenix_AttakLight2.png"),
-                                                      load_image_alpha("Enemy\Enemy_Phoenix_AttakLight3.png"),
-                                                      load_image_alpha("Enemy\Enemy_Phoenix_AttakLight4.png"),
-                                                      load_image_alpha("Enemy\Enemy_Phoenix_AttakLight5.png"),
-                                                      load_image_alpha("Enemy\Enemy_Phoenix_AttakLight6.png"),
-                                                      load_image_alpha("Enemy\Enemy_Phoenix_AttakLight7.png"),
-                                                      load_image_alpha("Enemy\Enemy_Phoenix_AttakLight8.png"),
-                                                      load_image_alpha("Enemy\Enemy_Phoenix_AttakLight9.png")])
-        RESOURCES.INTERCEPTOR_IMAGE.setdefault("Body", load_image_alpha("Enemy\Interceptor.png"))
-        RESOURCES.CARRIER_IMAGE.setdefault("Body", load_image_alpha("Enemy\Carrier.png"))
+        RESOURCES.BULLET_IMAGE.setdefault("Phoenix_Bullet", _load_image_alpha("Enemy/bullet.png"))
+        RESOURCES.BULLET_IMAGE.setdefault("Phoenix_Laser", _load_image_alpha("Enemy/laser.png"))
+        RESOURCES.PHOENIX_IMAGE.setdefault("Normal", [_load_image_alpha("Enemy\Enemy_Phoenix1.png"),
+                                                      _load_image_alpha("Enemy\Enemy_Phoenix2.png")])
+        RESOURCES.PHOENIX_IMAGE.setdefault("Stop", [_load_image_alpha("Enemy\Enemy_Phoenix_Stop1.png"),
+                                                    _load_image_alpha("Enemy\Enemy_Phoenix_Stop2.png")])
+        RESOURCES.PHOENIX_IMAGE.setdefault("Shield", [_load_image_alpha("Enemy\Sheild1.png"),
+                                                      _load_image_alpha("Enemy\Sheild2.png"),
+                                                      _load_image_alpha("Enemy\Sheild3.png"),
+                                                      _load_image_alpha("Enemy\Sheild4.png"),
+                                                      _load_image_alpha("Enemy\Sheild5.png")])
+        RESOURCES.PHOENIX_IMAGE.setdefault("Destroy", [_load_image_alpha("Enemy\Destroy_Phoenix1.png"),
+                                                       _load_image_alpha("Enemy\Destroy_Phoenix2.png"),
+                                                       _load_image_alpha("Enemy\Destroy_Phoenix3.png"),
+                                                       _load_image_alpha("Enemy\Destroy_Phoenix4.png"),
+                                                       _load_image_alpha("Enemy\Destroy_Phoenix5.png"),
+                                                       _load_image_alpha("Enemy\Destroy_Phoenix6.png")])
+        RESOURCES.PHOENIX_IMAGE.setdefault("Attack", [_load_image_alpha("Enemy\Enemy_Phoenix_AttakLight1.png"),
+                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight2.png"),
+                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight3.png"),
+                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight4.png"),
+                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight5.png"),
+                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight6.png"),
+                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight7.png"),
+                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight8.png"),
+                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight9.png")])
+        RESOURCES.INTERCEPTOR_IMAGE.setdefault("Body", _load_image_alpha("Enemy\Interceptor.png"))
+        RESOURCES.CARRIER_IMAGE.setdefault("Body", _load_image_alpha("Enemy\Carrier.png"))
 
     @classmethod
     def UNLOAD_IMAGE_LEVER1(cls):
@@ -119,16 +114,16 @@ class RESOURCES(object):
     def LOAD_SOUNDS(cls):
         # 加载音效
         RESOURCES.SOUNDS.clear()
-        RESOURCES.SOUNDS.setdefault("Shield", load_sound("Shield.wav", MAIN_VOLUME - 0.3))
-        RESOURCES.SOUNDS.setdefault("Player_Shoot", load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2))
-        RESOURCES.SOUNDS.setdefault("Laser", load_sound("Laser.wav", MAIN_VOLUME - 0.2))
-        RESOURCES.SOUNDS.setdefault("Explosion", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
-                                                  load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
-        RESOURCES.SOUNDS.setdefault("Player_Explo", load_sound("Player_Explo.wav", MAIN_VOLUME))
+        RESOURCES.SOUNDS.setdefault("Shield", _load_sound("Shield.wav", MAIN_VOLUME - 0.3))
+        RESOURCES.SOUNDS.setdefault("Player_Shoot", _load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2))
+        RESOURCES.SOUNDS.setdefault("Laser", _load_sound("Laser.wav", MAIN_VOLUME - 0.2))
+        RESOURCES.SOUNDS.setdefault("Explosion", [_load_sound("Explo.wav", MAIN_VOLUME - 0.4),
+                                                  _load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
+        RESOURCES.SOUNDS.setdefault("Player_Explo", _load_sound("Player_Explo.wav", MAIN_VOLUME))
         RESOURCES.SOUNDS.setdefault("NuclearLaunch_Detected",
-                                    load_sound("NuclearLaunch_Detected.wav", MAIN_VOLUME - 0.1))
-        RESOURCES.SOUNDS.setdefault("NuclearMissle_Ready", load_sound("NuclearMissle_Ready.wav", MAIN_VOLUME - 0.1))
-        RESOURCES.SOUNDS.setdefault("UI1", load_sound("UI1.wav", MAIN_VOLUME - 0.2))
-        RESOURCES.SOUNDS.setdefault("Liftoff1", load_sound("Liftoff1.wav", MAIN_VOLUME))
-        RESOURCES.SOUNDS.setdefault("Liftoff2", load_sound("Liftoff2.wav", MAIN_VOLUME - 0.2))
-        RESOURCES.SOUNDS.setdefault("Error", load_sound("Error.wav", MAIN_VOLUME))
+                                    _load_sound("NuclearLaunch_Detected.wav", MAIN_VOLUME - 0.1))
+        RESOURCES.SOUNDS.setdefault("NuclearMissle_Ready", _load_sound("NuclearMissle_Ready.wav", MAIN_VOLUME - 0.1))
+        RESOURCES.SOUNDS.setdefault("UI1", _load_sound("UI1.wav", MAIN_VOLUME - 0.2))
+        RESOURCES.SOUNDS.setdefault("Liftoff1", _load_sound("Liftoff1.wav", MAIN_VOLUME))
+        RESOURCES.SOUNDS.setdefault("Liftoff2", _load_sound("Liftoff2.wav", MAIN_VOLUME - 0.2))
+        RESOURCES.SOUNDS.setdefault("Error", _load_sound("Error.wav", MAIN_VOLUME))
