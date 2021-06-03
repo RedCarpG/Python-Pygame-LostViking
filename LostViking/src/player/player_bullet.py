@@ -56,7 +56,7 @@ class PlayerBullet1(pygame.sprite.Sprite):
     @classmethod
     def init_player_bullet(cls):
         cls.PLAYER_BULLET_IMAGE.clear()
-        cls.PLAYER_BULLET_IMAGE.setdefault("Viking_Bullet", load_image_alpha("MyPlane/bullet.png"))
+        cls.PLAYER_BULLET_IMAGE.setdefault("Viking_Bullet", _load_image_alpha("MyPlane/bullet.png"))
 
         cls.INIT_FLAG = True
 

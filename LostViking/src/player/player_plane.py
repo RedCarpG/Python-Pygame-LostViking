@@ -1,7 +1,4 @@
-from abc import ABC
-
 from player_bullet import *
-from LostViking.src.GLOBAL import *
 from general_entity import *
 
 
@@ -22,8 +19,6 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.Player_G)
 
         self.set_image_type("MoveNormal")
-
-        ''' Init images from loaded image in self.IMAGE '''
 
         ''' Init States '''
         self.is_active = True
@@ -170,20 +165,20 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
 
     @classmethod
     def _init_image(cls):
-        cls.IMAGE["Base"] = [load_image_alpha("MyPlane/Viking_body.png")]
-        cls.IMAGE.setdefault("Invincible", [load_image_alpha("MyPlane/MyPlane_Invincible.png")])
-        cls.IMAGE.setdefault("MoveUp", [load_image_alpha("MyPlane/MyPlane_moveUp1.png"),
-                                        load_image_alpha("MyPlane/MyPlane_moveUp2.png")])
-        cls.IMAGE.setdefault("MoveDown", [load_image_alpha("MyPlane/MyPlane_moveDown1.png"),
-                                          load_image_alpha("MyPlane/MyPlane_moveDown2.png")])
-        cls.IMAGE.setdefault("MoveNormal", [load_image_alpha("MyPlane/MyPlane_moveNormal1.png"),
-                                            load_image_alpha("MyPlane/MyPlane_moveNormal2.png")])
-        cls.IMAGE.setdefault("Explode", [load_image_alpha("MyPlane/MyPlane_explode1.png"),
-                                         load_image_alpha("MyPlane/MyPlane_explode2.png"),
-                                         load_image_alpha("MyPlane/MyPlane_explode3.png"),
-                                         load_image_alpha("MyPlane/MyPlane_explode4.png"),
-                                         load_image_alpha("MyPlane/MyPlane_explode5.png"),
-                                         load_image_alpha("MyPlane/MyPlane_explode6.png")])
+        cls.IMAGE["Base"] = [_load_image_alpha("MyPlane/Viking_body.png")]
+        cls.IMAGE.setdefault("Invincible", [_load_image_alpha("MyPlane/MyPlane_Invincible.png")])
+        cls.IMAGE.setdefault("MoveUp", [_load_image_alpha("MyPlane/MyPlane_moveUp1.png"),
+                                        _load_image_alpha("MyPlane/MyPlane_moveUp2.png")])
+        cls.IMAGE.setdefault("MoveDown", [_load_image_alpha("MyPlane/MyPlane_moveDown1.png"),
+                                          _load_image_alpha("MyPlane/MyPlane_moveDown2.png")])
+        cls.IMAGE.setdefault("MoveNormal", [_load_image_alpha("MyPlane/MyPlane_moveNormal1.png"),
+                                            _load_image_alpha("MyPlane/MyPlane_moveNormal2.png")])
+        cls.IMAGE.setdefault("Explode", [_load_image_alpha("MyPlane/MyPlane_explode1.png"),
+                                         _load_image_alpha("MyPlane/MyPlane_explode2.png"),
+                                         _load_image_alpha("MyPlane/MyPlane_explode3.png"),
+                                         _load_image_alpha("MyPlane/MyPlane_explode4.png"),
+                                         _load_image_alpha("MyPlane/MyPlane_explode5.png"),
+                                         _load_image_alpha("MyPlane/MyPlane_explode6.png")])
         cls.INIT_FLAG = True
 
     @classmethod
