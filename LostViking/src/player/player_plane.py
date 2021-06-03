@@ -1,3 +1,5 @@
+""" Player controllable object
+"""
 from LostViking.src.items.entity import InertialEntity
 from player_bullet import PlayerBulletType
 import pygame

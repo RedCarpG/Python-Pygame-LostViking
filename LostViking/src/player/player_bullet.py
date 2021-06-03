@@ -1,6 +1,7 @@
+""" Player controllable object
+"""
 import pygame
 from enum import Enum
-from LostViking.src.GLOBAL import *
 
 
 class PlayerBulletType(Enum):
