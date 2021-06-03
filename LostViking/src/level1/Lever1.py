@@ -1,9 +1,7 @@
-import random
 from GLOBAL import *
 from LostViking.LostViking import *
-from LostViking.src.entity.enemyPlane import *
-from LostViking.src.entity.bullet import *
-from math import sin, cos
+from LostViking.src.enemyPlane import *
+from LostViking.src.items.bullet import *
 from LostViking.src.generic.mytime import *
 
 

@@ -7,7 +7,7 @@ main_dir = os.path.split(os.path.abspath(__file__))[0]
 image_dir = os.path.join(main_dir, '../../data/image')
 
 
-def _load_image(name, color_key=None, alpha=None, scale=None):
+def load_image(name, color_key=None, alpha=None, scale=None):
     fullname = os.path.join(image_dir, name)
     try:
         image = pygame.image.load(fullname)
@@ -28,7 +28,7 @@ def _load_image(name, color_key=None, alpha=None, scale=None):
     return image
 
 
-def _load_image_alpha(name, color_key=None, alpha=None, scale=None):
+def load_image_alpha(name, color_key=None, alpha=None, scale=None):
     fullname = os.path.join(image_dir, name)
     try:
         image = pygame.image.load(fullname)

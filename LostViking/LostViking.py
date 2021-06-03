@@ -1,11 +1,3 @@
-import sys
-
-import pygame
-
-from src.Lever1 import Shield
-from src.entity.player_plane import MyPlane, PlayerNucBomb
-from src.entity.supply import Supply, SUPPLY_TYPE
-from src.generic.font import load_font, myFont
 from src.GLOBAL import *
 
 if not pygame.font:
@@ -13,7 +5,7 @@ if not pygame.font:
 if not pygame.mixer:
     print("Warning, sounds disabled!")
 
-from src.Lever1 import *
+from LostViking.src.level1.Lever1 import *
 
 
 def col(a, b):
@@ -28,11 +20,11 @@ class Enter:
     def enter(self, screen, clock):
         # 加载播放 enter界面音乐
         Main.MUSIC = ['bgm.ogg', 'bgm2.ogg']
-        load_music(Main.MUSIC, MAIN_VOLUME - 0.7)
+        _load_music(Main.MUSIC, MAIN_VOLUME - 0.7)
         # enter音乐播放
         pygame.mixer.music.play(0)
         # 加载 enter界面背景
-        Main.BACKGROUND = load_image("Space.png")
+        Main.BACKGROUND = _load_image("Space.png")
         # enter界面字体
         begin_font = load_font("arialbd.ttf", 50)
         title_font = load_font("arialbd.ttf", 120)
@@ -40,7 +32,7 @@ class Enter:
         title_text = myFont(screen, title_font, "LOST VIKING", (0, 0), color=WHITE)
         title_text.move_center((screen.get_width() // 2, screen.get_height() // 2))
         begin_text.move_center((screen.get_width() // 2, 3 * screen.get_height() // 5))
-        UI1 = load_sound("UI1.wav", MAIN_VOLUME - 0.2)
+        UI1 = _load_sound("UI1.wav", MAIN_VOLUME - 0.2)
         # enter入场等待
         enter = True
         delay = 100
@@ -125,10 +117,10 @@ class LostViking(object):
         # --- Load Music ---
         # MUSIC = ['bgm2.ogg', 'bgm.ogg']
         # load_music(Main.MUSIC, MAIN_VOLUME)
-        load_music(['bgm2.ogg', 'bgm.ogg'], MAIN_VOLUME)
+        _load_music(['bgm2.ogg', 'bgm.ogg'], MAIN_VOLUME)
         pygame.mixer.music.play(1)
         # Load BG
-        self.BACKGROUND = load_image("Space.png")
+        self.BACKGROUND = _load_image("Space.png")
 
         # -* Load Images and Sounds
         global_load_image()
@@ -340,8 +332,8 @@ class LostViking(object):
     def begin_animation(self):
 
         # 生成背景
-        BG = load_image_alpha("BackGround.png")
-        BG2 = load_image_alpha("BackGround2.png")
+        BG = _load_image_alpha("BackGround.png")
+        BG2 = _load_image_alpha("BackGround2.png")
         BG_rect = BG.get_rect()
         BG2_rect = BG2.get_rect()
         BG_rect.bottom = SCREEN.getH()

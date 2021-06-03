@@ -2,9 +2,8 @@ from LostViking.src.generic.image import *
 from enum import Enum
 import abc
 import random
-import math
 from GLOBAL import *
-from player_plane import PlayerBulletType
+from LostViking.src.player.player_plane import PlayerBulletType
 
 
 class SUPPLY_TYPE(Enum):
