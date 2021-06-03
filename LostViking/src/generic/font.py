@@ -1,5 +1,6 @@
-import pygame, os
-from GLOBAL import *
+import pygame
+import os
+from .color import *
 from pygame.compat import geterror
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -25,7 +26,7 @@ def load_font(name, size):
     return font
 
 
-class myFont:
+class _PGFont:
     def __init__(self, screen, font, text='', position=(0, 0), antialias=True, color=WHITE, background=None):
         self.font = font
         self.antialias = antialias
