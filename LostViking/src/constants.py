@@ -1,5 +1,5 @@
-from LostViking.src.generic.sound import *
-from LostViking.src.generic.image import *
+from .generic_loader.sound_loader import *
+from .generic_loader.image_loader import *
 from enum import Enum
 
 PLAYER_IMAGE = {}
