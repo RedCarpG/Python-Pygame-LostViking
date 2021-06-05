@@ -4,10 +4,14 @@ from .color import *
 from pygame.compat import geterror
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
-font_dir = os.path.join(main_dir, 'font')
+font_dir = os.path.join(main_dir, '../../data/font')
 
 
 def load_font(name, size):
+    """ Load from a font file ".ttf" to a Font object
+    :param name [Name of the file, from a default directory "font_dir"]
+    :param size
+    :return pygame.font.Font object"""
     class NoneFont:
         def render(self):
             print("--无字体")

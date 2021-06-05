@@ -3,10 +3,10 @@ import pygame
 from pygame.compat import geterror
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
-sound_dir = os.path.join(main_dir, 'sound')
+sound_dir = os.path.join(main_dir, '../../data/sound')
 
 
-def _load_sound(name, volume):
+def load_sound(name, volume):
     class NoneSound:
         def play(self): print("-- No sound file")
 
@@ -24,7 +24,7 @@ def _load_sound(name, volume):
     return sound
 
 
-def _load_music(name, volume):
+def load_music(name, volume):
     class NoneSound:
         def play(self): print("-- No music file")
 
