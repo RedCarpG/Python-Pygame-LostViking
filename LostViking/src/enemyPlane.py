@@ -1,9 +1,9 @@
-from LostViking.src.generic.image import *
-from LostViking.src.generic.sound import *
+from LostViking.src.generic_loader.image_loader import *
+from LostViking.src.generic_loader.sound_loader import *
 import math
 import abc
-from LostViking.src.GLOBAL import SCREEN
-from LostViking.src.generic.mytime import *
+from LostViking.src.constants import SCREEN
+from LostViking.src.generic_loader.mytime import *
 
 
 class Enemy(pygame.sprite.Sprite):

@@ -1,4 +1,4 @@
-from src.GLOBAL import *
+from src.constants import *
 
 if not pygame.font:
     print("Warning, fonts disabled!")

@@ -1,4 +1,4 @@
-from LostViking.src.generic.image import *
+from LostViking.src.generic_loader.image_loader import *
 from enum import Enum
 import abc
 import random

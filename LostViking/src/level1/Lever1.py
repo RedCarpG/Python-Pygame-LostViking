@@ -1,8 +1,8 @@
 from GLOBAL import *
 from LostViking.LostViking import *
 from LostViking.src.enemyPlane import *
-from LostViking.src.items.bullet import *
-from LostViking.src.generic.mytime import *
+from LostViking.src.generic_items.bullet import *
+from LostViking.src.generic_loader.mytime import *
 
 
 # Enemy 类
