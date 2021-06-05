@@ -2,6 +2,7 @@ from abc import abstractmethod
 
 
 class SingleImageHelper(object):
+    """ Abstract Class, which manage with image """
     # A Dictionary of lists of images
     _IMAGE = None
     # Flag is set to True once the _IMAGE is initialized
@@ -10,7 +11,7 @@ class SingleImageHelper(object):
     def __init__(self):
         if not self._INIT_FLAG:
             self.init_image()
-        self.image = self._IMAGE()
+        self.image = self._IMAGE
 
     @classmethod
     @abstractmethod
