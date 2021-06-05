@@ -1,8 +1,14 @@
 """ Player controllable object
+Includes:
+    -> MyPlane
 """
-from LostViking.src.items.entity import InertialEntity
-from player_bullet import PlayerBulletType
+from LostViking.src.generic_items.entity import InertialEntity
+from player_bullet import PlayerBullet1
+from LostViking.src.constants import SCREEN
 import pygame
+
+Player1_G = pygame.sprite.GroupSingle(None)
+Player2_G = pygame.sprite.GroupSingle(None)
 
 
 class MyPlane(InertialEntity, pygame.sprite.Sprite):
@@ -16,13 +22,15 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
     _ACC_UP = 1
     _ACC_DOWN = 0.6
 
-    Player_G = pygame.sprite.GroupSingle(None)
+    _SOUND = {}
+    _SOUND_INIT_FLAG = False
 
-    # Player_Bullet_G = pygame.sprite.Group()
-
-    def __init__(self, point=None, sort=1):
+    def __init__(self, point=None, p_id=1):
         InertialEntity.__init__(self, point)
-        pygame.sprite.Sprite.__init__(self, self.Player_G)
+        group = Player1_G if p_id == 1 else Player2_G
+        pygame.sprite.Sprite.__init__(self, group)
+        if not self._SOUND_INIT_FLAG:
+            self.init_sound()
 
         self._set_image_type("MoveNormal")
 
@@ -33,27 +41,39 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
         # self.crash_animation = 0
 
         ''' Init Weapon '''
-        self.bullet_type = PlayerBulletType.Bullet1
+        self.bullet_type = PlayerBullet1
         self.lever = 1
 
-    """ ------------------ Real-time methods ------------------ """
+        self.attack_speed = 500
 
-    def update(self):
+    """ ------------------ Real-time methods ------------------ """
+    def update(self) -> None:
         """ Overwrites update from Sprite,
         need to be called every frame """
         # If alive
         if self.is_active:
-            # When speed_x/speed_y is not 0
+            # When _speed_x/_speed_y is not 0
             if self.speed_y != 0 or self.speed_x != 0:
                 # Move this object
                 # (Note: this is the only place when the object is really moving)
                 self._move()
                 # Speed down if there's no movement command on X or Y
-                # (Note: Only values of speed_x/speed_y will be changed here)
+                # (Note: Only values of _speed_x/_speed_y will be changed here)
                 self._inertial_deceleration()
         else:
             self.reset()
         self._switch_image()
+
+    def hit(self) -> bool:
+        """ This function is called from collision test"""
+        if not self.is_invincible:
+            self.is_active = False
+            self._image_switch = 0
+            self._set_image_type("Explode")
+            self._SOUND["Player_Explo"].play()
+            return True
+        else:
+            return False
 
     """
     def invincible(self, ticks, rate=60):
@@ -63,12 +83,21 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
                 if self.invincible_reset == 49:
                     self.is_invincible = False
     """
+    """ ------------------ Trigger-Action-Commands ------------------"""
+    def shoot(self) -> None:
+        self._SOUND["Player_Shoot"].stop()
+        self._SOUND["Player_Shoot"].play()
+        position1 = self.rect.center[0] - 10, self.rect.center[1]
+        position2 = self.rect.center[0] + 10, self.rect.center[1]
+        if self.bullet_type == PlayerBullet1:
+            for i in range(1, self.lever + 1):
+                PlayerBullet1(position1, -i)
+                PlayerBullet1(position2, i)
 
     """ ------------------ Trigger-Movement-Commands ------------------"""
     """ ------------------ (Instant trigger method called by events) --"""
-
     # Trigger Move Up 
-    def trigger_move_up(self):
+    def trigger_move_up(self) -> None:
         """ Trigger this object to move Up (with acceleration)
         Called by event (e.g. Button press)
         """
@@ -84,10 +113,10 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
             self._set_image_type("MoveNormal")
 
     # Trigger Move Down
-    def trigger_move_back(self):
+    def trigger_move_back(self) -> None:
         """ Trigger this object to move Down (with acceleration)
         Called by event (e.g. Button press)
-        (Note: This method only change the value of speed_x / speed_y)
+        (Note: This method only change the value of _speed_x / _speed_y)
         """
         # If it was not moving before, change image
         if not self._move_flag_y:
@@ -101,10 +130,10 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
             self._set_image_type("MoveNormal")
 
     # Trigger Move Left
-    def trigger_move_left(self):
+    def trigger_move_left(self) -> None:
         """ Trigger this object to move Left (with acceleration)
         Called by event (e.g. Button press)
-        (Note: This method only change the value of speed_x / speed_y)
+        (Note: This method only change the value of _speed_x / _speed_y)
         """
         # If not outside the screen
         if self.rect.left > 0:
@@ -114,10 +143,10 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
             self.rect.left = 0
 
     # Trigger Move Right
-    def trigger_move_right(self):
+    def trigger_move_right(self) -> None:
         """ Trigger this object to move Right (with acceleration)
         Called by event (e.g. Button press)
-        (Note: This method only change the value of speed_x / speed_y)
+        (Note: This method only change the value of _speed_x / _speed_y)
         """
         # If not outside the screen
         if self.rect.right < SCREEN.get_w():
@@ -127,7 +156,7 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
             self.rect.right = SCREEN.get_w()
 
     # Trigger Brake y, only triggered when lease the button
-    def trigger_stop_y(self):
+    def trigger_stop_y(self) -> None:
         """ Trigger this object to stop in y axis (with acceleration)
         Triggered by event (e.g. Button release)
         (Note: This only sets the flag, the deceleration will be done
@@ -136,7 +165,7 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
         self._move_flag_y = False
 
     # Trigger Brake x
-    def trigger_stop_x(self):
+    def trigger_stop_x(self) -> None:
         """ Trigger this object to stop in x axis (with acceleration)
         Triggered by event (e.g. Button release)
         (Note: This only sets the flag, the deceleration will be done
@@ -144,196 +173,59 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
         """
         self._move_flag_x = False
 
-    ''' -- End of Trigger-Movement-Commands -- '''
-
-    """
-    def hit(self):
-        if not self.is_invincible:
-            self.is_active = False
-            self.image_switch = 0
-            self.mainImage = self._IMAGE["Explode"]
-            RESOURCES.SOUNDS["Player_Explo"].play()
-            return True
-        else:
-            return False
-
-    def shoot(self):
-        b = []
-        position1 = self.rect.center[0] - 10, self.rect.center[1]
-        position2 = self.rect.center[0] + 10, self.rect.center[1]
-        if self.bullet_type == PlayerBulletType.Bullet1:
-            if self.lever == 1:
-                b1 = PlayerBullet1(position1, -1)
-                b2 = PlayerBullet1(position2, 1)
-                b = [b1, b2]
-            elif self.lever == 2:
-                b1 = PlayerBullet1(position1, -1)
-                b2 = PlayerBullet1(position2, 1)
-                b3 = PlayerBullet1(position1, -2)
-                b4 = PlayerBullet1(position2, 2)
-                b = [b1, b2, b3, b4]
-            elif self.lever == 3:
-                b1 = PlayerBullet1(position1, -1)
-                b2 = PlayerBullet1(position2, 1)
-                b3 = PlayerBullet1(position1, -2)
-                b4 = PlayerBullet1(position2, 2)
-                b5 = PlayerBullet1(position1, -3)
-                b6 = PlayerBullet1(position2, 3)
-                b = [b1, b2, b3, b4, b5, b6]
-            MyPlane.Player_Bullet_G.add(b)
-    
+    """ ------------------ Other ------------------"""
     # Set Bullet Type
-    def set_bullet_type(self, bul_type):
-        if self.bullet_type != bul_type:
+    def set_bullet_class(self, bul_class) -> None:
+        if self.bullet_type != bul_class:
             self.lever = 2
-            self.bullet_type = bul_type
+            self.bullet_type = bul_class
         elif self.lever < 3:
             self.lever += 1
-    """
+
+    def get_position(self) -> list:
+        return self.rect.center
+
+    def get_attack_speed(self) -> int:
+        return self.attack_speed
 
     # Reset
-    def reset(self, point=None):
+    def reset(self, point=None) -> None:
         self.is_active = True
         self._image_switch = 0
         self._set_pos(point)
         # self.is_invincible = True
         self._set_image_type("MoveNormal")
-        self.bullet_type = PlayerBulletType.Bullet1
+        self.bullet_type = PlayerBullet1
         self.lever = 1
 
-    """ Class init methods"""
-
+    """ ----------------- Class init methods -----------------"""
     @classmethod
-    def init_image(cls):
-        cls._IMAGE["Base"] = [load_image_alpha("MyPlane/Viking_body.png")]
-        cls._IMAGE.setdefault("Invincible", [load_image_alpha("MyPlane/MyPlane_Invincible.png")])
-        cls._IMAGE.setdefault("MoveUp", [load_image_alpha("MyPlane/MyPlane_moveUp1.png"),
-                                         load_image_alpha("MyPlane/MyPlane_moveUp2.png")])
-        cls._IMAGE.setdefault("MoveDown", [load_image_alpha("MyPlane/MyPlane_moveDown1.png"),
-                                           load_image_alpha("MyPlane/MyPlane_moveDown2.png")])
-        cls._IMAGE.setdefault("MoveNormal", [load_image_alpha("MyPlane/MyPlane_moveNormal1.png"),
-                                             load_image_alpha("MyPlane/MyPlane_moveNormal2.png")])
-        cls._IMAGE.setdefault("Explode", [load_image_alpha("MyPlane/MyPlane_explode1.png"),
-                                          load_image_alpha("MyPlane/MyPlane_explode2.png"),
-                                          load_image_alpha("MyPlane/MyPlane_explode3.png"),
-                                          load_image_alpha("MyPlane/MyPlane_explode4.png"),
-                                          load_image_alpha("MyPlane/MyPlane_explode5.png"),
-                                          load_image_alpha("MyPlane/MyPlane_explode6.png")])
+    def init_image(cls) -> None:
+        from LostViking.src.generic_loader.image_loader import load_image
+        cls._IMAGE["Base"] = [load_image("MyPlane/Viking_body.png")]
+        cls._IMAGE.setdefault("Invincible", [load_image("MyPlane/MyPlane_Invincible.png")])
+        cls._IMAGE.setdefault("MoveUp", [load_image("MyPlane/MyPlane_moveUp1.png"),
+                                         load_image("MyPlane/MyPlane_moveUp2.png")])
+        cls._IMAGE.setdefault("MoveDown", [load_image("MyPlane/MyPlane_moveDown1.png"),
+                                           load_image("MyPlane/MyPlane_moveDown2.png")])
+        cls._IMAGE.setdefault("MoveNormal", [load_image("MyPlane/MyPlane_moveNormal1.png"),
+                                             load_image("MyPlane/MyPlane_moveNormal2.png")])
+        cls._IMAGE.setdefault("Explode", [load_image("MyPlane/MyPlane_explode1.png"),
+                                          load_image("MyPlane/MyPlane_explode2.png"),
+                                          load_image("MyPlane/MyPlane_explode3.png"),
+                                          load_image("MyPlane/MyPlane_explode4.png"),
+                                          load_image("MyPlane/MyPlane_explode5.png"),
+                                          load_image("MyPlane/MyPlane_explode6.png")])
         cls._INIT_FLAG = True
 
     @classmethod
-    def _clear_image(cls):
+    def _clear_image(cls) -> None:
         cls._IMAGE.clear()
         cls._INIT_FLAG = False
 
-
-if __name__ == "__main__":
-    import sys
-    from LostViking.src.GLOBAL import *
-    from pygame.locals import *
-    from LostViking.src.generic.color import *
-
-    pygame.init()
-    clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((SCREEN.WIDTH, SCREEN.HEIGHT))
-
-    # Event
-    # event_player_shoot = USEREVENT
-    # event_nuc_launch = USEREVENT + 1
-
-    # PlayerBullet1.init_player_bullet()
-    """
-    SOUNDS.setdefault("Player_Shoot", load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2))
-    SOUNDS.setdefault("Player_Explo", load_sound("Player_Explo.wav", MAIN_VOLUME))
-    SOUNDS.setdefault("NuclearLaunch_Detected", load_sound("NuclearLaunch_Detected.wav", MAIN_VOLUME - 0.1))
-    SOUNDS.setdefault("NuclearMissle_Ready", load_sound("NuclearMissle_Ready.wav", MAIN_VOLUME - 0.1))
-    """
-    player = MyPlane()
-    # player.set_bullet_type(PlayerBulletType.Bullet1)
-
-    running = True
-    while running:
-
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                running = False
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    running = False
-                """
-                # Space Button
-                if event.key == K_SPACE:
-                    pygame.event.post(pygame.event.Event(event_player_shoot, {}))
-                    pygame.time.set_timer(event_player_shoot, 200)
-                # Q Button
-                if event.key == K_q:
-                    if nuclear_bomb > 0 and NB.is_active == False:
-                        nuclear_bomb -= 1
-                        bomb_text.change_text("Bomb: " + str(nuclear_bomb))
-                        SOUNDS["NuclearLaunch_Detected"].stop()
-                        SOUNDS["NuclearLaunch_Detected"].play()
-                        pygame.event.post(pygame.event.Event(event_nuc_launch, {}))
-                    else:
-                        SOUNDS["Error"].stop()
-                        SOUNDS["Error"].play()
-                """
-            elif event.type == KEYUP:
-                # if event.key == K_SPACE:
-                # pygame.time.set_timer(event_player_shoot, 0)
-                if event.key == K_w:
-                    player.trigger_stop_y()
-                if event.key == K_s:
-                    player.trigger_stop_y()
-                if event.key == K_a:
-                    player.trigger_stop_x()
-                if event.key == K_d:
-                    player.trigger_stop_x()
-                if event.key == K_UP:
-                    player.trigger_stop_y()
-                if event.key == K_DOWN:
-                    player.trigger_stop_y()
-                if event.key == K_LEFT:
-                    player.trigger_stop_x()
-                if event.key == K_RIGHT:
-                    player.trigger_stop_x()
-            """
-            elif event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    pygame.event.post(pygame.event.Event(event_player_shoot, {}))
-                    pygame.time.set_timer(event_player_shoot, 200)
-
-            elif event.type == MOUSEBUTTONUP:
-                if event.button == 1:
-                    pygame.time.set_timer(event_player_shoot, 0)
-
-            elif event.type == event_player_shoot:
-                SOUNDS["Player_Shoot"].stop()
-                SOUNDS["Player_Shoot"].play()
-                player.shoot()
-
-            elif event.type == event_nuc_launch:
-                NB.is_active = True
-                NB.rect.center = player.rect.midtop
-            """
-        # If Key Pressed?
-        key_pressed = pygame.key.get_pressed()
-        if key_pressed[K_w] or key_pressed[K_UP]:
-            player.trigger_move_up()
-        if key_pressed[K_s] or key_pressed[K_DOWN]:
-            player.trigger_move_back()
-        if key_pressed[K_a] or key_pressed[K_LEFT]:
-            player.trigger_move_left()
-        if key_pressed[K_d] or key_pressed[K_RIGHT]:
-            player.trigger_move_right()
-
-        screen.fill(BLACK)
-        MyPlane.Player_G.update()
-        MyPlane.Player_G.draw(screen)
-        # b_g.update()
-        # b_g.draw(screen)
-        # 显示
-        pygame.display.flip()
-        clock.tick(60)
-
-    pygame.quit()
-    sys.exit()
+    @classmethod
+    def init_sound(cls) -> None:
+        from LostViking.src.generic_loader.sound_loader import load_sound
+        from LostViking.src.constants import MAIN_VOLUME
+        cls._SOUND.setdefault("Player_Shoot", load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2))
+        cls._SOUND.setdefault("Player_Explo", load_sound("Player_Explo.wav", MAIN_VOLUME))
