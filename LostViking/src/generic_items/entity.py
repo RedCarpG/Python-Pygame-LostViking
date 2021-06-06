@@ -6,10 +6,10 @@ Includes:
 """
 import pygame
 from abc import ABC
-from LostViking.src.generic_items.graphic_helper import LoopImageHelper
+import warnings
 
 
-class MovableEntity(LoopImageHelper, ABC):
+class MovableEntity(ABC):
     """ Movable class with speed """
     _MAX_SPEED_L = 0
     _MAX_SPEED_R = 0
@@ -17,12 +17,15 @@ class MovableEntity(LoopImageHelper, ABC):
     _MAX_SPEED_DOWN = 0
 
     def __init__(self, point=None):
-        LoopImageHelper.__init__(self)
         self._speed_x = 0
         self._speed_y = 0
         self._move_flag_x = False
         self._move_flag_y = False
-        self.rect = self.image.get_rect()
+        if hasattr(self, "image"):
+            self.rect = self.image.get_rect()
+        else:
+            warnings.warn("WARNING: Attribute image is not set for {}".format(self))
+            self.rect = pygame.rect.Rect(0, 0, 0, 0)
         self._set_pos(point)
 
     def _move(self) -> None:
@@ -38,7 +41,7 @@ class MovableEntity(LoopImageHelper, ABC):
         else:
             self.rect.center = point
 
-    def get_position(self) -> list:
+    def get_position(self) -> (list, tuple):
         return self.rect.center
 
     @property
@@ -107,12 +110,14 @@ class InertialEntity(MovableEntity, ABC):
                     self._speed_y -= self._ACC_UP
                     if self._speed_y <= 0:
                         self._speed_y = 0
-                        self._set_image_type("MoveNormal")
+                        if hasattr(self, "_set_image_type"):
+                            self._set_image_type("MoveNormal")
                 elif self._speed_y < 0:  # If it is moving up, decelerate by _ACC_DOWN
                     self._speed_y += self._ACC_DOWN
                     if self._speed_y >= 0:
                         self._speed_y = 0
-                        self._set_image_type("MoveNormal")
+                        if hasattr(self, "_set_image_type"):
+                            self._set_image_type("MoveNormal")
 
     """ --------------------- Accelerations --------------------- """
 
