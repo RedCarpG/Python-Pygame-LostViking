@@ -1,9 +1,10 @@
-from LostViking.src.generic_items.graphic_helper import SingleImageHelper
-from LostViking.src.constants import SCREEN
-from LostViking.src.generic_loader.image_loader import load_image
+from ..generic_items.graphic_helper import SingleImageHelper
+from ..constants import SCREEN
+from ..generic_loader.image_loader import load_image
+from ..generic_items.graphic_helper import LoopImageHelper
+from ..groups import Player_NucBomb_G, NucBomb_Explosion_G
+from .player_interface import get_nuc_count
 import pygame
-
-Player_NucBomb_G = pygame.sprite.GroupSingle(None)
 
 
 class PlayerNucBomb(SingleImageHelper, pygame.sprite.Sprite):
@@ -14,57 +15,46 @@ class PlayerNucBomb(SingleImageHelper, pygame.sprite.Sprite):
     """
     _Is_Already_Activate = False
 
-    _NUC_BOMB_COUNT_MAX = 3
-    _Nuc_Bomb_Count = 0
-
     _SOUND = {}
 
     def __init__(self, init_position: (list, tuple)):
+        SingleImageHelper.__init__(self)
         pygame.sprite.Sprite.__init__(self, Player_NucBomb_G)
+
         self.rect = self.image.get_rect()
         self.rect.center = init_position
+
         self.accelerate = 0.2
         self.speed = -2
+
         self.explode_flag = False
-        self.active = True
 
     def update(self) -> None:
-        if self.active:
-            if self.rect.bottom > SCREEN.get_h() // 3:
-                self.move()
-            else:
-                self.explode_flag = True
+        if self.rect.bottom > SCREEN.get_h() // 3:
+            self._move()
         else:
-            self.dec_nuc_count()
+            Explosion(self.rect.center)
+            PlayerNucBomb._Is_Already_Activate = False
             self.kill()
+            self._SOUND["Explode"].stop()
+            self._SOUND["Explode"].play()
 
-    def move(self) -> None:
+    def _move(self) -> None:
         self.rect.top -= self.speed
         self.speed += self.accelerate
 
     @classmethod
     def launch(cls, player_position) -> None:
-        if cls._Is_Already_Activate:
+        if cls._Is_Already_Activate or get_nuc_count() < 0:
             cls._SOUND["Error"].stop()
             cls._SOUND["Error"].play()
         else:
+            from .player_interface import dec_nuc_bomb
+            dec_nuc_bomb()
             cls._Is_Already_Activate = True
             cls._SOUND["NuclearLaunch_Detected"].stop()
             cls._SOUND["NuclearLaunch_Detected"].play()
             PlayerNucBomb(player_position)
-
-    @classmethod
-    def get_nuc_count(cls) -> int:
-        return cls._Nuc_Bomb_Count
-
-    @classmethod
-    def add_nuc_count(cls) -> None:
-        if cls._Nuc_Bomb_Count < cls._NUC_BOMB_COUNT_MAX:
-            cls._Nuc_Bomb_Count += 1
-
-    @classmethod
-    def dec_nuc_count(cls):
-        cls._Nuc_Bomb_Count -= 1
 
     @classmethod
     def init_image(cls) -> None:
@@ -80,4 +70,31 @@ class PlayerNucBomb(SingleImageHelper, pygame.sprite.Sprite):
                               load_sound("NuclearLaunch_Detected.wav",
                                          MAIN_VOLUME - 0.1))
         cls._SOUND.setdefault("Error", load_sound("Error.wav", MAIN_VOLUME))
+        # TODO Sound here
+        cls._SOUND.setdefault("Explode", load_sound("Player_Explo.wav", MAIN_VOLUME))
 
+
+class Explosion(LoopImageHelper, pygame.sprite.Sprite):
+
+    def __init__(self, init_position):
+        pygame.sprite.Sprite.__init__(self, NucBomb_Explosion_G)
+        LoopImageHelper.__init__(self)
+        self.rect = self.image.get_rect()
+        self.rect.center = init_position
+
+    def update(self) -> None:
+        if self._image_switch == len(self._main_image_type) - 1:
+            self.kill()
+        self._switch_image()
+
+    @classmethod
+    def init_image(cls) -> None:
+        # TODO Image here
+        cls._IMAGE["Base"] = [load_image("MyPlane/MyPlane_explode1.png"),
+                              load_image("MyPlane/MyPlane_explode2.png"),
+                              load_image("MyPlane/MyPlane_explode3.png"),
+                              load_image("MyPlane/MyPlane_explode4.png"),
+                              load_image("MyPlane/MyPlane_explode5.png"),
+                              load_image("MyPlane/MyPlane_explode6.png")]
+
+        cls._INIT_FLAG = True
