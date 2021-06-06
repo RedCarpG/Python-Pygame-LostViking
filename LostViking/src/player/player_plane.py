@@ -2,16 +2,15 @@
 Includes:
     -> MyPlane
 """
-from LostViking.src.generic_items.entity import InertialEntity
-from player_bullet import PlayerBullet1
-from LostViking.src.constants import SCREEN
+from ..generic_items.entity import InertialEntity
+from ..generic_items.graphic_helper import LoopImageHelper
+from .player_bullet import PlayerBullet1, PlayerBasicBullet
+from ..constants import SCREEN
+from ..groups import Player1_G, Player2_G
 import pygame
 
-Player1_G = pygame.sprite.GroupSingle(None)
-Player2_G = pygame.sprite.GroupSingle(None)
 
-
-class MyPlane(InertialEntity, pygame.sprite.Sprite):
+class MyPlane(LoopImageHelper, InertialEntity, pygame.sprite.Sprite):
     """ Player class inherits InertialEntity and Sprite """
     _MAX_SPEED_L = 8
     _MAX_SPEED_R = 8
@@ -26,9 +25,10 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
     _SOUND_INIT_FLAG = False
 
     def __init__(self, point=None, p_id=1):
+        LoopImageHelper.__init__(self)
         InertialEntity.__init__(self, point)
-        group = Player1_G if p_id == 1 else Player2_G
-        pygame.sprite.Sprite.__init__(self, group)
+        pygame.sprite.Sprite.__init__(self, Player1_G if p_id == 1 else Player2_G)
+
         if not self._SOUND_INIT_FLAG:
             self.init_sound()
 
@@ -41,12 +41,13 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
         # self.crash_animation = 0
 
         ''' Init Weapon '''
-        self.bullet_type = PlayerBullet1
-        self.lever = 1
+        self._bullet_type = PlayerBullet1
+        self._lever = 1
 
         self.attack_speed = 500
 
     """ ------------------ Real-time methods ------------------ """
+
     def update(self) -> None:
         """ Overwrites update from Sprite,
         need to be called every frame """
@@ -60,6 +61,15 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
                 # Speed down if there's no movement command on X or Y
                 # (Note: Only values of _speed_x/_speed_y will be changed here)
                 self._inertial_deceleration()
+                # Restrict the plane inside the screen
+                if self.rect.bottom > SCREEN.get_h():
+                    self.rect.bottom = SCREEN.get_h()
+                if self.rect.left < 0:
+                    self.rect.left = 0
+                if self.rect.right > SCREEN.get_w():
+                    self.rect.right = SCREEN.get_w()
+                if self.rect.top < 0:
+                    self.rect.top = 0
         else:
             self.reset()
         self._switch_image()
@@ -84,19 +94,16 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
                     self.is_invincible = False
     """
     """ ------------------ Trigger-Action-Commands ------------------"""
+
     def shoot(self) -> None:
         self._SOUND["Player_Shoot"].stop()
         self._SOUND["Player_Shoot"].play()
-        position1 = self.rect.center[0] - 10, self.rect.center[1]
-        position2 = self.rect.center[0] + 10, self.rect.center[1]
-        if self.bullet_type == PlayerBullet1:
-            for i in range(1, self.lever + 1):
-                PlayerBullet1(position1, -i)
-                PlayerBullet1(position2, i)
+        self._bullet_type.shoot_bullets(self.rect.center, self._lever)
 
     """ ------------------ Trigger-Movement-Commands ------------------"""
     """ ------------------ (Instant trigger method called by events) --"""
-    # Trigger Move Up 
+
+    # Trigger Move Up
     def trigger_move_up(self) -> None:
         """ Trigger this object to move Up (with acceleration)
         Called by event (e.g. Button press)
@@ -174,13 +181,23 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
         self._move_flag_x = False
 
     """ ------------------ Other ------------------"""
+
     # Set Bullet Type
-    def set_bullet_class(self, bul_class) -> None:
-        if self.bullet_type != bul_class:
-            self.lever = 2
-            self.bullet_type = bul_class
-        elif self.lever < 3:
-            self.lever += 1
+    def change_bullet_type(self, bul_class) -> None:
+        if not issubclass(bul_class, PlayerBasicBullet):
+            raise Exception("ERROR: Bullet type {} is not supported".format(bul_class))
+        if self._bullet_type != bul_class:
+            self._bullet_type = bul_class
+            self._lever = 1
+
+    def level_up(self) -> None:
+        if self._bullet_type.get_max_level() > self._lever:
+            self._lever += 1
+        else:
+            print("Max_level")
+
+    def get_level(self) -> int:
+        return self._lever
 
     def get_position(self) -> list:
         return self.rect.center
@@ -195,10 +212,11 @@ class MyPlane(InertialEntity, pygame.sprite.Sprite):
         self._set_pos(point)
         # self.is_invincible = True
         self._set_image_type("MoveNormal")
-        self.bullet_type = PlayerBullet1
-        self.lever = 1
+        self._bullet_type = PlayerBullet1
+        self._lever = 1
 
     """ ----------------- Class init methods -----------------"""
+
     @classmethod
     def init_image(cls) -> None:
         from LostViking.src.generic_loader.image_loader import load_image
