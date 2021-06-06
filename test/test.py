@@ -1,4 +1,5 @@
 from LostViking.src.player import *
+from LostViking.src.groups import *
 
 if __name__ == "__main__":
     import sys
@@ -15,8 +16,12 @@ if __name__ == "__main__":
     init_player_image()
     init_player_sound()
     player1 = create_player()
-    player1.set_bullet_class(PlayerBullet1)
-    PlayerNucBomb.add_nuc_count()
+    set_player_bullet_type(player1, 1)
+    player_upgrade(player1)
+    player_upgrade(player1)
+    add_nuc_bomb()
+    add_nuc_bomb()
+    add_nuc_bomb()
 
     running = True
     while running:
@@ -41,13 +46,15 @@ if __name__ == "__main__":
         if key_pressed[K_d] or key_pressed[K_RIGHT]:
             player1.trigger_move_right()
 
-        screen.fill(WHITE)
+        screen.fill(BLACK)
         Player_NucBomb_G.update()
         Player_Bullet_G.update()
         Player1_G.update()
+        NucBomb_Explosion_G.update()
         Player_Bullet_G.draw(screen)
         Player_NucBomb_G.draw(screen)
         Player1_G.draw(screen)
+        NucBomb_Explosion_G.draw(screen)
         # Display
         pygame.display.flip()
 
