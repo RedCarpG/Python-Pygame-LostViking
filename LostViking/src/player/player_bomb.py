@@ -1,3 +1,7 @@
+""" This file includes:
+    -> PlayerNucBomb class which creates a bomb entity
+    -> Explosion class which handles with the drawing of explosion image"""
+
 from ..generic_items.graphic_helper import SingleImageHelper
 from ..constants import SCREEN
 from ..generic_loader.image_loader import load_image
