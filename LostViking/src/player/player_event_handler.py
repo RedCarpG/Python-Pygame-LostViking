@@ -1,6 +1,5 @@
 import pygame.event
 from pygame.locals import *
-from ..event_manager import EM
 from .player_plane import MyPlane
 from .player_bomb import PlayerNucBomb
 from .player_event_type import *
