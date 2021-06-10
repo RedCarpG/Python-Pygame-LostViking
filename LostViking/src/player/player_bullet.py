@@ -66,7 +66,7 @@ class PlayerBullet1(PlayerBasicBullet):
     def init_image(cls) -> None:
         cls._IMAGE = load_image("MyPlane/bullet.png")
 
-        cls._INIT_FLAG = True
+        cls._INIT_FLAG_IMAGE = True
 
 
 # TODO Bullet2
@@ -119,4 +119,9 @@ class PlayerBullet2(BasicBullet):
     def init_image(cls) -> None:
         cls._IMAGE = load_image("MyPlane/bullet.png")
 
-        cls._INIT_FLAG = True
+        cls._INIT_FLAG_IMAGE = True
+
+
+def init_player_bullet():
+    PlayerBullet1.init_image()
+    #PlayerBullet2.init_image()

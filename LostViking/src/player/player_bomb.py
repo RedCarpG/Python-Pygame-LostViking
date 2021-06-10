@@ -64,7 +64,7 @@ class PlayerNucBomb(SingleImageHelper, pygame.sprite.Sprite):
     def init_image(cls) -> None:
         cls._IMAGE = load_image("MyPlane/bullet.png")
 
-        cls._INIT_FLAG = True
+        cls._INIT_FLAG_IMAGE = True
 
     @classmethod
     def init_sound(cls) -> None:
@@ -101,4 +101,10 @@ class Explosion(LoopImageHelper, pygame.sprite.Sprite):
                               load_image("MyPlane/MyPlane_explode5.png"),
                               load_image("MyPlane/MyPlane_explode6.png")]
 
-        cls._INIT_FLAG = True
+        cls._INIT_FLAG_IMAGE = True
+
+
+def init_bomb():
+    PlayerNucBomb.init_image()
+    PlayerNucBomb.init_sound()
+    Explosion.init_image()

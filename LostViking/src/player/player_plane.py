@@ -12,24 +12,16 @@ import pygame
 
 class MyPlane(LoopImageHelper, InertialEntity, pygame.sprite.Sprite):
     """ Player class inherits InertialEntity and Sprite """
-    _MAX_SPEED_L = 8
-    _MAX_SPEED_R = 8
-    _MAX_SPEED_UP = 10
-    _MAX_SPEED_DOWN = 5
-    _ACC_L = 0.8
-    _ACC_R = 0.8
-    _ACC_UP = 1
-    _ACC_DOWN = 0.6
 
     _SOUND = {}
-    _SOUND_INIT_FLAG = False
+    _INIT_FLAG_SOUND = False
 
     def __init__(self, point=None, p_id=1):
         LoopImageHelper.__init__(self)
         InertialEntity.__init__(self, point)
         pygame.sprite.Sprite.__init__(self, Player1_G if p_id == 1 else Player2_G)
 
-        if not self._SOUND_INIT_FLAG:
+        if not self._INIT_FLAG_SOUND:
             self.init_sound()
 
         self._set_image_type("MoveNormal")
@@ -234,12 +226,12 @@ class MyPlane(LoopImageHelper, InertialEntity, pygame.sprite.Sprite):
                                           load_image("MyPlane/MyPlane_explode4.png"),
                                           load_image("MyPlane/MyPlane_explode5.png"),
                                           load_image("MyPlane/MyPlane_explode6.png")])
-        cls._INIT_FLAG = True
+        cls._INIT_FLAG_IMAGE = True
 
     @classmethod
     def _clear_image(cls) -> None:
         cls._IMAGE.clear()
-        cls._INIT_FLAG = False
+        cls._INIT_FLAG_IMAGE = False
 
     @classmethod
     def init_sound(cls) -> None:
@@ -247,3 +239,27 @@ class MyPlane(LoopImageHelper, InertialEntity, pygame.sprite.Sprite):
         from LostViking.src.constants import MAIN_VOLUME
         cls._SOUND.setdefault("Player_Shoot", load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2))
         cls._SOUND.setdefault("Player_Explo", load_sound("Player_Explo.wav", MAIN_VOLUME))
+
+    @classmethod
+    def init_speed(cls) -> None:
+        cls._MAX_SPEED_L = 8
+        cls._MAX_SPEED_R = 8
+        cls._MAX_SPEED_UP = 10
+        cls._MAX_SPEED_DOWN = 5
+
+        cls._INIT_FLAG_SPEED = True
+
+    @classmethod
+    def init_acc(cls):
+        cls._ACC_L = 0.8
+        cls._ACC_R = 0.8
+        cls._ACC_UP = 1
+        cls._ACC_DOWN = 0.6
+        cls._INIT_FLAG_ACC = True
+
+
+def init_player_plane():
+    MyPlane.init_image()
+    MyPlane.init_sound()
+    MyPlane.init_speed()
+    MyPlane.init_acc()
