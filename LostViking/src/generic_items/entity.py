@@ -5,7 +5,7 @@ Includes:
     -> InertialEntity
 """
 import pygame
-from abc import ABC
+from abc import ABC, abstractmethod
 import warnings
 
 
@@ -16,7 +16,12 @@ class MovableEntity(ABC):
     _MAX_SPEED_UP = 0
     _MAX_SPEED_DOWN = 0
 
+    _INIT_FLAG_SPEED = False
+
     def __init__(self, point=None):
+        if not self._INIT_FLAG_SPEED:
+            print("!!! WARNING: {} speed value not set", self.__name__)
+            self.init_speed()
         self._speed_x = 0
         self._speed_y = 0
         self._move_flag_x = False
@@ -68,6 +73,11 @@ class MovableEntity(ABC):
             raise ValueError('score must between {} ~ {}!'.format(-self._MAX_SPEED_UP, self._MAX_SPEED_DOWN))
         self._speed_y = speed_y
 
+    @classmethod
+    @abstractmethod
+    def init_speed(cls):
+        pass
+
 
 class InertialEntity(MovableEntity, ABC):
     """ MovableEntity with acceleration/deceleration
@@ -77,8 +87,13 @@ class InertialEntity(MovableEntity, ABC):
     _ACC_UP = 0
     _ACC_DOWN = 0
 
+    _INIT_FLAG_ACC = False
+
     def __init__(self, point=None):
         MovableEntity.__init__(self, point)
+        if not self._INIT_FLAG_ACC:
+            print("!!! WARNING: {} acceleration value not set", self.__name__)
+            self._init_acc()
 
     """ --------------------- Deceleration --------------------- """
 
@@ -156,3 +171,8 @@ class InertialEntity(MovableEntity, ABC):
         # If speed doesn't reach limit
         if self._speed_x < self._MAX_SPEED_R:
             self._speed_x += self._ACC_R
+
+    @classmethod
+    @abstractmethod
+    def init_acc(cls):
+        pass
