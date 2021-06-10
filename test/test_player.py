@@ -1,20 +1,19 @@
 from LostViking.src.player import *
 from LostViking.src.groups import *
 
-if __name__ == "__main__":
-    import sys
-    from LostViking.src.constants import *
-    from pygame.locals import *
-    from LostViking.src.generic_loader.color import *
+from LostViking.src.constants import *
+from pygame.locals import *
+from LostViking.src.generic_loader.color import *
 
+
+def test_player():
     # Init Environment
     pygame.init()
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((SCREEN.WIDTH, SCREEN.HEIGHT))
 
     # Init Player
-    init_player_image()
-    init_player_sound()
+    init_player()
     player1 = create_player()
     set_player_bullet_type(player1, 1)
     player_upgrade(player1)
@@ -60,5 +59,11 @@ if __name__ == "__main__":
 
         clock.tick(60)
 
+
+if __name__ == "__main__":
+    test_player()
+
     pygame.quit()
+    import sys
+
     sys.exit()
