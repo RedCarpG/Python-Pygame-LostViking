@@ -17,23 +17,24 @@ class BasicImageHelper(object):
     Attributes:
         cls._IMAGE: A Surface or a list of Surface entity
             which are loaded from images
-        cls._INIT_FLAG: A flag which will be set True
+        cls._INIT_FLAG_IMAGE: A flag which will be set True
             when init_image() is called
      """
     # A Dictionary of lists of images
     _IMAGE = None
     # Flag is set to True once the _IMAGE is initialized
-    _INIT_FLAG = False
+    _INIT_FLAG_IMAGE = False
 
     def __init__(self):
-        if not self._INIT_FLAG:
+        if not self._INIT_FLAG_IMAGE:
+            print("!!! WARNING: {} image value not initialized", self.__name__)
             self.init_image()
 
     @classmethod
     @abstractmethod
     def init_image(cls):
         """ It should load image(s) to cls._IMAGE
-        and set cls._INIT_FLAG to true when it's done """
+        and set cls._INIT_FLAG_IMAGE to true when it's done """
         pass
 
 
