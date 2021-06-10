@@ -3,37 +3,29 @@ from LostViking.src.generic_loader.sound_loader import *
 import math
 import abc
 from LostViking.src.constants import SCREEN
-from LostViking.src.generic_loader.mytime import *
+from ..groups import Enemy_G
 
 
 class Enemy(pygame.sprite.Sprite):
-
-    Enemy_G = pygame.sprite.Group()
-    EnemyHit_G = pygame.sprite.Group()
-    EnemyDie_G = pygame.sprite.Group()
-    BOSS = pygame.sprite.GroupSingle(None)
-
-    __metaclass__ = abc.ABCMeta
-
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+        self.health = 0
+        self.score = 0
+        Enemy_G.add(self)
 
 
 class EnemyI(Enemy):
 
     def __init__(self, position):
         Enemy.__init__(self)
-        self.health = None
         self.image_switch = 0
         self.image = self.main_image[0]
         self.rect = self.image.get_rect()
         self.active = True
-        self.score = 0
         self.setPos(position)
         self.image_switch_interval = MYTIME(1)
         self.death_time = MYTIME(6)
         self.speed = [0, 0]
-        Enemy.Enemy_G.add(self)
 
     def update(self):
         self.change_image()
