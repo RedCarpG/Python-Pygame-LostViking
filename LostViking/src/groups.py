@@ -12,3 +12,4 @@ NucBomb_Explosion_G = pygame.sprite.GroupSingle(None)
 Enemy_G = pygame.sprite.Group()
 Enemy_Bullet_G = pygame.sprite.Group()
 
+BOSS = pygame.sprite.GroupSingle(None)
