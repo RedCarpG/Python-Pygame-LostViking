@@ -66,7 +66,7 @@ class RESOURCES(object):
         RESOURCES.SUPPLY_IMAGE.setdefault("Life", _load_image_alpha("Supply/bullet.png"))
         RESOURCES.SUPPLY_IMAGE.setdefault("Bomb", _load_image_alpha("Supply/bomb.png"))
         RESOURCES.SUPPLY_IMAGE.setdefault("Bullet", _load_image_alpha("Supply/bullet.png"))
-        RESOURCES.BULLET_IMAGE.setdefault("Viking_Bullet", _load_image_alpha("MyPlane/bullet.png"))
+        RESOURCES.BULLET_IMAGE.setdefault("Viking_Bullet", _load_image_alpha("PlayerPlane/bullet.png"))
 
     @classmethod
     def global_load_image_level1(cls):

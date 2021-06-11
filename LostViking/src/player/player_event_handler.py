@@ -1,11 +1,11 @@
 import pygame.event
 from pygame.locals import *
-from .player_plane import MyPlane
-from .player_bomb import PlayerNucBomb
+from .PlayerPlane import PlayerPlane
+from .PlayerBomb import PlayerNucBomb
 from .player_event_type import *
 
 
-def _start_player_shoot_event(player: MyPlane, player_id: int) -> None:
+def _start_player_shoot_event(player: PlayerPlane, player_id: int) -> None:
     if player_id == 1:
         pygame.event.post(pygame.event.Event(EVENT_PLAYER1_SHOOT, {}))
         pygame.time.set_timer(EVENT_PLAYER1_SHOOT, player.get_attack_speed())
@@ -21,7 +21,7 @@ def _stop_player_shoot_event(player_id: int) -> None:
         pygame.time.set_timer(EVENT_PLAYER2_SHOOT, 0)
 
 
-def _handle_player_shoot_event(player: MyPlane):
+def _handle_player_shoot_event(player: PlayerPlane):
     player.shoot()
 
 
@@ -32,11 +32,11 @@ def _start_player_bomb_launch_event(player_id: int):
         pygame.event.post(pygame.event.Event(EVENT_PLAYER2_BOMB, {}))
 
 
-def _handle_player_bomb_launch_event(player: MyPlane):
+def _handle_player_bomb_launch_event(player: PlayerPlane):
     PlayerNucBomb.launch(player.get_position())
 
 
-def detect_player_event(e: pygame.event.Event, player1: MyPlane, player2=None):
+def detect_player_event(e: pygame.event.Event, player1: PlayerPlane, player2=None):
     if e.type == KEYDOWN:
         # Space Button
         if e.key == K_SPACE:

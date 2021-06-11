@@ -30,7 +30,7 @@ class PlayerBullet1(PlayerBasicBullet):
     -> Implements StraightBullet class :
             -> SingleImageHelper
             -> pygame.sprite.Sprite
-    + Created by shoot() from MyPlane
+    + Created by shoot() from PlayerPlane
     - Deleted by self.hit() or self.kill() in self.update()
     """
 
@@ -64,7 +64,7 @@ class PlayerBullet1(PlayerBasicBullet):
 
     @classmethod
     def init_image(cls) -> None:
-        cls._IMAGE = load_image("MyPlane/bullet.png")
+        cls._IMAGE = load_image("PlayerPlane/bullet.png")
 
         cls._INIT_FLAG_IMAGE = True
 
@@ -75,7 +75,7 @@ class PlayerBullet2(BasicBullet):
     -> Implements StraightBullet class :
             -> SingleImageHelper
             -> pygame.sprite.Sprite
-    + Created by shoot() from MyPlane
+    + Created by shoot() from PlayerPlane
     - Deleted by self.hit() or self.kill() in self.update()
     """
     _MAX_LEVEL = 3
@@ -117,7 +117,7 @@ class PlayerBullet2(BasicBullet):
 
     @classmethod
     def init_image(cls) -> None:
-        cls._IMAGE = load_image("MyPlane/bullet.png")
+        cls._IMAGE = load_image("PlayerPlane/bullet.png")
 
         cls._INIT_FLAG_IMAGE = True
 

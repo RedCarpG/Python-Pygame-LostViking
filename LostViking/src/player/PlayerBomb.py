@@ -2,10 +2,10 @@
     -> PlayerNucBomb class which creates a bomb entity
     -> Explosion class which handles with the drawing of explosion image"""
 
-from ..generic_items.graphic_helper import SingleImageHelper
+from ..generic_items.ImageHelper import SingleImageHelper
 from ..constants import SCREEN
 from ..generic_loader.image_loader import load_image
-from ..generic_items.graphic_helper import LoopImageHelper
+from ..generic_items.ImageHelper import LoopImageHelper
 from ..groups import Player_NucBomb_G, NucBomb_Explosion_G
 from .player_interface import get_nuc_count
 import pygame
@@ -62,7 +62,7 @@ class PlayerNucBomb(SingleImageHelper, pygame.sprite.Sprite):
 
     @classmethod
     def init_image(cls) -> None:
-        cls._IMAGE = load_image("MyPlane/bullet.png")
+        cls._IMAGE = load_image("PlayerPlane/bullet.png")
 
         cls._INIT_FLAG_IMAGE = True
 
@@ -94,12 +94,12 @@ class Explosion(LoopImageHelper, pygame.sprite.Sprite):
     @classmethod
     def init_image(cls) -> None:
         # TODO Image here
-        cls._IMAGE["Base"] = [load_image("MyPlane/MyPlane_explode1.png"),
-                              load_image("MyPlane/MyPlane_explode2.png"),
-                              load_image("MyPlane/MyPlane_explode3.png"),
-                              load_image("MyPlane/MyPlane_explode4.png"),
-                              load_image("MyPlane/MyPlane_explode5.png"),
-                              load_image("MyPlane/MyPlane_explode6.png")]
+        cls._IMAGE["Base"] = [load_image("PlayerPlane/MyPlane_explode1.png"),
+                              load_image("PlayerPlane/MyPlane_explode2.png"),
+                              load_image("PlayerPlane/MyPlane_explode3.png"),
+                              load_image("PlayerPlane/MyPlane_explode4.png"),
+                              load_image("PlayerPlane/MyPlane_explode5.png"),
+                              load_image("PlayerPlane/MyPlane_explode6.png")]
 
         cls._INIT_FLAG_IMAGE = True
 

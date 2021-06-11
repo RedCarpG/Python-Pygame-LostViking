@@ -3,7 +3,7 @@ from enum import Enum
 import abc
 import random
 from GLOBAL import *
-from LostViking.src.player.player_plane import PlayerBulletType
+from LostViking.src.player.PlayerPlane import PlayerBulletType
 
 
 class SUPPLY_TYPE(Enum):

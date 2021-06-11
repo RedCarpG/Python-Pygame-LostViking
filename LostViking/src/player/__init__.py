@@ -4,19 +4,19 @@ from .player_interface import *
 
 def init_player():
     # Init Player Plane
-    from .player_plane import init_player_plane
+    from .PlayerPlane import init_player_plane
     init_player_plane()
-    from .player_bullet import init_player_bullet
+    from .PlayerBullet import init_player_bullet
     init_player_bullet()
-    from .player_bomb import init_bomb
+    from .PlayerBomb import init_bomb
     init_bomb()
 
 
 def create_player(player_num=1):
-    from .player_plane import MyPlane
+    from .PlayerPlane import PlayerPlane
     if player_num == 1:
-        return MyPlane()
+        return PlayerPlane()
     else:
         # TODO Point for P1, P2
-        return MyPlane(point=None), MyPlane(point=None, p_id=2)
+        return PlayerPlane(point=None), PlayerPlane(point=None, p_id=2)
 

@@ -1,4 +1,3 @@
-from LostViking.src.generic_loader.image_loader import *
 from LostViking.src.generic_loader.sound_loader import *
 import math
 import abc

@@ -1,16 +1,18 @@
 """ Player controllable object
 Includes:
-    -> MyPlane
+    -> PlayerPlane
 """
 from ..generic_items.entity import InertialEntity
-from ..generic_items.graphic_helper import LoopImageHelper
-from .player_bullet import PlayerBullet1, PlayerBasicBullet
+from ..generic_items.ImageHelper import LoopImageHelper
+from .PlayerBullet import PlayerBullet1, PlayerBasicBullet
 from ..constants import SCREEN
 from ..groups import Player1_G, Player2_G
 import pygame
 
 
-class MyPlane(LoopImageHelper, InertialEntity, pygame.sprite.Sprite):
+
+
+class PlayerPlane(LoopImageHelper, InertialEntity, pygame.sprite.Sprite):
     """ Player class inherits InertialEntity and Sprite """
 
     _SOUND = {}
@@ -212,20 +214,20 @@ class MyPlane(LoopImageHelper, InertialEntity, pygame.sprite.Sprite):
     @classmethod
     def init_image(cls) -> None:
         from LostViking.src.generic_loader.image_loader import load_image
-        cls._IMAGE["Base"] = [load_image("MyPlane/Viking_body.png")]
-        cls._IMAGE.setdefault("Invincible", [load_image("MyPlane/MyPlane_Invincible.png")])
-        cls._IMAGE.setdefault("MoveUp", [load_image("MyPlane/MyPlane_moveUp1.png"),
-                                         load_image("MyPlane/MyPlane_moveUp2.png")])
-        cls._IMAGE.setdefault("MoveDown", [load_image("MyPlane/MyPlane_moveDown1.png"),
-                                           load_image("MyPlane/MyPlane_moveDown2.png")])
-        cls._IMAGE.setdefault("MoveNormal", [load_image("MyPlane/MyPlane_moveNormal1.png"),
-                                             load_image("MyPlane/MyPlane_moveNormal2.png")])
-        cls._IMAGE.setdefault("Explode", [load_image("MyPlane/MyPlane_explode1.png"),
-                                          load_image("MyPlane/MyPlane_explode2.png"),
-                                          load_image("MyPlane/MyPlane_explode3.png"),
-                                          load_image("MyPlane/MyPlane_explode4.png"),
-                                          load_image("MyPlane/MyPlane_explode5.png"),
-                                          load_image("MyPlane/MyPlane_explode6.png")])
+        cls._IMAGE["Base"] = [load_image("PlayerPlane/Viking_body.png")]
+        cls._IMAGE.setdefault("Invincible", [load_image("PlayerPlane/MyPlane_Invincible.png")])
+        cls._IMAGE.setdefault("MoveUp", [load_image("PlayerPlane/MyPlane_moveUp1.png"),
+                                         load_image("PlayerPlane/MyPlane_moveUp2.png")])
+        cls._IMAGE.setdefault("MoveDown", [load_image("PlayerPlane/MyPlane_moveDown1.png"),
+                                           load_image("PlayerPlane/MyPlane_moveDown2.png")])
+        cls._IMAGE.setdefault("MoveNormal", [load_image("PlayerPlane/MyPlane_moveNormal1.png"),
+                                             load_image("PlayerPlane/MyPlane_moveNormal2.png")])
+        cls._IMAGE.setdefault("Explode", [load_image("PlayerPlane/MyPlane_explode1.png"),
+                                          load_image("PlayerPlane/MyPlane_explode2.png"),
+                                          load_image("PlayerPlane/MyPlane_explode3.png"),
+                                          load_image("PlayerPlane/MyPlane_explode4.png"),
+                                          load_image("PlayerPlane/MyPlane_explode5.png"),
+                                          load_image("PlayerPlane/MyPlane_explode6.png")])
         cls._INIT_FLAG_IMAGE = True
 
     @classmethod
@@ -259,7 +261,7 @@ class MyPlane(LoopImageHelper, InertialEntity, pygame.sprite.Sprite):
 
 
 def init_player_plane():
-    MyPlane.init_image()
-    MyPlane.init_sound()
-    MyPlane.init_speed()
-    MyPlane.init_acc()
+    PlayerPlane.init_image()
+    PlayerPlane.init_sound()
+    PlayerPlane.init_speed()
+    PlayerPlane.init_acc()

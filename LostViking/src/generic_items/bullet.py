@@ -7,7 +7,7 @@ from abc import ABC
 
 from LostViking.src.constants import SCREEN
 from LostViking.src.generic_loader.image_loader import load_image
-from LostViking.src.generic_items.graphic_helper import SingleImageHelper
+from LostViking.src.generic_items.ImageHelper import SingleImageHelper
 import pygame
 import math
 
@@ -87,7 +87,7 @@ class BulletViking(StraightBullet):
 
     @classmethod
     def init_image(cls):
-        cls._IMAGE = load_image_alpha("MyPlane/bullet.png")
+        cls._IMAGE = load_image_alpha("PlayerPlane/bullet.png")
 """
 
 
