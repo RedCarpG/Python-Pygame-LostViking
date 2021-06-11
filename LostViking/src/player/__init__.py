@@ -4,8 +4,8 @@ from .player_interface import *
 
 def init_player():
     # Init Player Plane
-    from .PlayerPlane import init_player_plane
-    init_player_plane()
+    from .PlayerPlane import PlayerPlane
+    PlayerPlane.init_player()
     from .PlayerBullet import init_player_bullet
     init_player_bullet()
     from .PlayerBomb import init_bomb

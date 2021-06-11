@@ -22,7 +22,7 @@ def _stop_player_shoot_event(player_id: int) -> None:
 
 
 def _handle_player_shoot_event(player: PlayerPlane):
-    player.shoot()
+    player.attack()
 
 
 def _start_player_bomb_launch_event(player_id: int):

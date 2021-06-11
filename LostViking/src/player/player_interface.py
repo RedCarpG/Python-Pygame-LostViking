@@ -16,7 +16,7 @@ def set_player_bullet_type(player: PlayerPlane, bullet_type: int):
 
 
 def player_upgrade(player: PlayerPlane):
-    player.level_up()
+    player.set_level()
 
 
 def get_level(player):
