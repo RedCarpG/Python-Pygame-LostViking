@@ -5,9 +5,9 @@ from .player_interface import *
 def init_player():
     # Init Player Plane
     from .PlayerPlane import PlayerPlane
-    PlayerPlane.init_player()
-    from .PlayerBullet import init_player_bullet
-    init_player_bullet()
+    PlayerPlane.init()
+    from .PlayerBullet import PlayerBullet1
+    PlayerBullet1.init()
     from .PlayerBomb import init_bomb
     init_bomb()
 

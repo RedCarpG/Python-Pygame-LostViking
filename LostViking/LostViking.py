@@ -207,7 +207,7 @@ class LostViking(object):
             elif event.type == self.PLAYER_SHOOT:
                 SOUNDS["Player_Shoot"].stop()
                 SOUNDS["Player_Shoot"].play()
-                self.player.shoot()
+                self.player._shoot()
 
             elif self.Lever.events(event):
                 pass
@@ -296,7 +296,7 @@ class LostViking(object):
         if self.boss.sprite:
             pygame.draw.rect(self.screen, (100, 200, 100, 180), Rect(0, 0, SCREEN.get_w(), 25), 3)
             pygame.draw.rect(self.screen, (100, 200, 100, 180),
-                             Rect(0, 0, SCREEN.get_w() * self.boss.sprite.health / self.boss.sprite.maxHealth, 25))
+                             Rect(0, 0, SCREEN.get_w() * self.boss.sprite._health / self.boss.sprite.maxHealth, 25))
 
         # 绘制字体
         self.score_text.blit()
