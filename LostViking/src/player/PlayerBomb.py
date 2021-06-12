@@ -94,12 +94,12 @@ class Explosion(LoopImageHelper, pygame.sprite.Sprite):
     @classmethod
     def init_image(cls) -> None:
         # TODO Image here
-        cls._IMAGE["Base"] = [load_image("PlayerPlane/MyPlane_explode1.png"),
-                              load_image("PlayerPlane/MyPlane_explode2.png"),
-                              load_image("PlayerPlane/MyPlane_explode3.png"),
-                              load_image("PlayerPlane/MyPlane_explode4.png"),
-                              load_image("PlayerPlane/MyPlane_explode5.png"),
-                              load_image("PlayerPlane/MyPlane_explode6.png")]
+        cls._IMAGE["Base"] = [load_image("PlayerPlane/PlayerPlane_explode1.png"),
+                              load_image("PlayerPlane/PlayerPlane_explode2.png"),
+                              load_image("PlayerPlane/PlayerPlane_explode3.png"),
+                              load_image("PlayerPlane/PlayerPlane_explode4.png"),
+                              load_image("PlayerPlane/PlayerPlane_explode5.png"),
+                              load_image("PlayerPlane/PlayerPlane_explode6.png")]
 
         cls._INIT_FLAG_IMAGE = True
 
