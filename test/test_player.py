@@ -22,6 +22,10 @@ def test_player():
     add_nuc_bomb()
     add_nuc_bomb()
 
+    def test_key_event():
+        if event.key == K_x:
+            player1.hit(100)
+
     running = True
     while running:
 
@@ -32,6 +36,7 @@ def test_player():
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
+                test_key_event()
             detect_player_event(event, player1=player1)
 
         # If Key Pressed

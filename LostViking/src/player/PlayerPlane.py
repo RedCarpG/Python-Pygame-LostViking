@@ -63,6 +63,7 @@ class PlayerPlane(BasicPlayerPlane):
     """ Player class inherits BasicPlayerPlane
     It specifies the interfaces and the call back from event triggers
     """
+    _MAX_HEALTH = 300
 
     _SOUND = {}
     _INIT_FLAG_SOUND = False
@@ -88,7 +89,7 @@ class PlayerPlane(BasicPlayerPlane):
 
         self._attack_speed = 500
 
-        self._health = 300
+        self._health = self._MAX_HEALTH
 
         # Set init position
         self.set_pos(point)
@@ -118,9 +119,11 @@ class PlayerPlane(BasicPlayerPlane):
                     self.rect.right = SCREEN.get_w()
                 if self.rect.top < 0:
                     self.rect.top = 0
+            self._switch_image()
         else:
-            self.reset()
-        self._switch_image()
+            finished = self._switch_image()
+            if finished:
+                self.reset()
 
     """ ------------------ Collision detect ------------------ """
     def hit(self, damage) -> bool:
@@ -128,7 +131,7 @@ class PlayerPlane(BasicPlayerPlane):
         This function is called in collision detection
         """
         if not self.is_invincible:
-            if self._damaged(damage):
+            if not self._damaged(damage):
                 self.is_active = False
                 self._image_switch = 0
                 self._set_image_type("Explode")
@@ -146,14 +149,14 @@ class PlayerPlane(BasicPlayerPlane):
                     self.is_invincible = False
     """
     """ ------------------ Trigger-Action-Commands ------------------"""
-
     def attack(self) -> None:
         """
         This method is called from a user attack event
         """
-        self._SOUND["Player_Shoot"].stop()
-        self._SOUND["Player_Shoot"].play()
-        self._shoot()
+        if self.is_active:
+            self._SOUND["Player_Shoot"].stop()
+            self._SOUND["Player_Shoot"].play()
+            self._shoot()
 
     """ ------------------ Trigger-Movement-Commands ------------------"""
     """ ------------------ (Instant trigger method called by events) --"""
@@ -303,6 +306,7 @@ class PlayerPlane(BasicPlayerPlane):
         self._set_image_type("MoveNormal")
         self._bullet_type = PlayerBullet1
         self._lever = 1
+        self._health = self._MAX_HEALTH
 
     """ ----------------- Class init methods -----------------"""
     @classmethod
@@ -359,4 +363,5 @@ class PlayerPlane(BasicPlayerPlane):
         cls._init_speed()
         cls._init_acc()
         cls._init_sound()
+        cls._MAX_HEALTH = 300
         cls._INIT_FLAG_PLAYER = True
