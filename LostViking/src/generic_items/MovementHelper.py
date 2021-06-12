@@ -1,15 +1,15 @@
 """
 General entities for inheriting by classes
 Includes:
-    -> MovableEntity
-    -> InertialEntity
+    -> StaticMoveHelper
+    -> InertialMoveHelper
 """
 import pygame
 from abc import ABC, abstractmethod
 import warnings
 
 
-class MovableEntity(ABC):
+class StaticMoveHelper(ABC):
     """ Movable class with speed """
     _MAX_SPEED_L = 0
     _MAX_SPEED_R = 0
@@ -18,10 +18,10 @@ class MovableEntity(ABC):
 
     _INIT_FLAG_SPEED = False
 
-    def __init__(self, point=None):
+    def __init__(self):
         if not self._INIT_FLAG_SPEED:
             print("!!! WARNING: {} speed value not set", self.__name__)
-            self.init_speed()
+            self._init_speed()
         self._speed_x = 0
         self._speed_y = 0
         self._move_flag_x = False
@@ -31,56 +31,20 @@ class MovableEntity(ABC):
         else:
             warnings.warn("WARNING: Attribute image is not set for {}".format(self))
             self.rect = pygame.rect.Rect(0, 0, 0, 0)
-        self._set_pos(point)
 
     def _move(self) -> None:
         """ Move its rect by its _speed_x and _speed_y"""
         self.rect.move_ip(self._speed_x, self._speed_y)
 
-    # Set position
-    def _set_pos(self, point=None) -> None:
-        """ Move its rect to a point, or a default position """
-        if point is None:
-            self.rect.center = (int(pygame.display.get_surface().get_width() // 2),
-                                int(pygame.display.get_surface().get_height() - self.rect.height // 2 - 30))
-        else:
-            self.rect.center = point
-
-    def get_position(self) -> (list, tuple):
-        return self.rect.center
-
-    @property
-    def speed_x(self) -> int:
-        return self._speed_x
-
-    @speed_x.setter
-    def speed_x(self, speed_x):
-        if not isinstance(speed_x, int):
-            raise ValueError('score must be an integer!')
-        if speed_x < -self._MAX_SPEED_L or speed_x > self._MAX_SPEED_R:
-            raise ValueError('score must between {} ~ {}!'.format(-self._MAX_SPEED_L, self._MAX_SPEED_R))
-        self._speed_x = speed_x
-
-    @property
-    def speed_y(self) -> int:
-        return self._speed_y
-
-    @speed_y.setter
-    def speed_y(self, speed_y):
-        if not isinstance(speed_y, int):
-            raise ValueError('score must be an integer!')
-        if speed_y < -self._MAX_SPEED_UP or speed_y > self._MAX_SPEED_DOWN:
-            raise ValueError('score must between {} ~ {}!'.format(-self._MAX_SPEED_UP, self._MAX_SPEED_DOWN))
-        self._speed_y = speed_y
-
     @classmethod
     @abstractmethod
-    def init_speed(cls):
+    def _init_speed(cls):
         pass
 
 
-class InertialEntity(MovableEntity, ABC):
-    """ MovableEntity with acceleration/deceleration
+class InertialMoveHelper(StaticMoveHelper, ABC):
+    """
+    Movement Helper with acceleration/deceleration
     """
     _ACC_L = 0
     _ACC_R = 0
@@ -89,8 +53,8 @@ class InertialEntity(MovableEntity, ABC):
 
     _INIT_FLAG_ACC = False
 
-    def __init__(self, point=None):
-        MovableEntity.__init__(self, point)
+    def __init__(self):
+        StaticMoveHelper.__init__(self)
         if not self._INIT_FLAG_ACC:
             print("!!! WARNING: {} acceleration value not set", self.__name__)
             self._init_acc()
@@ -174,5 +138,5 @@ class InertialEntity(MovableEntity, ABC):
 
     @classmethod
     @abstractmethod
-    def init_acc(cls):
+    def _init_acc(cls):
         pass
