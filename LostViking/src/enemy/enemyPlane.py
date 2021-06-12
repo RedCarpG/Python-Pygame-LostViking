@@ -1,59 +1,75 @@
+"""
+Enemy Basic abstract classes, which defines its general behaviors,
+Initialization should be made in the implementation of the class
+"""
+from abc import ABC
+
 from LostViking.src.generic_loader.sound_loader import *
 import math
 import abc
 from LostViking.src.constants import SCREEN
 from ..groups import Enemy_G
+from ..generic_items.ImageHelper import LoopImageHelper
+from ..generic_items.MovementHelper import StaticMoveHelper
 
 
-class Enemy(pygame.sprite.Sprite):
+class BasicEnemy(LoopImageHelper, StaticMoveHelper, pygame.sprite.Sprite, ABC):
+    """
+    Basic class, defines general properties of enemy plane
+    """
+    _INIT_FLAG = False
+
+    _MAX_HEALTH = 300
+
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.health = 0
+        # Init
+        if not self._INIT_FLAG:
+            print("!!! WARNING: {} not set", self.__name__)
+            self.init()
+        LoopImageHelper.__init__(self)
+        StaticMoveHelper.__init__(self)
+        pygame.sprite.Sprite.__init__(self, Enemy_G)
+
+        self._health = self._MAX_HEALTH
+
         self.score = 0
-        Enemy_G.add(self)
+
+        self.is_active = True
+
+    def _damaged(self, damage) -> bool:
+        if self._health > 0:
+            self._health -= damage
+            return False
+        else:
+            self._health = 0
+            return True
+
+    @classmethod
+    @abc.abstractmethod
+    def init(cls):
+        pass
 
 
-class EnemyI(Enemy):
+class EnemyI(BasicEnemy, ABC):
 
     def __init__(self, position):
-        Enemy.__init__(self)
-        self.image_switch = 0
-        self.image = self.main_image[0]
-        self.rect = self.image.get_rect()
-        self.active = True
+        BasicEnemy.__init__(self)
+        self.is_active = True
         self.setPos(position)
-        self.image_switch_interval = MYTIME(1)
-        self.death_time = MYTIME(6)
-        self.speed = [0, 0]
 
     def update(self):
-        self.change_image()
+        self._switch_image()
         if self.rect.top < SCREEN.get_h():
-            self.rect.top += self.speed[1]
+            self.rect.top += self._speed_y
 
     def hit(self, damage=100):
-        self.health -= damage
-        if self.health <= 0:
-            self.active = False
-
-    def destroy(self):
-        self.image_switch = 0
-        self.main_image = self.crashImage
-        self.destroySound.stop()
-        self.destroySound.play()
-
-    def change_image(self):
-        self.image_switch_interval.tick()
-        if self.image_switch_interval.check():
-            self.image_switch = (self.image_switch + 1) % len(self.main_image)
-            self.image = self.main_image[self.image_switch]
-
-    def setPos(self, point):
-        self.rect.center = point
-
-    @abc.abstractmethod
-    def LOAD(self):
-        pass
+        """
+        This function is called in collision detection
+        """
+        if self._damaged(damage):
+            self.is_active = False
+            self._image_switch = 0
+            self._set_image_type("Explode")
 
 
 class EnemyII(EnemyI):

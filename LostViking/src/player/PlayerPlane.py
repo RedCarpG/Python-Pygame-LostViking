@@ -18,16 +18,28 @@ class BasicPlayerPlane(LoopImageHelper, InertialMoveHelper, pygame.sprite.Sprite
      -> movement (from StaticMoveHelper)
      -> acceleration (from InertialMoveHelper)
      -> shoot
-     _> damaged
+     -> damaged
+     To implement this Class:
+        -> set _init_image() (from LoopImageHelper)
+        -> set _init_speed() (from StaticMoveHelper)
+        -> set _init_acc() (from InertialMoveHelper)
+        -> set init() for globally initialize every properties
+        -> (optional) set self.start_position (from StaticMoveHelper)
      """
 
-    _INIT_FLAG_PLAYER = False
+    _INIT_FLAG = False
+
+    _SOUND = {}
+    _INIT_FLAG_SOUND = False
 
     def __init__(self):
         # Init
-        if not self._INIT_FLAG_PLAYER:
-            print("!!! WARNING: {} speed value not set", self.__name__)
+        if not self._INIT_FLAG:
+            print("!!! WARNING: {} not set", self.__name__)
             self.init()
+        if not self._INIT_FLAG_SOUND:
+            self._init_sound()
+
         LoopImageHelper.__init__(self)
         InertialMoveHelper.__init__(self)
 
@@ -40,19 +52,28 @@ class BasicPlayerPlane(LoopImageHelper, InertialMoveHelper, pygame.sprite.Sprite
 
         self._health = 0
 
+        self.start_position = (int(pygame.display.get_surface().get_width() // 2),
+                               int(pygame.display.get_surface().get_height() - self.rect.height // 2 - 30))
+
     """ --------------------- Player Plane Behavior --------------------- """
+
     def _damaged(self, damage) -> bool:
         if self._health > 0:
             self._health -= damage
-            return True
+            return False
         else:
             self._health = 0
-            return False
+            return True
 
     def _shoot(self):
         self._bullet_type.shoot_bullets(self.rect.center, self._lever)
 
     """ --------------------- Player Plane Behavior --------------------- """
+    @classmethod
+    @abstractmethod
+    def _init_sound(cls):
+        pass
+
     @classmethod
     @abstractmethod
     def init(cls):
@@ -65,15 +86,9 @@ class PlayerPlane(BasicPlayerPlane):
     """
     _MAX_HEALTH = 300
 
-    _SOUND = {}
-    _INIT_FLAG_SOUND = False
-
     def __init__(self, point=None, p_id=1):
         BasicPlayerPlane.__init__(self)
         pygame.sprite.Sprite.__init__(self, Player1_G if p_id == 1 else Player2_G)
-
-        if not self._INIT_FLAG_SOUND:
-            self._init_sound()
 
         self._set_image_type("MoveNormal")
 
@@ -95,6 +110,7 @@ class PlayerPlane(BasicPlayerPlane):
         self.set_pos(point)
 
     """ ------------------ Real-time methods ------------------ """
+
     def update(self) -> None:
         """
         Overwrites update from Sprite,
@@ -126,12 +142,13 @@ class PlayerPlane(BasicPlayerPlane):
                 self.reset()
 
     """ ------------------ Collision detect ------------------ """
+
     def hit(self, damage) -> bool:
         """
         This function is called in collision detection
         """
         if not self.is_invincible:
-            if not self._damaged(damage):
+            if self._damaged(damage):
                 self.is_active = False
                 self._image_switch = 0
                 self._set_image_type("Explode")
@@ -149,6 +166,7 @@ class PlayerPlane(BasicPlayerPlane):
                     self.is_invincible = False
     """
     """ ------------------ Trigger-Action-Commands ------------------"""
+
     def attack(self) -> None:
         """
         This method is called from a user attack event
@@ -160,6 +178,7 @@ class PlayerPlane(BasicPlayerPlane):
 
     """ ------------------ Trigger-Movement-Commands ------------------"""
     """ ------------------ (Instant trigger method called by events) --"""
+
     # Trigger Move Up
     def trigger_move_up(self) -> None:
         """ Trigger this object to move Up (with acceleration)
@@ -238,6 +257,7 @@ class PlayerPlane(BasicPlayerPlane):
         self._move_flag_x = False
 
     """ ------------------ Interface-----------------"""
+
     # Bullet Type
     def change_bullet_type(self, bul_class) -> None:
         from LostViking.src.generic_items.BasicBullet import BasicBullet
@@ -280,23 +300,8 @@ class PlayerPlane(BasicPlayerPlane):
     def get_health(self) -> int:
         return self._health
 
-    # Position
-    def set_pos(self, point=None) -> None:
-        """ Move its rect to a point, or a default position """
-        if point is None:
-            self.rect.center = (int(pygame.display.get_surface().get_width() // 2),
-                                int(pygame.display.get_surface().get_height() - self.rect.height // 2 - 30))
-        else:
-            self.rect.center = point
-
-    def get_position(self) -> (list, tuple):
-        return self.rect.center
-
-    # Speed
-    def get_speed(self):
-        return self._speed_x, self._speed_y
-
     """ ----------------- Reset methods -----------------"""
+
     # Reset
     def reset(self, point=None) -> None:
         self.is_active = True
@@ -309,6 +314,7 @@ class PlayerPlane(BasicPlayerPlane):
         self._health = self._MAX_HEALTH
 
     """ ----------------- Class init methods -----------------"""
+
     @classmethod
     def _init_image(cls) -> None:
         from LostViking.src.generic_loader.image_loader import load_image
@@ -364,4 +370,4 @@ class PlayerPlane(BasicPlayerPlane):
         cls._init_acc()
         cls._init_sound()
         cls._MAX_HEALTH = 300
-        cls._INIT_FLAG_PLAYER = True
+        cls._INIT_FLAG = True

@@ -1,5 +1,6 @@
 """
 General entities for inheriting by classes
+with interface to get position and speed
 Includes:
     -> StaticMoveHelper
     -> InertialMoveHelper
@@ -10,7 +11,11 @@ import warnings
 
 
 class StaticMoveHelper(ABC):
-    """ Movable class with speed """
+    """ Movable class with speed
+    To implement this Class :
+        -> set _init_speed()
+        -> (optional) set self.start_position
+    """
     _MAX_SPEED_L = 0
     _MAX_SPEED_R = 0
     _MAX_SPEED_UP = 0
@@ -24,17 +29,32 @@ class StaticMoveHelper(ABC):
             self._init_speed()
         self._speed_x = 0
         self._speed_y = 0
-        self._move_flag_x = False
-        self._move_flag_y = False
         if hasattr(self, "image"):
             self.rect = self.image.get_rect()
         else:
             warnings.warn("WARNING: Attribute image is not set for {}".format(self))
             self.rect = pygame.rect.Rect(0, 0, 0, 0)
 
+        self.start_position = (0, 0)
+
     def _move(self) -> None:
         """ Move its rect by its _speed_x and _speed_y"""
         self.rect.move_ip(self._speed_x, self._speed_y)
+
+    # Position
+    def set_pos(self, point=None) -> None:
+        """ Move its rect to a point, or a default position """
+        if point is None:
+            self.rect.center = self.start_position
+        else:
+            self.rect.center = point
+
+    def get_position(self) -> (list, tuple):
+        return self.rect.center
+
+    # Speed
+    def get_speed(self):
+        return self._speed_x, self._speed_y
 
     @classmethod
     @abstractmethod
@@ -45,6 +65,10 @@ class StaticMoveHelper(ABC):
 class InertialMoveHelper(StaticMoveHelper, ABC):
     """
     Movement Helper with acceleration/deceleration
+    To implement this Class :
+        -> set _init_speed() (from StaticMoveHelper)
+        -> set _init_acc()
+        -> (optional) set self.start_position (from StaticMoveHelper)
     """
     _ACC_L = 0
     _ACC_R = 0
@@ -58,6 +82,10 @@ class InertialMoveHelper(StaticMoveHelper, ABC):
         if not self._INIT_FLAG_ACC:
             print("!!! WARNING: {} acceleration value not set", self.__name__)
             self._init_acc()
+
+        # Move Flags for detecting
+        self._move_flag_x = False
+        self._move_flag_y = False
 
     """ --------------------- Deceleration --------------------- """
 
