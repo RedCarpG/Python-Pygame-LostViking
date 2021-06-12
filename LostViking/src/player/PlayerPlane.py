@@ -4,31 +4,22 @@ Includes:
 """
 import warnings
 from abc import abstractmethod
-
-from ..generic_items.ImageHelper import LoopImageHelper
-from .PlayerBullet import PlayerBullet1, PlayerBasicBullet
-from ..constants import SCREEN
-from ..groups import Player1_G, Player2_G
 import pygame
 
+from ..generic_items.ImageHelper import LoopImageHelper
+from ..generic_items.MovementHelper import InertialMoveHelper
+from .PlayerBullet import PlayerBullet1
+from ..constants import SCREEN
+from ..groups import Player1_G, Player2_G
 
-class BasicPlayerPlane(LoopImageHelper, pygame.sprite.Sprite):
+
+class BasicPlayerPlane(LoopImageHelper, InertialMoveHelper, pygame.sprite.Sprite):
     """ Basic Player Abstract class with behavior defined below:
-     -> movement
-     -> acceleration
+     -> movement (from StaticMoveHelper)
+     -> acceleration (from InertialMoveHelper)
      -> shoot
-     _> hit
+     _> damaged
      """
-
-    # Constants
-    _MAX_SPEED_L = 0
-    _MAX_SPEED_R = 0
-    _MAX_SPEED_UP = 0
-    _MAX_SPEED_DOWN = 0
-    _ACC_L = 0
-    _ACC_R = 0
-    _ACC_UP = 0
-    _ACC_DOWN = 0
 
     _INIT_FLAG_PLAYER = False
 
@@ -36,21 +27,9 @@ class BasicPlayerPlane(LoopImageHelper, pygame.sprite.Sprite):
         # Init
         if not self._INIT_FLAG_PLAYER:
             print("!!! WARNING: {} speed value not set", self.__name__)
-            self.init_player()
+            self.init()
         LoopImageHelper.__init__(self)
-
-        # Set Speed Values
-        self._speed_x = 0
-        self._speed_y = 0
-        self._move_flag_x = False
-        self._move_flag_y = False
-
-        # Set Rect
-        if hasattr(self, "image"):
-            self.rect = self.image.get_rect()
-        else:
-            warnings.warn("WARNING: Attribute image is not set for {}".format(self))
-            self.rect = pygame.rect.Rect(0, 0, 0, 0)
+        InertialMoveHelper.__init__(self)
 
         # Set bullet type
         ''' Init Weapon '''
@@ -61,87 +40,7 @@ class BasicPlayerPlane(LoopImageHelper, pygame.sprite.Sprite):
 
         self._health = 0
 
-    def _move(self) -> None:
-        """ Move its rect by its _speed_x and _speed_y"""
-        self.rect.move_ip(self._speed_x, self._speed_y)
-
-    """ --------------------- Deceleration --------------------- """
-
-    # Speed down the plane when there's no movement commands on a X or Y direction
-    def _inertial_deceleration(self) -> None:
-        """ Decrease the _speed_x or _speed_y to 0 automatically
-        (Note: This method only change the value of _speed_x / _speed_y)
-        """
-        # If no speed
-        if self._speed_x == 0 and self._speed_y == 0:
-            return
-        else:
-            # If no move X command but _speed_x != 0
-            if not self._move_flag_x:
-
-                if self._speed_x > 0:  # If it is moving right, decelerate by _ACC_L
-                    self._speed_x -= self._ACC_L
-                    if self._speed_x <= 0:
-                        self._speed_x = 0
-                elif self._speed_x < 0:  # If it is moving left, decelerate by _ACC_R
-                    self._speed_x += self._ACC_R
-                    if self._speed_x >= 0:
-                        self._speed_x = 0
-
-            # If no move Y command but _speed_y != 0
-            if not self._move_flag_y:
-
-                if self._speed_y > 0:  # If it is moving down, decelerate by _ACC_UP
-                    self._speed_y -= self._ACC_UP
-                    if self._speed_y <= 0:
-                        self._speed_y = 0
-                        if hasattr(self, "_set_image_type"):
-                            self._set_image_type("MoveNormal")
-                elif self._speed_y < 0:  # If it is moving up, decelerate by _ACC_DOWN
-                    self._speed_y += self._ACC_DOWN
-                    if self._speed_y >= 0:
-                        self._speed_y = 0
-                        if hasattr(self, "_set_image_type"):
-                            self._set_image_type("MoveNormal")
-
-    """ --------------------- Accelerations --------------------- """
-
-    def _accelerate_up(self) -> None:
-        """ In crease the _speed_y by _ACC_UP (negative)
-        (Note: This method only change the value of _speed_x / _speed_y)
-        """
-        self._move_flag_y = True
-        # If speed doesn't reach limit
-        if self._speed_y > -self._MAX_SPEED_UP:
-            self._speed_y -= self._ACC_UP
-
-    def _accelerate_down(self) -> None:
-        """ In crease the _speed_x by _ACC_DOWN (positive)
-        (Note: This method only change the value of _speed_x / _speed_y)
-        """
-        self._move_flag_y = True
-        # If speed doesn't reach limit
-        if self._speed_y < self._MAX_SPEED_DOWN:
-            self._speed_y += self._ACC_DOWN
-
-    def _accelerate_left(self) -> None:
-        """ In crease the _speed_x by _ACC_L (negative)
-        (Note: This method only change the value of _speed_x / _speed_y)
-        """
-        self._move_flag_x = True
-        # If speed doesn't reach limit
-        if self._speed_x > -self._MAX_SPEED_L:
-            self._speed_x -= self._ACC_L
-
-    def _accelerate_right(self) -> None:
-        """ In crease the _speed_x by _ACC_R (positive)
-        (Note: This method only change the value of _speed_x / _speed_y)
-        """
-        self._move_flag_x = True
-        # If speed doesn't reach limit
-        if self._speed_x < self._MAX_SPEED_R:
-            self._speed_x += self._ACC_R
-
+    """ --------------------- Player Plane Behavior --------------------- """
     def _damaged(self, damage) -> bool:
         if self._health > 0:
             self._health -= damage
@@ -153,14 +52,17 @@ class BasicPlayerPlane(LoopImageHelper, pygame.sprite.Sprite):
     def _shoot(self):
         self._bullet_type.shoot_bullets(self.rect.center, self._lever)
 
+    """ --------------------- Player Plane Behavior --------------------- """
     @classmethod
     @abstractmethod
-    def init_player(cls):
+    def init(cls):
         pass
 
 
 class PlayerPlane(BasicPlayerPlane):
-    """ Player class inherits InertialEntity and Sprite """
+    """ Player class inherits BasicPlayerPlane
+    It specifies the interfaces and the call back from event triggers
+    """
 
     _SOUND = {}
     _INIT_FLAG_SOUND = False
@@ -192,10 +94,11 @@ class PlayerPlane(BasicPlayerPlane):
         self.set_pos(point)
 
     """ ------------------ Real-time methods ------------------ """
-
     def update(self) -> None:
-        """ Overwrites update from Sprite,
-        need to be called every frame """
+        """
+        Overwrites update from Sprite,
+        This method is called in every frame
+        """
         # If alive
         if self.is_active:
             # When _speed_x/_speed_y is not 0
@@ -219,8 +122,11 @@ class PlayerPlane(BasicPlayerPlane):
             self.reset()
         self._switch_image()
 
+    """ ------------------ Collision detect ------------------ """
     def hit(self, damage) -> bool:
-        """ This function is called from collision test"""
+        """
+        This function is called in collision detection
+        """
         if not self.is_invincible:
             if self._damaged(damage):
                 self.is_active = False
@@ -242,13 +148,15 @@ class PlayerPlane(BasicPlayerPlane):
     """ ------------------ Trigger-Action-Commands ------------------"""
 
     def attack(self) -> None:
+        """
+        This method is called from a user attack event
+        """
         self._SOUND["Player_Shoot"].stop()
         self._SOUND["Player_Shoot"].play()
         self._shoot()
 
     """ ------------------ Trigger-Movement-Commands ------------------"""
     """ ------------------ (Instant trigger method called by events) --"""
-
     # Trigger Move Up
     def trigger_move_up(self) -> None:
         """ Trigger this object to move Up (with acceleration)
@@ -327,10 +235,10 @@ class PlayerPlane(BasicPlayerPlane):
         self._move_flag_x = False
 
     """ ------------------ Interface-----------------"""
-
     # Bullet Type
     def change_bullet_type(self, bul_class) -> None:
-        if not issubclass(bul_class, PlayerBasicBullet):
+        from LostViking.src.generic_items.BasicBullet import BasicBullet
+        if not issubclass(bul_class, BasicBullet):
             raise Exception("ERROR: Bullet type {} is not supported".format(bul_class))
         if self._bullet_type != bul_class:
             self._bullet_type = bul_class
@@ -384,8 +292,8 @@ class PlayerPlane(BasicPlayerPlane):
     # Speed
     def get_speed(self):
         return self._speed_x, self._speed_y
-    """ ----------------- Reset methods -----------------"""
 
+    """ ----------------- Reset methods -----------------"""
     # Reset
     def reset(self, point=None) -> None:
         self.is_active = True
@@ -397,7 +305,6 @@ class PlayerPlane(BasicPlayerPlane):
         self._lever = 1
 
     """ ----------------- Class init methods -----------------"""
-
     @classmethod
     def _init_image(cls) -> None:
         from LostViking.src.generic_loader.image_loader import load_image
@@ -423,6 +330,22 @@ class PlayerPlane(BasicPlayerPlane):
         cls._INIT_FLAG_IMAGE = False
 
     @classmethod
+    def _init_speed(cls) -> None:
+        cls._MAX_SPEED_L = 8
+        cls._MAX_SPEED_R = 8
+        cls._MAX_SPEED_UP = 10
+        cls._MAX_SPEED_DOWN = 5
+        cls._INIT_FLAG_SPEED = True
+
+    @classmethod
+    def _init_acc(cls) -> None:
+        cls._ACC_L = 0.8
+        cls._ACC_R = 0.8
+        cls._ACC_UP = 1
+        cls._ACC_DOWN = 0.6
+        cls._INIT_FLAG_ACC = True
+
+    @classmethod
     def _init_sound(cls) -> None:
         from LostViking.src.generic_loader.sound_loader import load_sound
         from LostViking.src.constants import MAIN_VOLUME
@@ -431,16 +354,9 @@ class PlayerPlane(BasicPlayerPlane):
         cls._INIT_FLAG_SOUND = True
 
     @classmethod
-    def init_player(cls) -> None:
+    def init(cls) -> None:
         cls._init_image()
+        cls._init_speed()
+        cls._init_acc()
         cls._init_sound()
-        cls._MAX_SPEED_L = 8
-        cls._MAX_SPEED_R = 8
-        cls._MAX_SPEED_UP = 10
-        cls._MAX_SPEED_DOWN = 5
-
-        cls._ACC_L = 0.8
-        cls._ACC_R = 0.8
-        cls._ACC_UP = 1
-        cls._ACC_DOWN = 0.6
         cls._INIT_FLAG_PLAYER = True
