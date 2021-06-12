@@ -67,14 +67,17 @@ class LoopImageHelper(BasicImageHelper, ABC):
             raise Exception("!!!ERROR: _IMAGE[\"Base\"] value is not supported! {}".format(self))
 
     # Switch image
-    def _switch_image(self, switch_rate=5):
+    def _switch_image(self, switch_rate=5) -> bool:
         """ Switch image function should be called """
         if self._image_switch_interval >= switch_rate:
             self._image_switch = (self._image_switch + 1) % len(self._main_image_type)
             self.image = self._main_image_type[self._image_switch]
             self._image_switch_interval = 0
+            if self._image_switch == 0:
+                return True
         else:
             self._image_switch_interval += 1
+        return False
 
     def _set_image_type(self, image_type):
         self._main_image_type = self._IMAGE[image_type]
