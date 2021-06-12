@@ -4,24 +4,24 @@ Includes:
     -> StraightBullet()
 """
 from abc import ABC
-
-from LostViking.src.constants import SCREEN
-from LostViking.src.generic_loader.image_loader import load_image
-from LostViking.src.generic_items.ImageHelper import SingleImageHelper
 import pygame
 import math
 
+from LostViking.src.constants import SCREEN
+from LostViking.src.groups import Bullet_G
 
-class BasicBullet(SingleImageHelper, pygame.sprite.Sprite, ABC):
+
+class BasicBullet(pygame.sprite.Sprite, ABC):
     """ Basic Bullet Class
     To implement this Class:
         -> Set _init_image() from SingleImageHelper
         -> Set set_speed(_speed_x, _speed_y) in __init__()
     """
 
-    def __init__(self, init_position: (list, tuple), speed: (list, tuple)):
-        SingleImageHelper.__init__(self)
-        pygame.sprite.Sprite.__init__(self)
+    def __init__(self,
+                 init_position: (list, tuple),
+                 speed: (list, tuple)):
+        pygame.sprite.Sprite.__init__(self, Bullet_G)
 
         self._speed_x = speed[0]
         self._speed_y = speed[1]
@@ -53,7 +53,7 @@ class BasicBullet(SingleImageHelper, pygame.sprite.Sprite, ABC):
         return False
 
 
-class SpinBullet(BasicBullet, ABC):
+class BasicSpinBullet(BasicBullet, ABC):
     _MAX_SPEED_X = 0
     _MAX_SPEED_Y = 0
 
@@ -88,26 +88,26 @@ class BulletViking(StraightBullet):
     @classmethod
     def init_image(cls):
         cls._IMAGE = load_image_alpha("PlayerPlane/bullet.png")
-"""
 
-
-class BulletPhoenix(SpinBullet):
+class BulletPhoenix(BasicSpinBullet):
     _MAX_SPEED = 15
 
     def __init__(self, position, angle):
-        SpinBullet.__init__(self, position, angle)
+        BasicSpinBullet.__init__(self, position, angle)
 
     @classmethod
     def init_image(cls):
         cls._IMAGE = load_image("Enemy/laser.png")
 
 
-class BulletInterceptor(SpinBullet):
+class BulletInterceptor(BasicSpinBullet):
     _MAX_SPEED = 5
 
     def __init__(self, position, angle):
-        SpinBullet.__init__(self, position, angle)
+        BasicSpinBullet.__init__(self, position, angle)
 
     @classmethod
     def init_image(cls):
         cls._IMAGE = load_image("Enemy/laser.png")
+
+"""
