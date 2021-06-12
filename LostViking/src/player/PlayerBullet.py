@@ -26,9 +26,8 @@ class PlayerBullet1(SingleImageHelper, BasicBullet):
         SingleImageHelper.__init__(self)
         BasicBullet.__init__(self, init_position=init_position,
                              speed=speed)
-        pygame.sprite.Sprite.__init__(self, Player_Bullet_G)
         self.damage = 150
-        self.add(Player_Bullet_G)
+        Player_Bullet_G.add(self)
 
     def _trans_image(self, angle: int) -> None:
         temp = self.rect.center
