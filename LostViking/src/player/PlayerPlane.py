@@ -39,7 +39,7 @@ class BasicPlayerPlane(LoopImageHelper, InertialMoveHelper, pygame.sprite.Sprite
             self.init()
         if not self._INIT_FLAG_SOUND:
             self._init_sound()
-
+        pygame.sprite.Sprite.__init__(self)
         LoopImageHelper.__init__(self)
         InertialMoveHelper.__init__(self)
 
@@ -88,7 +88,7 @@ class PlayerPlane(BasicPlayerPlane):
 
     def __init__(self, point=None, p_id=1):
         BasicPlayerPlane.__init__(self)
-        pygame.sprite.Sprite.__init__(self, Player1_G if p_id == 1 else Player2_G)
+        self.add(Player1_G if p_id == 1 else Player2_G)
 
         self._set_image_type("MoveNormal")
 
