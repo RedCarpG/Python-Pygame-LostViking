@@ -2,7 +2,6 @@
 Includes:
     -> PlayerPlane
 """
-import warnings
 from abc import abstractmethod
 import pygame
 
@@ -89,6 +88,7 @@ class PlayerPlane(BasicPlayerPlane):
     def __init__(self, point=None, p_id=1):
         BasicPlayerPlane.__init__(self)
         self.add(Player1_G if p_id == 1 else Player2_G)
+        self.init()
 
         self._set_image_type("MoveNormal")
 
@@ -317,22 +317,23 @@ class PlayerPlane(BasicPlayerPlane):
 
     @classmethod
     def _init_image(cls) -> None:
-        from LostViking.src.generic_loader.image_loader import load_image
-        cls._IMAGE["Base"] = [load_image("PlayerPlane/Viking_body.png")]
-        cls._IMAGE.setdefault("Invincible", [load_image("PlayerPlane/PlayerPlane_Invincible.png")])
-        cls._IMAGE.setdefault("MoveUp", [load_image("PlayerPlane/PlayerPlane_moveUp1.png"),
-                                         load_image("PlayerPlane/PlayerPlane_moveUp2.png")])
-        cls._IMAGE.setdefault("MoveDown", [load_image("PlayerPlane/PlayerPlane_moveDown1.png"),
-                                           load_image("PlayerPlane/PlayerPlane_moveDown2.png")])
-        cls._IMAGE.setdefault("MoveNormal", [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
-                                             load_image("PlayerPlane/PlayerPlane_moveNormal2.png")])
-        cls._IMAGE.setdefault("Explode", [load_image("PlayerPlane/PlayerPlane_explode1.png"),
-                                          load_image("PlayerPlane/PlayerPlane_explode2.png"),
-                                          load_image("PlayerPlane/PlayerPlane_explode3.png"),
-                                          load_image("PlayerPlane/PlayerPlane_explode4.png"),
-                                          load_image("PlayerPlane/PlayerPlane_explode5.png"),
-                                          load_image("PlayerPlane/PlayerPlane_explode6.png")])
-        cls._INIT_FLAG_IMAGE = True
+        if not cls._INIT_FLAG_IMAGE:
+            from LostViking.src.generic_loader.image_loader import load_image
+            cls._IMAGE["Base"] = [load_image("PlayerPlane/Viking_body.png")]
+            cls._IMAGE.setdefault("Invincible", [load_image("PlayerPlane/PlayerPlane_Invincible.png")])
+            cls._IMAGE.setdefault("MoveUp", [load_image("PlayerPlane/PlayerPlane_moveUp1.png"),
+                                             load_image("PlayerPlane/PlayerPlane_moveUp2.png")])
+            cls._IMAGE.setdefault("MoveDown", [load_image("PlayerPlane/PlayerPlane_moveDown1.png"),
+                                               load_image("PlayerPlane/PlayerPlane_moveDown2.png")])
+            cls._IMAGE.setdefault("MoveNormal", [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
+                                                 load_image("PlayerPlane/PlayerPlane_moveNormal2.png")])
+            cls._IMAGE.setdefault("Explode", [load_image("PlayerPlane/PlayerPlane_explode1.png"),
+                                              load_image("PlayerPlane/PlayerPlane_explode2.png"),
+                                              load_image("PlayerPlane/PlayerPlane_explode3.png"),
+                                              load_image("PlayerPlane/PlayerPlane_explode4.png"),
+                                              load_image("PlayerPlane/PlayerPlane_explode5.png"),
+                                              load_image("PlayerPlane/PlayerPlane_explode6.png")])
+            cls._INIT_FLAG_IMAGE = True
 
     @classmethod
     def _clear_image(cls) -> None:
@@ -341,33 +342,37 @@ class PlayerPlane(BasicPlayerPlane):
 
     @classmethod
     def _init_speed(cls) -> None:
-        cls._MAX_SPEED_L = 8
-        cls._MAX_SPEED_R = 8
-        cls._MAX_SPEED_UP = 10
-        cls._MAX_SPEED_DOWN = 5
-        cls._INIT_FLAG_SPEED = True
+        if not cls._INIT_FLAG_SPEED:
+            cls._MAX_SPEED_L = 8
+            cls._MAX_SPEED_R = 8
+            cls._MAX_SPEED_UP = 10
+            cls._MAX_SPEED_DOWN = 5
+            cls._INIT_FLAG_SPEED = True
 
     @classmethod
     def _init_acc(cls) -> None:
-        cls._ACC_L = 0.8
-        cls._ACC_R = 0.8
-        cls._ACC_UP = 1
-        cls._ACC_DOWN = 0.6
-        cls._INIT_FLAG_ACC = True
+        if not cls._INIT_FLAG_ACC:
+            cls._ACC_L = 0.8
+            cls._ACC_R = 0.8
+            cls._ACC_UP = 1
+            cls._ACC_DOWN = 0.6
+            cls._INIT_FLAG_ACC = True
 
     @classmethod
     def _init_sound(cls) -> None:
-        from LostViking.src.generic_loader.sound_loader import load_sound
-        from LostViking.src.constants import MAIN_VOLUME
-        cls._SOUND.setdefault("Player_Shoot", load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2))
-        cls._SOUND.setdefault("Player_Explo", load_sound("Player_Explo.wav", MAIN_VOLUME))
-        cls._INIT_FLAG_SOUND = True
+        if not cls._INIT_FLAG_SOUND:
+            from LostViking.src.generic_loader.sound_loader import load_sound
+            from LostViking.src.constants import MAIN_VOLUME
+            cls._SOUND.setdefault("Player_Shoot", load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2))
+            cls._SOUND.setdefault("Player_Explo", load_sound("Player_Explo.wav", MAIN_VOLUME))
+            cls._INIT_FLAG_SOUND = True
 
     @classmethod
     def init(cls) -> None:
-        cls._init_image()
-        cls._init_speed()
-        cls._init_acc()
-        cls._init_sound()
-        cls._MAX_HEALTH = 300
-        cls._INIT_FLAG = True
+        if not cls._INIT_FLAG:
+            cls._init_image()
+            cls._init_speed()
+            cls._init_acc()
+            cls._init_sound()
+            cls._MAX_HEALTH = 300
+            cls._INIT_FLAG = True

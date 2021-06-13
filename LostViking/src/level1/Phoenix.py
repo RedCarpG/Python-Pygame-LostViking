@@ -9,8 +9,8 @@ class EnemyPhoenix(EnemyIII):
         self.add(Enemy_Phoenix_G)
 
         self.stay = 1000
-        #self.attack_interval = MYTIME(100)
-        #self.shield = Shield()
+        # self.attack_interval = MYTIME(100)
+        # self.shield = Shield()
 
     """
     # 增加 Shield
@@ -22,54 +22,59 @@ class EnemyPhoenix(EnemyIII):
             if self.health <= 0:
                 self.active = False
     """
+
     def _shoot(self):
         pass
-        #Bullet.BULLETS.add(Bullet_Phoenix(self.rect.center, self.angle))
+        # Bullet.BULLETS.add(Bullet_Phoenix(self.rect.center, self.angle))
 
     @classmethod
     def _init_image(cls):
-        from ..generic_loader.image_loader import load_image
-        cls._IMAGE["Base"] = [load_image("Enemy/Enemy_Phoenix1.png")]
-        cls._IMAGE.setdefault("Normal", [load_image("Enemy/Enemy_Phoenix1.png"),
-                                         load_image("Enemy/Enemy_Phoenix2.png")])
-        cls._IMAGE.setdefault("Explode", [load_image("Enemy/Destroy_Phoenix1.png"),
-                                          load_image("Enemy/Destroy_Phoenix2.png"),
-                                          load_image("Enemy/Destroy_Phoenix3.png"),
-                                          load_image("Enemy/Destroy_Phoenix4.png"),
-                                          load_image("Enemy/Destroy_Phoenix5.png"),
-                                          load_image("Enemy/Destroy_Phoenix6.png")])
-        cls._INIT_FLAG_IMAGE = True
+        if not cls._INIT_FLAG_IMAGE:
+            from ..generic_loader.image_loader import load_image
+            cls._IMAGE["Base"] = [load_image("Enemy/Enemy_Phoenix1.png")]
+            cls._IMAGE.setdefault("Normal", [load_image("Enemy/Enemy_Phoenix1.png"),
+                                             load_image("Enemy/Enemy_Phoenix2.png")])
+            cls._IMAGE.setdefault("Explode", [load_image("Enemy/Destroy_Phoenix1.png"),
+                                              load_image("Enemy/Destroy_Phoenix2.png"),
+                                              load_image("Enemy/Destroy_Phoenix3.png"),
+                                              load_image("Enemy/Destroy_Phoenix4.png"),
+                                              load_image("Enemy/Destroy_Phoenix5.png"),
+                                              load_image("Enemy/Destroy_Phoenix6.png")])
+            cls._IMAGE.setdefault("Stop", [load_image("Enemy/Enemy_Phoenix_Stop1.png"),
+                                           load_image("Enemy/Enemy_Phoenix_Stop2.png")])
+            cls._IMAGE.setdefault("Attack", [load_image("Enemy/Enemy_Phoenix_AttackLight1.png"),
+                                             load_image("Enemy/Enemy_Phoenix_AttackLight2.png"),
+                                             load_image("Enemy/Enemy_Phoenix_AttackLight3.png"),
+                                             load_image("Enemy/Enemy_Phoenix_AttackLight4.png"),
+                                             load_image("Enemy/Enemy_Phoenix_AttackLight5.png"),
+                                             load_image("Enemy/Enemy_Phoenix_AttackLight6.png"),
+                                             load_image("Enemy/Enemy_Phoenix_AttackLight7.png"),
+                                             load_image("Enemy/Enemy_Phoenix_AttackLight8.png"),
+                                             load_image("Enemy/Enemy_Phoenix_AttackLight9.png")])
+            cls._INIT_FLAG_IMAGE = True
 
     @classmethod
     def _init_sound(cls):
-        from LostViking.src.generic_loader.sound_loader import load_sound
-        from LostViking.src.constants import MAIN_VOLUME
-        cls._SOUND.setdefault("Shield", load_sound("Shield.wav", MAIN_VOLUME - 0.3))
-        cls._SOUND.setdefault("Laser", load_sound("Laser.wav", MAIN_VOLUME - 0.2))
-        cls._SOUND.setdefault("Explode", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
-                                          load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
-        cls._INIT_FLAG_SOUND = True
-
-    @classmethod
-    def _init_speed(cls):
-        cls._MAX_SPEED_R = cls._MAX_SPEED_L = 10
-        cls._MAX_SPEED_DOWN = cls._MAX_SPEED_UP = 1
-        cls._INIT_FLAG_SPEED = True
-
-    @classmethod
-    def _init_acc(cls):
-        cls._ACC_L = cls._ACC_R = 0.1
-        cls._INIT_FLAG_ACC = True
+        if not cls._INIT_FLAG_SOUND:
+            from LostViking.src.generic_loader.sound_loader import load_sound
+            from LostViking.src.constants import MAIN_VOLUME
+            cls._SOUND.setdefault("Shield", load_sound("Shield.wav", MAIN_VOLUME - 0.3))
+            cls._SOUND.setdefault("Laser", load_sound("Laser.wav", MAIN_VOLUME - 0.2))
+            cls._SOUND.setdefault("Explode", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
+                                              load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
+            cls._INIT_FLAG_SOUND = True
 
     @classmethod
     def init(cls):
-        cls._init_image()
-        cls._init_acc()
-        cls._init_speed()
-        cls._init_sound()
-        cls._MAX_HEALTH = 100
-        cls._SCORE = 200
-        cls._INIT_FLAG = True
+        if not cls._INIT_FLAG:
+            cls._init_image()
+            cls._init_acc()
+            cls._init_speed()
+            cls._init_sound()
+            cls._MAX_HEALTH = 100
+            cls._SCORE = 200
+            cls._INIT_FLAG = True
+
 
 """
 class Shield(pygame.sprite.Sprite):

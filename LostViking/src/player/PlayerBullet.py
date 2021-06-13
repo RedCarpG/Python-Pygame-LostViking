@@ -21,8 +21,12 @@ class PlayerBullet1(SingleImageHelper, BasicBullet):
     """
     _MAX_LEVEL = 0
 
+    _INIT_FLAG = False
+
     def __init__(self, init_position: (list, tuple),
                  speed: list[int, int]):
+        if not self._INIT_FLAG:
+            self.init()
         SingleImageHelper.__init__(self)
         BasicBullet.__init__(self, init_position=init_position,
                              speed=speed)
@@ -59,14 +63,17 @@ class PlayerBullet1(SingleImageHelper, BasicBullet):
 
     @classmethod
     def _init_image(cls) -> None:
-        cls._IMAGE = load_image("PlayerPlane/bullet.png")
+        if not cls._INIT_FLAG_IMAGE:
+            cls._IMAGE = load_image("PlayerPlane/bullet.png")
 
-        cls._INIT_FLAG_IMAGE = True
+            cls._INIT_FLAG_IMAGE = True
 
     @classmethod
     def init(cls):
-        cls._init_image()
-        cls._MAX_LEVEL = 3
+        if not cls._INIT_FLAG:
+            cls._init_image()
+            cls._MAX_LEVEL = 3
+            cls._INIT_FLAG = True
 
 
 # TODO Bullet2
@@ -117,12 +124,14 @@ class PlayerBullet2(BasicBullet):
 
     @classmethod
     def _init_image(cls) -> None:
-        cls._IMAGE = load_image("PlayerPlane/bullet.png")
+        if not cls._INIT_FLAG_IMAGE:
+            cls._IMAGE = load_image("PlayerPlane/bullet.png")
 
-        cls._INIT_FLAG_IMAGE = True
+            cls._INIT_FLAG_IMAGE = True
 
     @classmethod
     def init(cls):
-        cls._init_image()
-        cls._MAX_LEVEL = 3
-
+        if not cls._INIT_FLAG:
+            cls._init_image()
+            cls._MAX_LEVEL = 3
+            cls._INIT_FLAG = True
