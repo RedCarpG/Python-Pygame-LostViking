@@ -8,8 +8,9 @@ def init_player():
     PlayerPlane.init()
     from .PlayerBullet import PlayerBullet1
     PlayerBullet1.init()
-    from .PlayerBomb import init_bomb
-    init_bomb()
+    from .PlayerBomb import PlayerNucBomb, Explosion
+    PlayerNucBomb.init()
+    Explosion.init()
 
 
 def create_player(player_num=1):
