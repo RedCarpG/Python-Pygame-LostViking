@@ -126,7 +126,3 @@ class PlayerBullet2(BasicBullet):
         cls._init_image()
         cls._MAX_LEVEL = 3
 
-
-def init_player_bullet():
-    PlayerBullet1.init()
-    #PlayerBullet2.init()
