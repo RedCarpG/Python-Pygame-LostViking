@@ -74,34 +74,34 @@ class RESOURCES(object):
         RESOURCES.CARRIER_IMAGE.clear()
         RESOURCES.INTERCEPTOR_IMAGE.clear()
 
-        RESOURCES.BULLET_IMAGE.setdefault("Phoenix_Bullet", _load_image_alpha("Enemy/bullet.png"))
-        RESOURCES.BULLET_IMAGE.setdefault("Phoenix_Laser", _load_image_alpha("Enemy/laser.png"))
-        RESOURCES.PHOENIX_IMAGE.setdefault("Normal", [_load_image_alpha("Enemy\Enemy_Phoenix1.png"),
-                                                      _load_image_alpha("Enemy\Enemy_Phoenix2.png")])
-        RESOURCES.PHOENIX_IMAGE.setdefault("Stop", [_load_image_alpha("Enemy\Enemy_Phoenix_Stop1.png"),
-                                                    _load_image_alpha("Enemy\Enemy_Phoenix_Stop2.png")])
-        RESOURCES.PHOENIX_IMAGE.setdefault("Shield", [_load_image_alpha("Enemy\Sheild1.png"),
-                                                      _load_image_alpha("Enemy\Sheild2.png"),
-                                                      _load_image_alpha("Enemy\Sheild3.png"),
-                                                      _load_image_alpha("Enemy\Sheild4.png"),
-                                                      _load_image_alpha("Enemy\Sheild5.png")])
-        RESOURCES.PHOENIX_IMAGE.setdefault("Destroy", [_load_image_alpha("Enemy\Destroy_Phoenix1.png"),
-                                                       _load_image_alpha("Enemy\Destroy_Phoenix2.png"),
-                                                       _load_image_alpha("Enemy\Destroy_Phoenix3.png"),
-                                                       _load_image_alpha("Enemy\Destroy_Phoenix4.png"),
-                                                       _load_image_alpha("Enemy\Destroy_Phoenix5.png"),
-                                                       _load_image_alpha("Enemy\Destroy_Phoenix6.png")])
-        RESOURCES.PHOENIX_IMAGE.setdefault("Attack", [_load_image_alpha("Enemy\Enemy_Phoenix_AttakLight1.png"),
-                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight2.png"),
-                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight3.png"),
-                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight4.png"),
-                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight5.png"),
-                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight6.png"),
-                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight7.png"),
-                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight8.png"),
-                                                      _load_image_alpha("Enemy\Enemy_Phoenix_AttakLight9.png")])
-        RESOURCES.INTERCEPTOR_IMAGE.setdefault("Body", _load_image_alpha("Enemy\Interceptor.png"))
-        RESOURCES.CARRIER_IMAGE.setdefault("Body", _load_image_alpha("Enemy\Carrier.png"))
+        RESOURCES.BULLET_IMAGE.setdefault("Phoenix_Bullet", _load_image_alpha("BasicEnemy/bullet.png"))
+        RESOURCES.BULLET_IMAGE.setdefault("Phoenix_Laser", _load_image_alpha("BasicEnemy/laser.png"))
+        RESOURCES.PHOENIX_IMAGE.setdefault("Normal", [_load_image_alpha("BasicEnemy\Enemy_Phoenix1.png"),
+                                                      _load_image_alpha("BasicEnemy\Enemy_Phoenix2.png")])
+        RESOURCES.PHOENIX_IMAGE.setdefault("Stop", [_load_image_alpha("BasicEnemy\Enemy_Phoenix_Stop1.png"),
+                                                    _load_image_alpha("BasicEnemy\Enemy_Phoenix_Stop2.png")])
+        RESOURCES.PHOENIX_IMAGE.setdefault("Shield", [_load_image_alpha("BasicEnemy\Sheild1.png"),
+                                                      _load_image_alpha("BasicEnemy\Sheild2.png"),
+                                                      _load_image_alpha("BasicEnemy\Sheild3.png"),
+                                                      _load_image_alpha("BasicEnemy\Sheild4.png"),
+                                                      _load_image_alpha("BasicEnemy\Sheild5.png")])
+        RESOURCES.PHOENIX_IMAGE.setdefault("Destroy", [_load_image_alpha("BasicEnemy\Destroy_Phoenix1.png"),
+                                                       _load_image_alpha("BasicEnemy\Destroy_Phoenix2.png"),
+                                                       _load_image_alpha("BasicEnemy\Destroy_Phoenix3.png"),
+                                                       _load_image_alpha("BasicEnemy\Destroy_Phoenix4.png"),
+                                                       _load_image_alpha("BasicEnemy\Destroy_Phoenix5.png"),
+                                                       _load_image_alpha("BasicEnemy\Destroy_Phoenix6.png")])
+        RESOURCES.PHOENIX_IMAGE.setdefault("Attack", [_load_image_alpha("BasicEnemy\Enemy_Phoenix_AttakLight1.png"),
+                                                      _load_image_alpha("BasicEnemy\Enemy_Phoenix_AttakLight2.png"),
+                                                      _load_image_alpha("BasicEnemy\Enemy_Phoenix_AttakLight3.png"),
+                                                      _load_image_alpha("BasicEnemy\Enemy_Phoenix_AttakLight4.png"),
+                                                      _load_image_alpha("BasicEnemy\Enemy_Phoenix_AttakLight5.png"),
+                                                      _load_image_alpha("BasicEnemy\Enemy_Phoenix_AttakLight6.png"),
+                                                      _load_image_alpha("BasicEnemy\Enemy_Phoenix_AttakLight7.png"),
+                                                      _load_image_alpha("BasicEnemy\Enemy_Phoenix_AttakLight8.png"),
+                                                      _load_image_alpha("BasicEnemy\Enemy_Phoenix_AttakLight9.png")])
+        RESOURCES.INTERCEPTOR_IMAGE.setdefault("Body", _load_image_alpha("BasicEnemy\Interceptor.png"))
+        RESOURCES.CARRIER_IMAGE.setdefault("Body", _load_image_alpha("BasicEnemy\Carrier.png"))
 
     @classmethod
     def UNLOAD_IMAGE_LEVER1(cls):

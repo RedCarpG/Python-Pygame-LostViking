@@ -105,10 +105,10 @@ class LostViking(object):
             'bomb_text': myFont(self.SCREEN, fonts["score_font"],
                                 ("Bomb: " + str(G.BOMB)), (0, 90), color=WHITE)
         }
-        # Enemy groups
-        self.enemies_hit = Enemy.EnemyHit_G
-        self.enemies_die = Enemy.EnemyDie_G
-        self.boss = Enemy.BOSS
+        # BasicEnemy groups
+        self.enemies_hit = BasicEnemy.EnemyHit_G
+        self.enemies_die = BasicEnemy.EnemyDie_G
+        self.boss = BasicEnemy.BOSS
         self.player_bullets = MyPlane.Player_Bullet_G
 
         # -* Set Timer *-

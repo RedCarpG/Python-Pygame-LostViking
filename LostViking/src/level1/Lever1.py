@@ -4,31 +4,13 @@ from LostViking.src.enemy.enemyPlane import *
 from LostViking.src.generic_items.BasicBullet import *
 from LostViking.src.generic_loader.mytime import *
 
-
-
-
-
 from pygame.locals import *
 
 
 # Level1 类
 class Level1():
-    CREATE_Scout = USEREVENT + 3
-    CREATE_Phoenix = USEREVENT + 4
-    CREATE_Carrier = USEREVENT + 5
-    enemy_Interceptor = pygame.sprite.Group()
-    enemy_Scout = pygame.sprite.Group()
-    enemy_Phoenix = pygame.sprite.Group()
-    enemy_Carrier = pygame.sprite.GroupSingle()
 
     def __init__(self):
-        LOAD_IMAGE_LEVER1()
-        Enemy_Scout.LOAD()
-        Enemy_Phoenix.LOAD()
-        Enemy_Carrier.LOAD()
-        Enemy_Interceptor.LOAD()
-        Shield.LOAD()
-
         add_enemy_Scout(5)
         # 定时生成敌机
         pygame.time.set_timer(self.CREATE_Carrier, 30000)
