@@ -10,57 +10,40 @@ import abc
 from LostViking.src.constants import SCREEN
 from ..groups import Enemy_G
 from ..generic_items.ImageHelper import LoopImageHelper
-from ..generic_items.MovementHelper import StaticMoveHelper
+from ..generic_items.MovementHelper import StaticMoveHelper, InertialMoveHelper
 
 
-class BasicEnemy(LoopImageHelper, StaticMoveHelper, pygame.sprite.Sprite, ABC):
+class BasicEnemy(LoopImageHelper, pygame.sprite.Sprite, ABC):
     """
     Basic class, defines general properties of enemy plane
     """
     _INIT_FLAG = False
 
     _MAX_HEALTH = 300
+    _SCORE = 100
+
+    _SOUND = {}
 
     def __init__(self):
         # Init
         if not self._INIT_FLAG:
-            print("!!! WARNING: {} not set", self.__name__)
+            print("!!! WARNING: {} not set", self.__class__.__name__)
             self.init()
         LoopImageHelper.__init__(self)
-        StaticMoveHelper.__init__(self)
         pygame.sprite.Sprite.__init__(self, Enemy_G)
 
         self._health = self._MAX_HEALTH
 
-        self.score = 0
+        self.score = self._SCORE
 
         self.is_active = True
-
-    def _damaged(self, damage) -> bool:
-        if self._health > 0:
-            self._health -= damage
-            return False
-        else:
-            self._health = 0
-            return True
-
-    @classmethod
-    @abc.abstractmethod
-    def init(cls):
-        pass
-
-
-class EnemyI(BasicEnemy, ABC):
-
-    def __init__(self, position):
-        BasicEnemy.__init__(self)
-        self.is_active = True
-        self.setPos(position)
 
     def update(self):
-        self._switch_image()
-        if self.rect.top < SCREEN.get_h():
-            self.rect.top += self._speed_y
+        if self.is_active:
+            self._switch_image()
+            self._action()
+        else:
+            self._destroy()
 
     def hit(self, damage=100):
         """
@@ -71,70 +54,98 @@ class EnemyI(BasicEnemy, ABC):
             self._image_switch = 0
             self._set_image_type("Explode")
 
+    def _damaged(self, damage) -> bool:
+        if self._health > 0:
+            self._health -= damage
+            return False
+        else:
+            self._health = 0
+            return True
 
-class EnemyII(EnemyI):
-    def __init__(self, pos, path):
-        EnemyI.__init__(self, pos)
+    def _destroy(self):
+        finished = self._switch_image()
+        if finished:
+            self.kill()
+
+    @abc.abstractmethod
+    def _action(self):
+        pass
+
+    @classmethod
+    @abc.abstractmethod
+    def init(cls):
+        pass
+
+
+class EnemyI(BasicEnemy, StaticMoveHelper, ABC):
+    """ First type of Enemy """
+
+    def __init__(self, position):
+        BasicEnemy.__init__(self)
+        StaticMoveHelper.__init__(self)
+        self.is_active = True
+        self.set_pos(position)
+        self._set_image_type("Normal")
+
+    def _move(self):
+        """ Move its rect by its _speed_x and _speed_y"""
+        self.rect.top += self._MAX_SPEED_DOWN
+
+    def _action(self):
+        if self.rect.top < SCREEN.get_h():
+            self._move()
+        else:
+            self.kill()
+
+
+class EnemyII(BasicEnemy, InertialMoveHelper, ABC):
+    """ Second type of Enemy, shoot and track the player """
+
+    def __init__(self, pos, path=None):
+        BasicEnemy.__init__(self)
+        InertialMoveHelper.__init__(self)
         self.angle = 0
         self.path = path
         self.current_path = 0
+
         self.rotate_flag = True
+        self.move_flag = True
 
-    def change_image(self):
-        self.image_switch_interval.tick()
-        if self.image_switch_interval.check():
-            self.image_switch = (self.image_switch + 1) % len(self.main_image)
-            self.image = pygame.transform.rotate(self.main_image[self.image_switch], self.angle)
+        self.set_pos(pos)
 
-    def update(self):
-        self.change_image()
-        self.action()
-
-    def rotate(self, point):
-        if self.rect.center[1] == point[1]:
-            if point[0] > self.rect.center[0]:
-                angle = 90
-            else:
-                angle = -90
-        elif self.rect.center[0] == point[0]:
-            if point[1] > self.rect.center[1]:
-                angle = 0
-            else:
-                angle = 180
-        else:
-            angle = math.atan((point[0] - self.rect.center[0]) / (point[1] - self.rect.center[1]))
-            angle = angle * 360 / 2 / math.pi
-            if self.rect.center[1] > point[1]:
-                if self.rect.center[0] < point[0]:
-                    angle += 180
-                else:
-                    angle -= 180
-        self.angle = angle
-        angle = angle * math.pi / 180
-        self.speed = [float(self.MaxSpeed * math.sin(angle)), float(self.MaxSpeed * math.cos(angle))]
+    def _switch_image(self, switch_rate=5):
+        LoopImageHelper._switch_image(self)
         temp = self.rect.center
-        self.image = pygame.transform.rotate(self.main_image[self.image_switch], self.angle)
+        self.image = pygame.transform.rotate(self._main_image_type[self._image_switch], self.angle)
 
         self.rect = self.image.get_rect()
         self.rect.center = temp
 
-    def rotate_angle(self, angle):
+    def aim(self, point):
+        angle = _cal_angle(self.rect.center, point)
+
+        self._rotate_angle(angle)
+
+    def _rotate_angle(self, angle):
         self.angle = angle
         angle = angle * math.pi / 180
-        self.speed = [float(self.MaxSpeed * math.sin(angle)), float(self.MaxSpeed * math.cos(angle))]
+        self._speed_x = float(self._MAX_SPEED_L * math.sin(angle))
+        self._speed_y = float(self._MAX_SPEED_DOWN * math.cos(angle))
         temp = self.rect.center
-        self.image = pygame.transform.rotate(self.main_image[self.image_switch], self.angle)
+        self.image = pygame.transform.rotate(self._main_image_type[self._image_switch], self.angle)
 
         self.rect = self.image.get_rect()
         self.rect.center = temp
 
-    def action(self):
+    def _action(self):
         if self.move_flag:
-            self.rect.move_ip(self.speed[0], self.speed[1])
+            self._move()
+
         if self.rotate_flag:
-            self.rotate(self.path[self.current_path])
+            self.aim(self.path[self.current_path])
             self.rotate_flag = False
             self.move_flag = True
+
         if self.rect.collidepoint(self.path[self.current_path]):
             if self.current_path < len(self.path):
                 self.current_path += 1
@@ -143,48 +154,43 @@ class EnemyII(EnemyI):
             else:
                 self.kill()
 
-    @abc.abstractmethod
-    def LOAD(self):
-        pass
 
+class EnemyIII(BasicEnemy, InertialMoveHelper, ABC):
 
-class EnemyIII(EnemyI):
-    def __init__(self, pos):
-        EnemyI.__init__(self, pos)
-        self.angle = 0
-        self.entrance_flag = True
-        self.stay_duration = MYTIME(500)
-        self.attack_interval = MYTIME(100)
+    def __init__(self, pos, side='L'):
+        BasicEnemy.__init__(self)
+        InertialMoveHelper.__init__(self)
 
-    def change_image(self):
-        self.image_switch_interval.tick()
-        if self.image_switch_interval.check():
-            self.image_switch = (self.image_switch + 1) % len(self.main_image)
-            temp = self.rect.center
-            self.image = pygame.transform.rotate(self.main_image[self.image_switch], self.angle)
+        self.set_pos(pos)
 
-            self.rect = self.image.get_rect()
-            self.rect.center = temp
+        self.stage1_flag = True
+        self.stage2_flag = False
+        self.stage3_flag = False
 
-    def rotate(self, point):
-        if self.rect.center[1] == point[1]:
-            if point[0] > self.rect.center[0]:
-                angle = 90
-            else:
-                angle = -90
-        elif self.rect.center[0] == point[0]:
-            if point[1] > self.rect.center[1]:
-                angle = 0
-            else:
-                angle = 180
+        self.attack_interval = pygame.time.Clock()
+        self.stay_duration = pygame.time.Clock()
+
+        if side == 'L':
+            self.side = -1
+            self._speed_x = self._MAX_SPEED_L
         else:
-            angle = math.atan((point[0] - self.rect.center[0]) / (point[1] - self.rect.center[1]))
-            angle = angle * 360 / 2 / math.pi
-            if self.rect.center[1] > point[1]:
-                if self.rect.center[0] < point[0]:
-                    angle += 180
-                else:
-                    angle -= 180
+            self.side = 1
+            self._speed_x = -self._MAX_SPEED_L
+
+        self.angle = 90 * self.side
+
+        self._speed_y = self._MAX_SPEED_DOWN
+
+    '''
+    def rotate1(self,angle):  -180<angle<180
+        if self.angle > angle:
+           self.angle -= 2
+        elif self.angle < angle:
+            self.angle += 2 
+        angle_ = self.angle * math.pi / 180
+    '''
+    def aim(self, point):
+        angle = _cal_angle(self.rect.center, point)
 
         if self.rect.center[0] > point[0] and self.angle > 90:
             self.angle += 2
@@ -200,47 +206,62 @@ class EnemyIII(EnemyI):
         if self.angle > 180:
             self.angle = -180
 
-        angle_ = self.angle * math.pi / 180
+        #angle_ = self.angle * math.pi / 180
 
-    '''
-    def rotate1(self,angle):  -180<angle<180
-        if self.angle > angle:
-           self.angle -= 2
-        elif self.angle < angle:
-            self.angle += 2 
-        angle_ = self.angle * math.pi / 180
-    '''
-
-    def update(self, player_point):
-        self.change_image()
-        if self.entrance_flag:
-            self.entrance()
+    def _action(self):
+        if self.stage1_flag:
+            self._entrance()
         else:
-            self.action(player_point)
+            from ..groups import Player1_G
+            player_point = Player1_G.sprite().position
+            self.aim(player_point)
             if self.stay_duration.tick() > 500:
-                self.leave()
+                self._leave()
 
-    def action(self, player_point):
-        self.attack_interval.tick()
-        if self.attack_interval.check():
-            self.shoot()
-        self.rotate(player_point)
+            if self.attack_interval.tick() > 500:
+                self._shoot()
 
-    def leave(self):
-        if self.rect.top < SCREEN.getH():
-            self.rect.move_ip(0, self.speed[1])
+    def _leave(self):
+        if self.rect.top < SCREEN.get_h():
+            self.rect.move_ip(0, self._speed_y)
         else:
             self.kill()
 
-    @abc.abstractmethod
-    def entrance(self):
-        pass
+    def _entrance(self):
+        if self._speed_x != 0:
+            self._speed_x += self._ACC_L*self.side
+            self.rect.move_ip(self._speed_x, 0)
+        else:
+            self.stage1_flag = False
+            self._set_image_type("Stop")
 
     @abc.abstractmethod
-    def LOAD(self):
+    def _shoot(self):
         pass
 
 
+def _cal_angle(point_rect, point):
+    if point_rect[1] == point[1]:
+        if point[0] > point_rect[0]:
+            angle = 90
+        else:
+            angle = -90
+    elif point_rect[0] == point[0]:
+        if point[1] > point_rect[1]:
+            angle = 0
+        else:
+            angle = 180
+    else:
+        angle = math.atan((point[0] - point_rect[0]) / (point[1] - point_rect[1]))
+        angle = angle * 360 / 2 / math.pi
+        if point_rect[1] > point[1]:
+            if point_rect[0] < point[0]:
+                angle += 180
+            else:
+                angle -= 180
+    return angle
+
+"""
 class Enemy_Boss(Enemy):
     BOSS_Score = 5000
     BOSS_MaxHealth = 30000
@@ -361,3 +382,4 @@ class Enemy_ShooterII(Enemy_ShooterI, EnemyIII):
     @abc.abstractmethod
     def action(self):
         pass
+"""
