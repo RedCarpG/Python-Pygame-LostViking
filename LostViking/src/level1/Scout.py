@@ -1,6 +1,6 @@
 from ..enemy.enemyPlane import EnemyI
 from ..generic_loader.image_loader import load_image
-from .group_level1 import Enemy_Scout_G
+from .level1_group import Enemy_Scout_G
 
 import random
 from ..constants import SCREEN
