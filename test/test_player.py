@@ -39,16 +39,7 @@ def test_player():
                 test_key_event()
             detect_player_event(event, player1=player1)
 
-        # If Key Pressed
-        key_pressed = pygame.key.get_pressed()
-        if key_pressed[K_w] or key_pressed[K_UP]:
-            player1.trigger_move_up()
-        if key_pressed[K_s] or key_pressed[K_DOWN]:
-            player1.trigger_move_back()
-        if key_pressed[K_a] or key_pressed[K_LEFT]:
-            player1.trigger_move_left()
-        if key_pressed[K_d] or key_pressed[K_RIGHT]:
-            player1.trigger_move_right()
+        detect_key_pressed(player1)
 
         screen.fill(BLACK)
         Player_NucBomb_G.update()

@@ -35,8 +35,13 @@ def test_enemy():
             level1_events(event=event)
 
         screen.fill(BLACK)
+        Player1_G.update()
+        Player1_G.draw(screen)
+        Bullet_G.update()
+        Bullet_G.draw(screen)
         Enemy_G.update()
         Enemy_G.draw(screen)
+
         # Display
         pygame.display.flip()
 
