@@ -2,9 +2,10 @@
 Includes:
     -> PlayerPlane
 """
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 import pygame
 
+from ..generic_items.SoundHelper import SoundHelper
 from ..generic_items.ImageHelper import LoopImageHelper
 from ..generic_items.MovementHelper import InertialMoveHelper
 from .PlayerBullet import PlayerBullet1
@@ -12,7 +13,7 @@ from ..constants import SCREEN
 from ..groups import Player1_G, Player2_G
 
 
-class BasicPlayerPlane(LoopImageHelper, InertialMoveHelper, pygame.sprite.Sprite):
+class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.sprite.Sprite, ABC):
     """ Basic Player Abstract class with behavior defined below:
      -> movement (from StaticMoveHelper)
      -> acceleration (from InertialMoveHelper)
@@ -26,69 +27,21 @@ class BasicPlayerPlane(LoopImageHelper, InertialMoveHelper, pygame.sprite.Sprite
         -> (optional) set self.start_position (from StaticMoveHelper)
      """
 
-    _INIT_FLAG = False
-
-    _SOUND = {}
-    _INIT_FLAG_SOUND = False
-
-    def __init__(self):
+    def __init__(self, point=None):
         # Init
         if not self._INIT_FLAG:
-            print("!!! WARNING: {} not set", self.__class__.__name__)
-            self.init()
-        if not self._INIT_FLAG_SOUND:
-            self._init_sound()
-        pygame.sprite.Sprite.__init__(self)
+            raise Exception("!!!ERROR: _IMAGE value is not set! {}".format(self))
+        if not self._MAX_HEALTH:
+            raise Exception("!!!ERROR: _MAX_HEALTH value is not set! {}".format(self))
+        SoundHelper.__init__(self)
         LoopImageHelper.__init__(self)
         InertialMoveHelper.__init__(self)
+        pygame.sprite.Sprite.__init__(self)
 
         # Set bullet type
         ''' Init Weapon '''
-        self._bullet_type = None
-        self._lever = 1
-
-        self._attack_speed = 0
-
-        self._health = 0
-
         self.start_position = (int(pygame.display.get_surface().get_width() // 2),
                                int(pygame.display.get_surface().get_height() - self.rect.height // 2 - 30))
-
-    """ --------------------- Player Plane Behavior --------------------- """
-
-    def _damaged(self, damage) -> bool:
-        if self._health > 0:
-            self._health -= damage
-            return False
-        else:
-            self._health = 0
-            return True
-
-    def _shoot(self):
-        self._bullet_type.shoot_bullets(self.rect.center, self._lever)
-
-    """ --------------------- Player Plane Behavior --------------------- """
-    @classmethod
-    @abstractmethod
-    def _init_sound(cls):
-        pass
-
-    @classmethod
-    @abstractmethod
-    def init(cls):
-        pass
-
-
-class PlayerPlane(BasicPlayerPlane):
-    """ Player class inherits BasicPlayerPlane
-    It specifies the interfaces and the call back from event triggers
-    """
-    _MAX_HEALTH = 300
-
-    def __init__(self, point=None, p_id=1):
-        BasicPlayerPlane.__init__(self)
-        self.add(Player1_G if p_id == 1 else Player2_G)
-        self.init()
 
         self._set_image_type("MoveNormal")
 
@@ -108,6 +61,19 @@ class PlayerPlane(BasicPlayerPlane):
 
         # Set init position
         self.set_pos(point)
+
+    """ --------------------- Player Plane Behavior --------------------- """
+
+    def _damaged(self, damage) -> bool:
+        if self._health > 0:
+            self._health -= damage
+            return False
+        else:
+            self._health = 0
+            return True
+
+    def _shoot(self):
+        self._bullet_type.shoot_bullets(self.rect.center, self._lever)
 
     """ ------------------ Real-time methods ------------------ """
 
@@ -143,7 +109,7 @@ class PlayerPlane(BasicPlayerPlane):
 
     """ ------------------ Collision detect ------------------ """
 
-    def hit(self, damage) -> bool:
+    def hit(self, damage=100) -> bool:
         """
         This function is called in collision detection
         """
@@ -316,8 +282,54 @@ class PlayerPlane(BasicPlayerPlane):
     """ ----------------- Class init methods -----------------"""
 
     @classmethod
+    def _init_speed(cls) -> None:
+        if not hasattr(cls, "_INIT_FLAG_SPEED") or not cls._INIT_FLAG_SPEED:
+            cls._MAX_SPEED_L = 8
+            cls._MAX_SPEED_R = 8
+            cls._MAX_SPEED_UP = 10
+            cls._MAX_SPEED_DOWN = 5
+            cls._INIT_FLAG_SPEED = True
+
+    @classmethod
+    def _init_acc(cls) -> None:
+        if not hasattr(cls, "_INIT_FLAG_ACC") or not cls._INIT_FLAG_ACC:
+            cls._ACC_L = 0.8
+            cls._ACC_R = 0.8
+            cls._ACC_UP = 1
+            cls._ACC_DOWN = 0.6
+            cls._INIT_FLAG_ACC = True
+
+    @classmethod
+    def _init_sound(cls) -> None:
+        if not hasattr(cls, "_INIT_FLAG_SOUND") or not cls._INIT_FLAG_SOUND:
+            cls._SOUND = dict()
+            from LostViking.src.generic_loader.sound_loader import load_sound
+            from LostViking.src.constants import MAIN_VOLUME
+            cls._SOUND.setdefault("Player_Shoot", load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2))
+            cls._SOUND.setdefault("Player_Explo", load_sound("Player_Explo.wav", MAIN_VOLUME))
+            cls._INIT_FLAG_SOUND = True
+
+    @classmethod
+    def init(cls) -> None:
+        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
+            cls._init_image()
+            cls._init_speed()
+            cls._init_acc()
+            cls._init_sound()
+            cls._MAX_HEALTH = 300
+            cls._INIT_FLAG = True
+
+
+class Player1(BasicPlayerPlane):
+
+    def __init__(self):
+        BasicPlayerPlane.__init__(self)
+        self.add(Player1_G)
+
+    @classmethod
     def _init_image(cls) -> None:
-        if not cls._INIT_FLAG_IMAGE:
+        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
+            cls._IMAGE = dict()
             from LostViking.src.generic_loader.image_loader import load_image
             cls._IMAGE["Base"] = [load_image("PlayerPlane/Viking_body.png")]
             cls._IMAGE.setdefault("Invincible", [load_image("PlayerPlane/PlayerPlane_Invincible.png")])
@@ -335,44 +347,30 @@ class PlayerPlane(BasicPlayerPlane):
                                               load_image("PlayerPlane/PlayerPlane_explode6.png")])
             cls._INIT_FLAG_IMAGE = True
 
-    @classmethod
-    def _clear_image(cls) -> None:
-        cls._IMAGE.clear()
-        cls._INIT_FLAG_IMAGE = False
+
+class Player2(BasicPlayerPlane):
+
+    def __init__(self):
+        BasicPlayerPlane.__init__(self)
+        self.add(Player2_G)
 
     @classmethod
-    def _init_speed(cls) -> None:
-        if not cls._INIT_FLAG_SPEED:
-            cls._MAX_SPEED_L = 8
-            cls._MAX_SPEED_R = 8
-            cls._MAX_SPEED_UP = 10
-            cls._MAX_SPEED_DOWN = 5
-            cls._INIT_FLAG_SPEED = True
-
-    @classmethod
-    def _init_acc(cls) -> None:
-        if not cls._INIT_FLAG_ACC:
-            cls._ACC_L = 0.8
-            cls._ACC_R = 0.8
-            cls._ACC_UP = 1
-            cls._ACC_DOWN = 0.6
-            cls._INIT_FLAG_ACC = True
-
-    @classmethod
-    def _init_sound(cls) -> None:
-        if not cls._INIT_FLAG_SOUND:
-            from LostViking.src.generic_loader.sound_loader import load_sound
-            from LostViking.src.constants import MAIN_VOLUME
-            cls._SOUND.setdefault("Player_Shoot", load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2))
-            cls._SOUND.setdefault("Player_Explo", load_sound("Player_Explo.wav", MAIN_VOLUME))
-            cls._INIT_FLAG_SOUND = True
-
-    @classmethod
-    def init(cls) -> None:
-        if not cls._INIT_FLAG:
-            cls._init_image()
-            cls._init_speed()
-            cls._init_acc()
-            cls._init_sound()
-            cls._MAX_HEALTH = 300
-            cls._INIT_FLAG = True
+    def _init_image(cls) -> None:
+        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
+            cls._IMAGE = dict()
+            from LostViking.src.generic_loader.image_loader import load_image
+            cls._IMAGE["Base"] = [load_image("PlayerPlane/Viking_body.png")]
+            cls._IMAGE.setdefault("Invincible", [load_image("PlayerPlane/PlayerPlane_Invincible.png")])
+            cls._IMAGE.setdefault("MoveUp", [load_image("PlayerPlane/PlayerPlane_moveUp1.png"),
+                                             load_image("PlayerPlane/PlayerPlane_moveUp2.png")])
+            cls._IMAGE.setdefault("MoveDown", [load_image("PlayerPlane/PlayerPlane_moveDown1.png"),
+                                               load_image("PlayerPlane/PlayerPlane_moveDown2.png")])
+            cls._IMAGE.setdefault("MoveNormal", [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
+                                                 load_image("PlayerPlane/PlayerPlane_moveNormal2.png")])
+            cls._IMAGE.setdefault("Explode", [load_image("PlayerPlane/PlayerPlane_explode1.png"),
+                                              load_image("PlayerPlane/PlayerPlane_explode2.png"),
+                                              load_image("PlayerPlane/PlayerPlane_explode3.png"),
+                                              load_image("PlayerPlane/PlayerPlane_explode4.png"),
+                                              load_image("PlayerPlane/PlayerPlane_explode5.png"),
+                                              load_image("PlayerPlane/PlayerPlane_explode6.png")])
+            cls._INIT_FLAG_IMAGE = True
