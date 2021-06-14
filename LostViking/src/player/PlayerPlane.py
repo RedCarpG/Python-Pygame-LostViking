@@ -34,7 +34,7 @@ class BasicPlayerPlane(LoopImageHelper, InertialMoveHelper, pygame.sprite.Sprite
     def __init__(self):
         # Init
         if not self._INIT_FLAG:
-            print("!!! WARNING: {} not set", self.__name__)
+            print("!!! WARNING: {} not set", self.__class__.__name__)
             self.init()
         if not self._INIT_FLAG_SOUND:
             self._init_sound()

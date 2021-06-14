@@ -17,11 +17,11 @@ def add_enemy_scout(num):
 
 
 def add_enemy_phoenix():
-    x1 = SCREEN.get_w() + 200
-    x2 = - 200
+    x1 = SCREEN.get_w()
+    x2 = 0
     y = 200
-    EnemyPhoenix((x1, y), 'L')
-    EnemyPhoenix((x2, y), 'R')
+    EnemyPhoenix((x1, y), 'R')
+    EnemyPhoenix((x2, y), 'L')
 
 
 def level1_events(event):

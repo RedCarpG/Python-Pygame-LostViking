@@ -18,6 +18,9 @@ def test_enemy():
     add_enemy_phoenix()
     #pygame.time.set_timer(EVENT_CREATE_SCOUT, 500)
     #pygame.time.set_timer(EVENT_CREATE_PHOENIX, 500)
+    from LostViking.src.player import create_player, init_player
+    init_player()
+    create_player(1)
 
     running = True
     while running:

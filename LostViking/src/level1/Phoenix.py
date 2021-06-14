@@ -8,7 +8,6 @@ class EnemyPhoenix(EnemyIII):
         EnemyIII.__init__(self, pos, side)
         self.add(Enemy_Phoenix_G)
 
-        self.stay = 1000
         # self.attack_interval = MYTIME(100)
         # self.shield = Shield()
 
@@ -24,7 +23,7 @@ class EnemyPhoenix(EnemyIII):
     """
 
     def _shoot(self):
-        pass
+        print("SHoot")
         # Bullet.BULLETS.add(Bullet_Phoenix(self.rect.center, self.angle))
 
     @classmethod
