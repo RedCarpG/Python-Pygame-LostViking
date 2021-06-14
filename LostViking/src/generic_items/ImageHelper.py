@@ -20,22 +20,18 @@ class BasicImageHelper(object):
         cls._INIT_FLAG_IMAGE: A flag which will be set True
             when init_image() is called
      """
-    # A Dictionary of lists of images
-    _IMAGE = None
-    # Flag is set to True once the _IMAGE is initialized
-    _INIT_FLAG_IMAGE = False
 
     def __init__(self):
         if not self._INIT_FLAG_IMAGE:
-            print("!!! WARNING: {} image value not initialized", self.__name__)
-            self._init_image()
+            raise Exception("!!!ERROR: _IMAGE value is not set! {}".format(self))
 
     @classmethod
     @abstractmethod
     def _init_image(cls):
         """ It should load image(s) to cls._IMAGE
         and set cls._INIT_FLAG_IMAGE to true when it's done """
-        pass
+        cls._IMAGE = dict()
+        cls._INIT_FLAG_IMAGE = False
 
 
 class SingleImageHelper(BasicImageHelper, ABC):
@@ -52,7 +48,6 @@ class LoopImageHelper(BasicImageHelper, ABC):
     It's an abstract Class which implements from BasicImageHelper
     """
     # A Dictionary of lists of images
-    _IMAGE = {"Base": None}
 
     def __init__(self):
         BasicImageHelper.__init__(self)

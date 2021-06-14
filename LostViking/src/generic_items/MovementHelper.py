@@ -16,17 +16,11 @@ class StaticMoveHelper(ABC):
         -> set _init_speed()
         -> (optional) set self.start_position
     """
-    _MAX_SPEED_L = 0
-    _MAX_SPEED_R = 0
-    _MAX_SPEED_UP = 0
-    _MAX_SPEED_DOWN = 0
-
-    _INIT_FLAG_SPEED = False
 
     def __init__(self):
         if not self._INIT_FLAG_SPEED:
-            print("!!! WARNING: {} speed value not set", self.__name__)
-            self._init_speed()
+            raise Exception("!!! ERROR: speed value not se! {}".format(self))
+
         self._speed_x = 0
         self._speed_y = 0
         if hasattr(self, "image"):
@@ -59,7 +53,11 @@ class StaticMoveHelper(ABC):
     @classmethod
     @abstractmethod
     def _init_speed(cls):
-        pass
+        cls._INIT_FLAG_SPEED = False
+        cls._MAX_SPEED_L = 0
+        cls._MAX_SPEED_R = 0
+        cls._MAX_SPEED_UP = 0
+        cls._MAX_SPEED_DOWN = 0
 
 
 class InertialMoveHelper(StaticMoveHelper, ABC):
@@ -70,18 +68,11 @@ class InertialMoveHelper(StaticMoveHelper, ABC):
         -> set _init_acc()
         -> (optional) set self.start_position (from StaticMoveHelper)
     """
-    _ACC_L = 0
-    _ACC_R = 0
-    _ACC_UP = 0
-    _ACC_DOWN = 0
-
-    _INIT_FLAG_ACC = False
 
     def __init__(self):
         StaticMoveHelper.__init__(self)
         if not self._INIT_FLAG_ACC:
-            print("!!! WARNING: {} acceleration value not set", self.__name__)
-            self._init_acc()
+            raise Exception("!!! ERROR: acceleration value not se! {}".format(self))
 
         # Move Flags for detecting
         self._move_flag_x = False
@@ -167,4 +158,8 @@ class InertialMoveHelper(StaticMoveHelper, ABC):
     @classmethod
     @abstractmethod
     def _init_acc(cls):
-        pass
+        cls._ACC_L = 0
+        cls._ACC_R = 0
+        cls._ACC_UP = 0
+        cls._ACC_DOWN = 0
+        cls._INIT_FLAG_ACC = False

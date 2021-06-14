@@ -8,7 +8,7 @@ from LostViking.src.generic_loader.sound_loader import *
 import math
 import abc
 from LostViking.src.constants import SCREEN
-from ..groups import Enemy_G
+from ..groups import Enemy_G, Enemy_Destroyed_G
 from ..generic_items.ImageHelper import LoopImageHelper
 from ..generic_items.MovementHelper import StaticMoveHelper, InertialMoveHelper
 
@@ -17,19 +17,12 @@ class BasicEnemy(LoopImageHelper, pygame.sprite.Sprite, ABC):
     """
     Basic class, defines general properties of enemy plane
     """
-    _INIT_FLAG = False
-    _INIT_FLAG_SOUND = False
-
-    _MAX_HEALTH = 300
-    _SCORE = 100
-
-    _SOUND = {}
 
     def __init__(self):
         # Init
-        if not self._INIT_FLAG:
-            print("!!! WARNING: {} not set", self.__class__.__name__)
-            self.init()
+        if not self._INIT_FLAG or not self._MAX_HEALTH or not self._SCORE:
+            raise Exception("!!! ERROR class not init! {}".format(self))
+
         LoopImageHelper.__init__(self)
         pygame.sprite.Sprite.__init__(self, Enemy_G)
 
@@ -54,6 +47,8 @@ class BasicEnemy(LoopImageHelper, pygame.sprite.Sprite, ABC):
         """
         if self._damaged(damage):
             self.is_active = False
+            self.kill()
+            self.add(Enemy_Destroyed_G)
             self._image_switch = 0
             self._set_image_type("Explode")
 
@@ -76,13 +71,10 @@ class BasicEnemy(LoopImageHelper, pygame.sprite.Sprite, ABC):
 
     @classmethod
     @abc.abstractmethod
-    def _init_sound(cls):
-        pass
-
-    @classmethod
-    @abc.abstractmethod
     def init(cls):
-        pass
+        cls._INIT_FLAG = False
+        cls._MAX_HEALTH = None
+        cls._SCORE = None
 
 
 class EnemyI(BasicEnemy, StaticMoveHelper, ABC):
@@ -204,12 +196,13 @@ class EnemyIII(BasicEnemy, InertialMoveHelper, ABC):
     '''
 
     def _switch_image(self, switch_rate=5):
-        LoopImageHelper._switch_image(self)
+        is_finished = LoopImageHelper._switch_image(self)
         temp = self.rect.center
         self.image = pygame.transform.rotate(self._main_image_type[self._image_switch], self.angle)
 
         self.rect = self.image.get_rect()
         self.rect.center = temp
+        return is_finished
 
     def aim(self, point):
         angle = _cal_angle(self.rect.center, point)
@@ -265,16 +258,18 @@ class EnemyIII(BasicEnemy, InertialMoveHelper, ABC):
 
     @classmethod
     def _init_speed(cls):
-        if not cls._INIT_FLAG_SPEED:
+        if not hasattr(cls, "_INIT_FLAG_SPEED") or not cls._INIT_FLAG_SPEED:
             cls._MAX_SPEED_R = cls._MAX_SPEED_L = 10
             cls._MAX_SPEED_DOWN = cls._MAX_SPEED_UP = 1
             cls._INIT_FLAG_SPEED = True
 
     @classmethod
     def _init_acc(cls):
-        if not cls._INIT_FLAG_SPEED:
+        if not hasattr(cls, "_INIT_FLAG_SPEED") or not cls._INIT_FLAG_SPEED:
+            cls._MAX_SPEED_L = 0
+            cls._INIT_FLAG_SPEED = False
             cls._init_speed()
-        if not cls._INIT_FLAG_ACC:
+        if not hasattr(cls, "_INIT_FLAG_ACC") or not cls._INIT_FLAG_ACC:
             cls._ACC_L = cls._ACC_R = round((cls._MAX_SPEED_L ** 2) / (SCREEN.get_w()*7/4), 2)
             cls._INIT_FLAG_ACC = True
         # s = t*v0/2 => t = 2s/v0

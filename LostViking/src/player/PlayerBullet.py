@@ -63,14 +63,14 @@ class PlayerBullet1(SingleImageHelper, BasicBullet):
 
     @classmethod
     def _init_image(cls) -> None:
-        if not cls._INIT_FLAG_IMAGE:
+        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
             cls._IMAGE = load_image("PlayerPlane/bullet.png")
 
             cls._INIT_FLAG_IMAGE = True
 
     @classmethod
     def init(cls):
-        if not cls._INIT_FLAG:
+        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
             cls._init_image()
             cls._MAX_LEVEL = 3
             cls._INIT_FLAG = True
@@ -124,14 +124,14 @@ class PlayerBullet2(BasicBullet):
 
     @classmethod
     def _init_image(cls) -> None:
-        if not cls._INIT_FLAG_IMAGE:
+        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
             cls._IMAGE = load_image("PlayerPlane/bullet.png")
 
             cls._INIT_FLAG_IMAGE = True
 
     @classmethod
     def init(cls):
-        if not cls._INIT_FLAG:
+        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
             cls._init_image()
             cls._MAX_LEVEL = 3
             cls._INIT_FLAG = True

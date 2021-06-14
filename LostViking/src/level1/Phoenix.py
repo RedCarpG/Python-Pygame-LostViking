@@ -1,10 +1,16 @@
 from ..enemy.enemyPlane import EnemyIII
 from .level1_group import Enemy_Phoenix_G
+from ..groups import Enemy_Bullet_G
+from ..generic_items.BasicBullet import BasicSpinBullet
+from ..generic_loader.image_loader import load_image
+from ..generic_items.ImageHelper import SingleImageHelper
+from ..generic_items.SoundHelper import SoundHelper
 
 
-class EnemyPhoenix(EnemyIII):
+class EnemyPhoenix(SoundHelper, EnemyIII):
 
     def __init__(self, pos, side):
+        SoundHelper.__init__(self)
         EnemyIII.__init__(self, pos, side)
         self.add(Enemy_Phoenix_G)
 
@@ -23,12 +29,13 @@ class EnemyPhoenix(EnemyIII):
     """
 
     def _shoot(self):
-        print("SHoot")
+        BulletPhoenix(self.rect.center, self.angle)
         # Bullet.BULLETS.add(Bullet_Phoenix(self.rect.center, self.angle))
 
     @classmethod
     def _init_image(cls):
-        if not cls._INIT_FLAG_IMAGE:
+        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
+            cls._IMAGE = dict()
             from ..generic_loader.image_loader import load_image
             cls._IMAGE["Base"] = [load_image("Enemy/Enemy_Phoenix1.png")]
             cls._IMAGE.setdefault("Normal", [load_image("Enemy/Enemy_Phoenix1.png"),
@@ -54,7 +61,8 @@ class EnemyPhoenix(EnemyIII):
 
     @classmethod
     def _init_sound(cls):
-        if not cls._INIT_FLAG_SOUND:
+        if not hasattr(cls, "_INIT_FLAG_SOUND") or not cls._INIT_FLAG_SOUND:
+            cls._SOUND = dict()
             from LostViking.src.generic_loader.sound_loader import load_sound
             from LostViking.src.constants import MAIN_VOLUME
             cls._SOUND.setdefault("Shield", load_sound("Shield.wav", MAIN_VOLUME - 0.3))
@@ -65,13 +73,35 @@ class EnemyPhoenix(EnemyIII):
 
     @classmethod
     def init(cls):
-        if not cls._INIT_FLAG:
+        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
             cls._init_image()
             cls._init_acc()
             cls._init_speed()
             cls._init_sound()
             cls._MAX_HEALTH = 100
             cls._SCORE = 200
+            cls._INIT_FLAG = True
+
+
+class BulletPhoenix(SingleImageHelper, BasicSpinBullet):
+
+    def __init__(self, position, angle):
+        self.init()
+        SingleImageHelper.__init__(self)
+        BasicSpinBullet.__init__(self, position, angle)
+        self.add(Enemy_Bullet_G)
+
+    @classmethod
+    def _init_image(cls):
+        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
+            cls._IMAGE = load_image("Enemy/laser.png")
+            cls._INIT_FLAG_IMAGE = True
+
+    @classmethod
+    def init(cls):
+        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
+            cls._init_image()
+            cls._MAX_SPEED_X = cls._MAX_SPEED_Y = 15
             cls._INIT_FLAG = True
 
 

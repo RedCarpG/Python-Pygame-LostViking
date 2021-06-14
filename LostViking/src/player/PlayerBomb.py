@@ -3,6 +3,7 @@
     -> Explosion class which handles with the drawing of explosion image"""
 
 from ..generic_items.ImageHelper import SingleImageHelper
+from ..generic_items.SoundHelper import SoundHelper
 from ..constants import SCREEN
 from ..generic_loader.image_loader import load_image
 from ..generic_items.ImageHelper import LoopImageHelper
@@ -11,23 +12,21 @@ from .player_interface import get_nuc_count
 import pygame
 
 
-class PlayerNucBomb(SingleImageHelper, pygame.sprite.Sprite):
+class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
     """ Player Nuclear Bomb
     -> Implements StraightBullet class :
             -> SingleImageHelper
             -> pygame.sprite.Sprite
     """
+    _SOUND = None
     _Is_Already_Activate = False
-
-    _SOUND = {}
-
-    _INIT_FLAG = False
-    _INIT_FLAG_SOUND = False
 
     def __init__(self, init_position: (list, tuple)):
         self.init()
         SingleImageHelper.__init__(self)
         pygame.sprite.Sprite.__init__(self, Player_NucBomb_G)
+        self._SOUND["Error"].stop()
+        self._SOUND["Error"].play()
 
         self.rect = self.image.get_rect()
         self.rect.center = init_position
@@ -60,20 +59,20 @@ class PlayerNucBomb(SingleImageHelper, pygame.sprite.Sprite):
             from .player_interface import dec_nuc_bomb
             dec_nuc_bomb()
             cls._Is_Already_Activate = True
-            cls._SOUND["NuclearLaunch_Detected"].stop()
-            cls._SOUND["NuclearLaunch_Detected"].play()
             PlayerNucBomb(player_position)
 
     @classmethod
     def _init_image(cls) -> None:
-        if not cls._INIT_FLAG_IMAGE:
+        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
+            cls._IMAGE = dict()
             cls._IMAGE = load_image("PlayerPlane/bullet.png")
 
             cls._INIT_FLAG_IMAGE = True
 
     @classmethod
     def _init_sound(cls) -> None:
-        if not cls._INIT_FLAG_IMAGE:
+        if not hasattr(cls, "_INIT_FLAG_SOUND") or not cls._INIT_FLAG_SOUND:
+            cls._SOUND = dict()
             from LostViking.src.generic_loader.sound_loader import load_sound
             from LostViking.src.constants import MAIN_VOLUME
             cls._SOUND.setdefault("NuclearLaunch_Detected",
@@ -86,7 +85,7 @@ class PlayerNucBomb(SingleImageHelper, pygame.sprite.Sprite):
 
     @classmethod
     def init(cls):
-        if not cls._INIT_FLAG:
+        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
             cls._init_sound()
             cls._init_image()
             cls._INIT_FLAG = True
@@ -110,7 +109,8 @@ class Explosion(LoopImageHelper, pygame.sprite.Sprite):
 
     @classmethod
     def _init_image(cls) -> None:
-        if not cls._INIT_FLAG_IMAGE:
+        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
+            cls._IMAGE = dict()
             # TODO Image here
             cls._IMAGE["Base"] = [load_image("PlayerPlane/PlayerPlane_explode1.png"),
                                   load_image("PlayerPlane/PlayerPlane_explode2.png"),
@@ -123,6 +123,6 @@ class Explosion(LoopImageHelper, pygame.sprite.Sprite):
 
     @classmethod
     def init(cls):
-        if not cls._INIT_FLAG:
+        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
             cls._init_image()
             cls._INIT_FLAG = True
