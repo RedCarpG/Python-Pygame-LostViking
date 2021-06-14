@@ -1,11 +1,11 @@
 import pygame.event
 from pygame.locals import *
-from .PlayerPlane import PlayerPlane
+from .PlayerPlane import BasicPlayerPlane
 from .PlayerBomb import PlayerNucBomb
 from .player_event_type import *
 
 
-def _start_player_shoot_event(player: PlayerPlane, player_id: int) -> None:
+def _start_player_shoot_event(player: BasicPlayerPlane, player_id: int) -> None:
     if player_id == 1:
         pygame.event.post(pygame.event.Event(EVENT_PLAYER1_SHOOT, {}))
         pygame.time.set_timer(EVENT_PLAYER1_SHOOT, player.get_attack_speed())
@@ -21,7 +21,7 @@ def _stop_player_shoot_event(player_id: int) -> None:
         pygame.time.set_timer(EVENT_PLAYER2_SHOOT, 0)
 
 
-def _handle_player_shoot_event(player: PlayerPlane):
+def _handle_player_shoot_event(player: BasicPlayerPlane):
     player.attack()
 
 
@@ -32,11 +32,11 @@ def _start_player_bomb_launch_event(player_id: int):
         pygame.event.post(pygame.event.Event(EVENT_PLAYER2_BOMB, {}))
 
 
-def _handle_player_bomb_launch_event(player: PlayerPlane):
+def _handle_player_bomb_launch_event(player: BasicPlayerPlane):
     PlayerNucBomb.launch(player.get_position())
 
 
-def detect_player_event(e: pygame.event.Event, player1: PlayerPlane, player2=None):
+def detect_player_event(e: pygame.event.Event, player1: BasicPlayerPlane, player2=None):
     if e.type == KEYDOWN:
         # Space Button
         if e.key == K_SPACE:
@@ -88,3 +88,15 @@ def detect_player_event(e: pygame.event.Event, player1: PlayerPlane, player2=Non
     elif e.type == EVENT_BOMB_EXPLODE:
         print(e.__dict__)
 
+
+def detect_key_pressed(player1: BasicPlayerPlane, player2=None):
+    # If Key Pressed
+    key_pressed = pygame.key.get_pressed()
+    if key_pressed[K_w] or key_pressed[K_UP]:
+        player1.trigger_move_up()
+    if key_pressed[K_s] or key_pressed[K_DOWN]:
+        player1.trigger_move_back()
+    if key_pressed[K_a] or key_pressed[K_LEFT]:
+        player1.trigger_move_left()
+    if key_pressed[K_d] or key_pressed[K_RIGHT]:
+        player1.trigger_move_right()

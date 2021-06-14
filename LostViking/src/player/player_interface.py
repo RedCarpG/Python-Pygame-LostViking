@@ -1,4 +1,4 @@
-from .PlayerPlane import PlayerPlane
+from .PlayerPlane import BasicPlayerPlane
 from .PlayerBullet import PlayerBullet1
 
 
@@ -10,12 +10,12 @@ class _PlayerProperty(object):
     Player_Life = 3
 
 
-def set_player_bullet_type(player: PlayerPlane, bullet_type: int):
+def set_player_bullet_type(player: BasicPlayerPlane, bullet_type: int):
     if bullet_type == 1:
         player.change_bullet_type(PlayerBullet1)
 
 
-def player_upgrade(player: PlayerPlane):
+def player_upgrade(player: BasicPlayerPlane):
     player.set_level()
 
 
