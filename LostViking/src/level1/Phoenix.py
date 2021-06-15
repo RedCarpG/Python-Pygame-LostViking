@@ -109,12 +109,21 @@ class BulletPhoenix(SingleImageHelper, BasicSpinBullet):
 class Shield(LoopImageHelper, SoundHelper, pygame.sprite.DirtySprite):
 
     def __init__(self, owner):
-        pygame.sprite.Sprite.__init__(self, Shield_G)
+        if not hasattr(self, "_INIT_FLAG") or not self._INIT_FLAG:
+            raise Exception("!!! ERROR class not init! {}".format(self))
+        LoopImageHelper.__init__(self)
+        SoundHelper.__init__(self)
+        pygame.sprite.DirtySprite.__init__(self, Shield_G)
+
         self.health = self._MAX_HEALTH
+
         self.is_active = True
-        self.get_hit = False
-        self.rect = self.image.get_rect()
+        self.dirty = 2
         self.visible = 0
+
+        self.rect = self.image.get_rect()
+        self._set_image_type("Normal")
+
         self.owner = owner
 
     def hit(self, damage):
@@ -140,12 +149,12 @@ class Shield(LoopImageHelper, SoundHelper, pygame.sprite.DirtySprite):
         if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
             cls._IMAGE = dict()
             from ..generic_loader.image_loader import load_image
-            cls._IMAGE["Base"] = [load_image("Enemy/Enemy_Phoenix1.png")]
-            cls._IMAGE.setdefault("Normal", [load_image("BasicEnemy/Shield1.png"),
-                                             load_image("BasicEnemy/Shield2.png"),
-                                             load_image("BasicEnemy/Shield3.png"),
-                                             load_image("BasicEnemy/Shield4.png"),
-                                             load_image("BasicEnemy/Shield5.png")])
+            cls._IMAGE["Base"] = [load_image("Enemy/Shield1.png")]
+            cls._IMAGE.setdefault("Normal", [load_image("Enemy/Shield1.png"),
+                                             load_image("Enemy/Shield2.png"),
+                                             load_image("Enemy/Shield3.png"),
+                                             load_image("Enemy/Shield4.png"),
+                                             load_image("Enemy/Shield5.png")])
             cls._INIT_FLAG_IMAGE = True
 
     @classmethod
