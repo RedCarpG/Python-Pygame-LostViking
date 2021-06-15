@@ -64,6 +64,7 @@ class BasicEnemy(LoopImageHelper, pygame.sprite.Sprite, ABC):
         finished = self._switch_image()
         if finished:
             self.kill()
+            del self
 
     @abc.abstractmethod
     def _action(self):
@@ -114,12 +115,13 @@ class EnemyII(BasicEnemy, InertialMoveHelper, ABC):
         self.set_pos(pos)
 
     def _switch_image(self, switch_rate=5):
-        LoopImageHelper._switch_image(self)
+        is_finished = LoopImageHelper._switch_image(self)
         temp = self.rect.center
         self.image = pygame.transform.rotate(self._main_image_type[self._image_switch], self.angle)
 
         self.rect = self.image.get_rect()
         self.rect.center = temp
+        return is_finished
 
     def aim(self, point):
         angle = _cal_angle(self.rect.center, point)
@@ -186,6 +188,7 @@ class EnemyIII(BasicEnemy, InertialMoveHelper, ABC):
 
         self._attack_speed = 100
         self._attack_interval_count = 0
+
     '''
     def rotate1(self,angle):  -180<angle<180
         if self.angle > angle:

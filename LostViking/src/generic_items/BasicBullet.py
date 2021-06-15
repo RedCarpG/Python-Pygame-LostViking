@@ -39,6 +39,7 @@ class BasicBullet(pygame.sprite.Sprite, ABC):
     # General get hit method for bullets
     def hit(self):
         self.kill()
+        del self
 
     # General movement method
     def _move(self):
