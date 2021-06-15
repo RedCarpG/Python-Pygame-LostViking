@@ -21,8 +21,6 @@ class PlayerBullet1(SingleImageHelper, BasicBullet):
     """
     _MAX_LEVEL = 0
 
-    _INIT_FLAG = False
-
     def __init__(self, init_position: (list, tuple),
                  speed: list[int, int]):
         if not self._INIT_FLAG:

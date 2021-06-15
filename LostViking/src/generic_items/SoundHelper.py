@@ -11,9 +11,10 @@ class SoundHelper(object):
             warnings.warn("!!! ERROR: _SOUND value is not set! {}".format(self.__name__))
             self._init_sound()
 
-    def _play_sound(self, label):
-        self._SOUND[label].stop()
-        self._SOUND[label].play()
+    @classmethod
+    def _play_sound(cls, label):
+        cls._SOUND[label].stop()
+        cls._SOUND[label].play()
 
     @classmethod
     @abstractmethod

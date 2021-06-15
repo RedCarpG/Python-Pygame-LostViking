@@ -18,15 +18,13 @@ class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
             -> SingleImageHelper
             -> pygame.sprite.Sprite
     """
-    _SOUND = None
     _Is_Already_Activate = False
 
     def __init__(self, init_position: (list, tuple)):
         self.init()
         SingleImageHelper.__init__(self)
         pygame.sprite.Sprite.__init__(self, Player_NucBomb_G)
-        self._SOUND["Error"].stop()
-        self._SOUND["Error"].play()
+        self._play_sound("NuclearMissile_Ready")
 
         self.rect = self.image.get_rect()
         self.rect.center = init_position
@@ -42,9 +40,9 @@ class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
         else:
             Explosion(self.rect.center)
             PlayerNucBomb._Is_Already_Activate = False
+            self._play_sound("Explode")
             self.kill()
-            self._SOUND["Explode"].stop()
-            self._SOUND["Explode"].play()
+            del self
 
     def _move(self) -> None:
         self.rect.top -= self.speed
@@ -53,8 +51,7 @@ class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
     @classmethod
     def launch(cls, player_position) -> None:
         if cls._Is_Already_Activate or get_nuc_count() < 0:
-            cls._SOUND["Error"].stop()
-            cls._SOUND["Error"].play()
+            cls._play_sound("Error")
         else:
             from .player_interface import dec_nuc_bomb
             dec_nuc_bomb()
@@ -78,6 +75,7 @@ class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
             cls._SOUND.setdefault("NuclearLaunch_Detected",
                                   load_sound("NuclearLaunch_Detected.wav",
                                              MAIN_VOLUME - 0.1))
+            cls._SOUND.setdefault("NuclearMissile_Ready", load_sound("NuclearMissile_Ready.wav", MAIN_VOLUME - 0.1))
             cls._SOUND.setdefault("Error", load_sound("Error.wav", MAIN_VOLUME))
             # TODO Sound here
             cls._SOUND.setdefault("Explode", load_sound("Player_Explo.wav", MAIN_VOLUME))
@@ -93,8 +91,6 @@ class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
 
 class Explosion(LoopImageHelper, pygame.sprite.Sprite):
 
-    _INIT_FLAG = False
-
     def __init__(self, init_position):
         self.init()
         LoopImageHelper.__init__(self)
@@ -103,9 +99,10 @@ class Explosion(LoopImageHelper, pygame.sprite.Sprite):
         self.rect.center = init_position
 
     def update(self) -> None:
+        self._switch_image()
         if self._image_switch == len(self._main_image_type) - 1:
             self.kill()
-        self._switch_image()
+            del self
 
     @classmethod
     def _init_image(cls) -> None:
