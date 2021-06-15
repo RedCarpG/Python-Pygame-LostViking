@@ -5,9 +5,10 @@ import warnings
 
 class SoundHelper(object):
     _SOUND = None
+    _INIT_FLAG_SOUND = False
 
     def __init__(self):
-        if not hasattr(self, "_INIT_FLAG_SOUND") or not self._INIT_FLAG_SOUND:
+        if not self._INIT_FLAG_SOUND:
             warnings.warn("!!! ERROR: _SOUND value is not set! {}".format(self.__name__))
             self._init_sound()
 

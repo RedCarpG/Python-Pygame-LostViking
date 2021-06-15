@@ -20,6 +20,8 @@ class BasicImageHelper(object):
         cls._INIT_FLAG_IMAGE: A flag which will be set True
             when init_image() is called
      """
+    _IMAGE = {}
+    _INIT_FLAG_IMAGE = False
 
     def __init__(self):
         if not self._INIT_FLAG_IMAGE:
