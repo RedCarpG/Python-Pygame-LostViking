@@ -21,7 +21,8 @@ class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
     _Is_Already_Activate = False
 
     def __init__(self, init_position: (list, tuple)):
-        self.init()
+        if not hasattr(self, "_INIT_FLAG") or not self._INIT_FLAG:
+            raise Exception("!!!ERROR: class is not init! {}".format(self))
         SingleImageHelper.__init__(self)
         pygame.sprite.Sprite.__init__(self, Player_NucBomb_G)
         self._play_sound("NuclearMissile_Ready")
@@ -92,7 +93,8 @@ class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
 class Explosion(LoopImageHelper, pygame.sprite.Sprite):
 
     def __init__(self, init_position):
-        self.init()
+        if not hasattr(self, "_INIT_FLAG") or not self._INIT_FLAG:
+            raise Exception("!!!ERROR: class is not init! {}".format(self))
         LoopImageHelper.__init__(self)
         pygame.sprite.Sprite.__init__(self, NucBomb_Explosion_G)
         self.rect = self.image.get_rect()

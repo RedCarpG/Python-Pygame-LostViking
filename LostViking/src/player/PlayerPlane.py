@@ -29,8 +29,8 @@ class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.
 
     def __init__(self, point=None):
         # Init
-        if not self._INIT_FLAG:
-            raise Exception("!!!ERROR: _IMAGE value is not set! {}".format(self))
+        if not hasattr(self, "_INIT_FLAG") or not self._INIT_FLAG:
+            raise Exception("!!!ERROR: class is not init! {}".format(self))
         if not self._MAX_HEALTH:
             raise Exception("!!!ERROR: _MAX_HEALTH value is not set! {}".format(self))
         SoundHelper.__init__(self)

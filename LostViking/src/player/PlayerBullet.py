@@ -23,8 +23,8 @@ class PlayerBullet1(SingleImageHelper, BasicBullet):
 
     def __init__(self, init_position: (list, tuple),
                  speed: list[int, int]):
-        if not self._INIT_FLAG:
-            self.init()
+        if not hasattr(self, "_INIT_FLAG") or not self._INIT_FLAG:
+            raise Exception("!!!ERROR: class is not init! {}".format(self))
         SingleImageHelper.__init__(self)
         BasicBullet.__init__(self, init_position=init_position,
                              speed=speed)
@@ -86,6 +86,8 @@ class PlayerBullet2(BasicBullet):
     _MAX_LEVEL = 3
 
     def __init__(self, init_position: (list, tuple), level: (list, tuple)):
+        if not hasattr(self, "_INIT_FLAG_SPEED") or not self._INIT_FLAG:
+            raise Exception("!!!ERROR: class is not init! {}".format(self))
 
         self.damage = 150
 
