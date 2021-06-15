@@ -86,9 +86,10 @@ def test_game():
     # Init Enemy
     EnemyScout.init()
     EnemyPhoenix.init()
+    Shield.init()
 
-    #add_enemy_phoenix()
-    pygame.time.set_timer(EVENT_CREATE_SCOUT, 800)
+    add_enemy_phoenix()
+    #pygame.time.set_timer(EVENT_CREATE_SCOUT, 800)
     # pygame.time.set_timer(EVENT_CREATE_PHOENIX, 500)
 
     running = True
@@ -117,6 +118,8 @@ def test_game():
         Enemy_G.draw(screen)
         Player1_G.update()
         Player1_G.draw(screen)
+        Shield_G.update()
+        Shield_G.draw(screen)
 
         # Display
         pygame.display.flip()
