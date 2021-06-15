@@ -20,7 +20,7 @@ class BasicEnemy(LoopImageHelper, pygame.sprite.Sprite, ABC):
 
     def __init__(self):
         # Init
-        if not self._INIT_FLAG or not self._MAX_HEALTH or not self._SCORE:
+        if not hasattr(self, "_INIT_FLAG") or not self._INIT_FLAG:
             raise Exception("!!! ERROR class not init! {}".format(self))
 
         LoopImageHelper.__init__(self)

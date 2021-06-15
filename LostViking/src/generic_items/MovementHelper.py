@@ -18,8 +18,6 @@ class StaticMoveHelper(ABC):
     """
 
     def __init__(self):
-        if not self._INIT_FLAG_SPEED:
-            raise Exception("!!! ERROR: speed value not se! {}".format(self))
 
         self._speed_x = 0
         self._speed_y = 0
@@ -71,8 +69,6 @@ class InertialMoveHelper(StaticMoveHelper, ABC):
 
     def __init__(self):
         StaticMoveHelper.__init__(self)
-        if not self._INIT_FLAG_ACC:
-            raise Exception("!!! ERROR: acceleration value not se! {}".format(self))
 
         # Move Flags for detecting
         self._move_flag_x = False
