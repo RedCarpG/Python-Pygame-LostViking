@@ -30,7 +30,7 @@ class EnemyPhoenix(SoundHelper, EnemyIII):
 
     def _shoot(self):
         BulletPhoenix(self.rect.center, self.angle)
-        # Bullet.BULLETS.add(Bullet_Phoenix(self.rect.center, self.angle))
+        # Bullet.BULLETS.add(Bullet_Phoenix(self.rect.center, self._angle))
 
     @classmethod
     def _init_image(cls):

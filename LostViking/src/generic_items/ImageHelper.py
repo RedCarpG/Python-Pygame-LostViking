@@ -15,7 +15,7 @@ class BasicImageHelper(object):
     Implemented by SingleImageHelper and LoopImageHelper
 
     Attributes:
-        cls._IMAGE: A Surface or a list of Surface entity
+        cls.IMAGE: A Surface or a list of Surface entity
             which are loaded from images
         cls._INIT_FLAG_IMAGE: A flag which will be set True
             when init_image() is called
@@ -25,12 +25,12 @@ class BasicImageHelper(object):
 
     def __init__(self):
         if not self._INIT_FLAG_IMAGE:
-            raise Exception("!!!ERROR: _IMAGE value is not set! {}".format(self))
+            raise Exception("!!!ERROR: IMAGE value is not set! {}".format(self))
 
     @classmethod
     @abstractmethod
     def _init_image(cls):
-        """ It should load image(s) to cls._IMAGE
+        """ It should load image(s) to cls.IMAGE
         and set cls._INIT_FLAG_IMAGE to true when it's done """
         cls._IMAGE = dict()
         cls._INIT_FLAG_IMAGE = False
@@ -57,11 +57,11 @@ class LoopImageHelper(BasicImageHelper, ABC):
         self._image_switch = 0
         self._image_switch_interval = 0
         if self._IMAGE["Base"] is None:
-            raise Exception("!!!ERROR: _IMAGE[\"Base\"] value is not set! {}".format(self))
+            raise Exception("!!!ERROR: IMAGE[\"Base\"] value is not set! {}".format(self))
         elif isinstance(self._main_image_type, (list, tuple)):
             self.image = self._main_image_type[self._image_switch]
         else:
-            raise Exception("!!!ERROR: _IMAGE[\"Base\"] value is not supported! {}".format(self))
+            raise Exception("!!!ERROR: IMAGE[\"Base\"] value is not supported! {}".format(self))
 
     # Switch image
     def _switch_image(self, switch_rate=5) -> bool:

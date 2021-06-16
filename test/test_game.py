@@ -110,8 +110,8 @@ def test_game():
         collide_detection(player1=player1)
 
         screen.fill(BLACK)
-        Enemy_Destroyed_G.update()
-        Enemy_Destroyed_G.draw(screen)
+        Destroyed_Plane_G.update()
+        Destroyed_Plane_G.draw(screen)
         Bullet_G.update()
         Bullet_G.draw(screen)
         Enemy_G.update()

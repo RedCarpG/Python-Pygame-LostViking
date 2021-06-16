@@ -15,6 +15,7 @@ Bullet_G = pygame.sprite.Group()
 Player_Bullet_G = pygame.sprite.Group()
 Enemy_Bullet_G = pygame.sprite.Group()
 
-Enemy_Destroyed_G = pygame.sprite.Group()
+Plane_G = pygame.sprite.Group()
+Destroyed_Plane_G = pygame.sprite.Group()
 
 Shield_G = pygame.sprite.LayeredDirty()

@@ -8,7 +8,7 @@ from LostViking.src.generic_loader.sound_loader import *
 import math
 import abc
 from LostViking.src.constants import SCREEN
-from ..groups import Enemy_G, Enemy_Destroyed_G
+from ..groups import Enemy_G, Destroyed_Plane_G
 from ..generic_items.ImageHelper import LoopImageHelper
 from ..generic_items.MovementHelper import StaticMoveHelper, InertialMoveHelper
 from ..generic_items.SoundHelper import SoundHelper
@@ -18,6 +18,8 @@ class BasicEnemy(SoundHelper, LoopImageHelper, pygame.sprite.Sprite, ABC):
     """
     Basic class, defines general properties of enemy plane
     """
+    _MAX_HEALTH = 100
+    _SCORE = 100
 
     def __init__(self):
         # Init
@@ -49,7 +51,7 @@ class BasicEnemy(SoundHelper, LoopImageHelper, pygame.sprite.Sprite, ABC):
         if self._damaged(damage):
             self.is_active = False
             self.kill()
-            self.add(Enemy_Destroyed_G)
+            self.add(Destroyed_Plane_G)
             self._image_switch = 0
             self._set_image_type("Explode")
 
@@ -132,7 +134,7 @@ class EnemyII(BasicEnemy, InertialMoveHelper, ABC):
         return is_finished
 
     def aim(self, point):
-        angle = _cal_angle(self.rect.center, point)
+        angle = cal_angle(self.rect.center, point)
 
         self._rotate_angle(angle)
 
@@ -198,12 +200,12 @@ class EnemyIII(BasicEnemy, InertialMoveHelper, ABC):
         self._attack_interval_count = 0
 
     '''
-    def rotate1(self,angle):  -180<angle<180
-        if self.angle > angle:
-           self.angle -= 2
-        elif self.angle < angle:
-            self.angle += 2 
-        angle_ = self.angle * math.pi / 180
+    def rotate1(self,_angle):  -180<_angle<180
+        if self._angle > _angle:
+           self._angle -= 2
+        elif self._angle < _angle:
+            self._angle += 2 
+        angle_ = self._angle * math.pi / 180
     '''
 
     def _switch_image(self, switch_rate=5):
@@ -216,7 +218,7 @@ class EnemyIII(BasicEnemy, InertialMoveHelper, ABC):
         return is_finished
 
     def aim(self, point):
-        angle = _cal_angle(self.rect.center, point)
+        angle = cal_angle(self.rect.center, point)
 
         if self.rect.center[0] > point[0] and self.angle > 90:
             self.angle += 2
@@ -232,7 +234,7 @@ class EnemyIII(BasicEnemy, InertialMoveHelper, ABC):
         if self.angle > 180:
             self.angle = -180
 
-        #angle_ = self.angle * math.pi / 180
+        #angle_ = self._angle * math.pi / 180
 
     def _action(self):
         if self.stage1_flag:
@@ -298,22 +300,22 @@ class EnemyIII(BasicEnemy, InertialMoveHelper, ABC):
             cls._INIT_FLAG = True
 
 
-def _cal_angle(point_rect, point):
-    if point_rect[1] == point[1]:
-        if point[0] > point_rect[0]:
+def cal_angle(base_point, target_point):
+    if base_point[1] == target_point[1]:
+        if target_point[0] > base_point[0]:
             angle = 90
         else:
             angle = -90
-    elif point_rect[0] == point[0]:
-        if point[1] > point_rect[1]:
+    elif base_point[0] == target_point[0]:
+        if target_point[1] > base_point[1]:
             angle = 0
         else:
             angle = 180
     else:
-        angle = math.atan((point[0] - point_rect[0]) / (point[1] - point_rect[1]))
+        angle = math.atan((target_point[0] - base_point[0]) / (target_point[1] - base_point[1]))
         angle = angle * 360 / 2 / math.pi
-        if point_rect[1] > point[1]:
-            if point_rect[0] < point[0]:
+        if base_point[1] > target_point[1]:
+            if base_point[0] < target_point[0]:
                 angle += 180
             else:
                 angle -= 180

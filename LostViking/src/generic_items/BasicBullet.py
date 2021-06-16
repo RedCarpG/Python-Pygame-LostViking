@@ -96,17 +96,17 @@ class BulletViking(StraightBullet):
 
     @classmethod
     def init_image(cls):
-        cls._IMAGE = load_image_alpha("PlayerPlane/bullet.png")
+        cls.IMAGE = load_image_alpha("PlayerPlane/bullet.png")
 
 
 class BulletInterceptor(BasicSpinBullet):
     _MAX_SPEED = 5
 
-    def __init__(self, position, angle):
-        BasicSpinBullet.__init__(self, position, angle)
+    def __init__(self, position, _angle):
+        BasicSpinBullet.__init__(self, position, _angle)
 
     @classmethod
     def init_image(cls):
-        cls._IMAGE = load_image("Enemy/laser.png")
+        cls.IMAGE = load_image("Enemy/laser.png")
 
 """
