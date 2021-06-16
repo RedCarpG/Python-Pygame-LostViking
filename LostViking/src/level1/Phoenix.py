@@ -73,10 +73,9 @@ class EnemyPhoenix(SoundHelper, EnemyIII):
 
     @classmethod
     def init(cls):
+        super().init()
         if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
             cls._init_image()
-            cls._init_acc()
-            cls._init_speed()
             cls._init_sound()
             cls._MAX_HEALTH = 100
             cls._SCORE = 200
