@@ -11,9 +11,10 @@ from LostViking.src.constants import SCREEN
 from ..groups import Enemy_G, Enemy_Destroyed_G
 from ..generic_items.ImageHelper import LoopImageHelper
 from ..generic_items.MovementHelper import StaticMoveHelper, InertialMoveHelper
+from ..generic_items.SoundHelper import SoundHelper
 
 
-class BasicEnemy(LoopImageHelper, pygame.sprite.Sprite, ABC):
+class BasicEnemy(SoundHelper, LoopImageHelper, pygame.sprite.Sprite, ABC):
     """
     Basic class, defines general properties of enemy plane
     """
@@ -71,11 +72,18 @@ class BasicEnemy(LoopImageHelper, pygame.sprite.Sprite, ABC):
         pass
 
     @classmethod
+    def _init_sound(cls):
+        if not hasattr(cls, "_INIT_FLAG_SOUND") or not cls._INIT_FLAG_SOUND:
+            cls._SOUND = dict()
+            from LostViking.src.generic_loader.sound_loader import load_sound
+            from LostViking.src.constants import MAIN_VOLUME
+            cls._SOUND.setdefault("Explode", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
+                                              load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
+
+    @classmethod
     @abc.abstractmethod
     def init(cls):
-        cls._INIT_FLAG = False
-        cls._MAX_HEALTH = None
-        cls._SCORE = None
+        cls._init_sound()
 
 
 class EnemyI(BasicEnemy, StaticMoveHelper, ABC):
@@ -282,6 +290,13 @@ class EnemyIII(BasicEnemy, InertialMoveHelper, ABC):
     def _shoot(self):
         pass
 
+    @classmethod
+    def init(cls):
+        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
+            cls._init_speed()
+            cls._init_acc()
+            cls._INIT_FLAG = True
+
 
 def _cal_angle(point_rect, point):
     if point_rect[1] == point[1]:
@@ -304,57 +319,7 @@ def _cal_angle(point_rect, point):
                 angle -= 180
     return angle
 
-
 """
-class Enemy_Boss(Enemy):
-    BOSS_Score = 5000
-    BOSS_MaxHealth = 30000
-
-    def __init__(self):
-        Enemy.__init__(self)
-        self.image_switch = 0
-        self.mainImage = None
-        self.image = self.mainImage[0]
-        self.rect = self.image.get_rect()
-        self.rect.center = [SCREEN.get_w() // 2, -self.rect.height]
-        self.active = True
-        self.image_switch
-        self.maxHealth = self.BOSS_MaxHealth
-        self.health = self.BOSS_MaxHealth
-        self.score = self.BOSS_Score
-        self.image_switch_interval = MYTIME(60)
-        self.BOSS.add(self)
-
-    def update(self, point):
-        self.change_image()
-        self.action()
-        self.attack(point)
-
-    def hit(self, damage=100):
-        self.health -= damage
-        if self.health <= 0:
-            self.active = False
-
-    def destroy(self):
-        self.image_switch = 0
-        self.mainImage = self.crashImage
-        self.destroySound.stop()
-        self.destroySound.play()
-
-    def change_image(self):
-        self.image_switch_interval.tick()
-        if self.image_switch_interval.check():
-            self.image_switch = (self.image_switch + 1) % len(self.mainImage)
-            self.image = self.mainImage[self.image_switch]
-
-    @abc.abstractmethod
-    def action(self):
-        pass
-
-    @abc.abstractmethod
-    def LOAD(self):
-        pass
-
 
 class Enemy_ShooterI(EnemyI):
     def __init__(self, pos):
