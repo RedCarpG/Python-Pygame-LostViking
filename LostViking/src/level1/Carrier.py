@@ -1,84 +1,28 @@
-from ..enemy.enemyBoss import EnemyBoss
-from ..enemy.enemyPlane import EnemyII
+import math
+
+from ..enemy.enemyBoss import EnemyBoss, BossActionPhase, BossAttackPhase
+from ..enemy.enemyPlane import BasicEnemy, cal_angle
+from ..generic_items.MovementHelper import InertialMoveHelper
 
 
 class EnemyCarrier(EnemyBoss):
-    CARRIER_BULLET_NUMBER = 9
+    MAX_INTERCEPTOR_NUMBER = 9
 
     def __init__(self):
         EnemyBoss.__init__(self)
-        self.move_interval = MYTIME(250)
-        self.stay_interval = MYTIME(250)
-        self.attack1_flag = False
-        self.attack2_flag = False
-        self.attack1_interval = MYTIME(2000, 1850)
-        self.attack2_interval = MYTIME(1800, 900)
-        self.sendI_interval = MyTime2(25)
-        self.shoot_interval = MyTime2(25)
 
-    def _action(self):
-        if self.speedY > 0:
-            self.rect.top += self.speedY
-            self.speedY -= self.accelerate[1]
+        self._count_sent_interceptor_interval = 10
+
+    def _action_attack(self, point):
+        self.enter_attack_idle_phase()
+        """
+        if EnemyInterceptor.NUM < 9:
+            if self._count_sent_interceptor_interval <= 0:
+                pos = self.rect.center
+                EnemyInterceptor(pos, [[pos[0], pos[1] + 300], [0, 0]])
         else:
-            if self.move_flag:
-                self.move_interval.tick()
-                if self.move_interval.check():
-                    self.move_flag = False
-            else:
-                self.stay_interval.tick()
-                if self.speedX > 0:
-                    self.speedX -= self.accelerate[0]
-                elif self.stay_interval.check():
-                    self.move_flag = True
-                    self.directionX = random.choice((-1, 1))
-                    self.speedX = 2
-            self.rect.left += self.speedX * self.directionX
-
-            self.attack1_interval.tick()
-            if self.attack1_interval.check():
-                self.attack1_flag = True
-            self.attack2_interval.tick()
-            if self.attack2_interval.check():
-                self.attack2_flag = True
-            if self.rect.left < 0 or self.rect.right > SCREEN.get_w():
-                self.directionX = -self.directionX
-
-    def send_interceptor(self, point):
-        if self.attack1_flag:
-            if self.sendI_interval.check() and Enemy_Interceptor.NUM < 9:
-                add_enemy_Interceptor(self.rect.center)
-
-            if self.sendI_interval.check_count(9):
-                self.attack1_flag = False
-            self.sendI_interval.tick()
-
-        if self.attack2_flag:
-            if self.shoot_interval.check():
-                if self.rect.center[1] == point[1]:
-                    if point[0] > self.rect.center[0]:
-                        angle = 90
-                    else:
-                        angle = -90
-                elif self.rect.center[0] == point[0]:
-                    if point[1] > self.rect.center[1]:
-                        angle = 0
-                    else:
-                        angle = 180
-                else:
-                    angle = math.atan((point[0] - self.rect.center[0]) / (point[1] - self.rect.center[1]))
-                    angle = angle * 360 / 2 / math.pi
-                    if self.rect.center[1] > point[1]:
-                        if self.rect.center[0] < point[0]:
-                            angle += 180
-                        else:
-                            angle -= 180
-                Bullet.BULLETS.add(Bullet_Phoenix((self.rect.center[0] + 10, self.rect.center[1] + 100), angle + 2))
-                Bullet.BULLETS.add(Bullet_Phoenix((self.rect.center[0] - 10, self.rect.center[1] + 100), angle - 2))
-            if self.shoot_interval.check_count(self.CARRIER_BULLET_NUMBER):
-                self.attack2_flag = False
-            self.shoot_interval.tick()
-
+            self.enter_attack_idle_phase()
+        """
     @classmethod
     def _init_image(cls):
         if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
@@ -105,39 +49,45 @@ class EnemyCarrier(EnemyBoss):
             cls._init_sound()
             cls._INIT_FLAG = True
 
-
-class EnemyInterceptor(EnemyII):
-    INTERCEPTOR_MaxHealth = 1000
-    INTERCEPTOR_MaxSpeed = 10.0
-    INTERCEPTOR_Score = 500
+"""
+class EnemyInterceptor(EnemyII, InertialMoveHelper):
+    _MAX_SPEED_DOWN = 10
+    _MAX_SPEED_X = 10
     NUM = 0
-    main_image = []
-    crashImage = []
 
     def __init__(self, pos, path):
-        EnemyII.__init__(self, pos, path)
-        self.health = self.INTERCEPTOR_MaxHealth
-        self.score = self.INTERCEPTOR_Score
-        self.speed = [0.0, self.INTERCEPTOR_MaxSpeed]
-        self.move_rad = 200
-        self.move_interval = MYTIME(80)
-        self.stay_interval = MYTIME(15)
-        self.move_flag = True
-        self.rotate_flag = False
-        self.attack_flag = False
-        self.stage1_flag = True
+        EnemyII.__init__(self)
+        InertialMoveHelper.__init__(self)
+        
+        self._speed_x = 0
+        self._speed_y = self._MAX_SPEED_DOWN
+        self._move_rad = 200
+        
+        self._count_action_move_x = 80
+        self._count_action_idle = 15
+        self._count_attack_interval = 100
+        
+        self._destination = path
+        
+        self.set_pos(pos)
+        
+        self._angle = 0
+        
         EnemyInterceptor.NUM += 1
 
-    def update(self, point):
-        self.change_image()
-        self.action()
-        self.shoot(point)
-
-    def brake(self):
-        self.speed[0] *= 0.8
-        self.speed[1] *= 0.8
-
-    def action(self):
+    def _action(self):
+        if self.action_status == BossActionPhase.MoveDown:
+            self._action_move_down()
+        else:
+            if self.action_status == BossActionPhase.MoveX:
+                self._action_move_x()
+            else:
+                self._action_idle()
+            if self.attack_status == BossAttackPhase.Attack:
+                self._action_attack()
+            else:
+                self._action_attack_idle()
+                
         if self.stage1_flag:
             self.rect.move_ip(self.speed[0], self.speed[1])
             if self.rect.collidepoint(self.path[0]):
@@ -146,19 +96,19 @@ class EnemyInterceptor(EnemyII):
                 self.move_flag = False
         else:
             if self.rotate_flag:
-                x = random.randint(self.rect.center[0] - self.move_rad, self.rect.center[0] + self.move_rad)
-                y = random.randint(self.rect.center[1] - self.move_rad, self.rect.center[1] + self.move_rad)
+                x = random.randint(self.rect.center[0] - self._move_rad, self.rect.center[0] + self._move_rad)
+                y = random.randint(self.rect.center[1] - self._move_rad, self.rect.center[1] + self._move_rad)
                 self.path[1] = [x, y]
                 self.rotate(self.path[self.current_path])
                 self.rotate_flag = False
                 self.move_flag = True
 
             if self.move_flag:
-                self.move_interval.tick()
+                self._move_interval.tick()
                 if self.rect.collidepoint(self.path[self.current_path]):
-                    self.move_interval.reset()
+                    self._move_interval.reset()
                     self.move_flag = False
-                if self.move_interval.check():
+                if self._move_interval.check():
                     self.move_flag = False
                 self.rect.move_ip(self.speed[0], self.speed[1])
             else:
@@ -185,7 +135,7 @@ class EnemyInterceptor(EnemyII):
                 self.path[0][0] = 2 * SCREEN.get_w() - self.path[0][0]
             self.rotate(self.path[0])
 
-    def shoot(self, point):
+    def _action_attack(self, point):
         if self.attack_flag:
             if random.randint(0, 10) == 0:
                 if self.rect.center[1] == point[1]:
@@ -210,31 +160,14 @@ class EnemyInterceptor(EnemyII):
         self.attack_flag = False
 
     def rotate(self, point):
-        if self.rect.center[1] == point[1]:
-            if point[0] > self.rect.center[0]:
-                angle = 90
-            else:
-                angle = -90
-        elif self.rect.center[0] == point[0]:
-            if point[1] > self.rect.center[1]:
-                angle = 0
-            else:
-                angle = 180
-        else:
-            angle = math.atan((point[0] - self.rect.center[0]) / (point[1] - self.rect.center[1]))
-            angle = angle * 360 / 2 / math.pi
-            if self.rect.center[1] > point[1]:
-                if self.rect.center[0] < point[0]:
-                    angle += 180
-                else:
-                    angle -= 180
-        self.angle = angle
-        angle = angle * math.pi / 180
-        self.speed = [float(self.INTERCEPTOR_MaxSpeed * math.sin(angle)),
-                      float(self.INTERCEPTOR_MaxSpeed * math.cos(angle))]
+        self._angle = cal_angle(self.rect.center, point)
+        
+        angle = self._angle * math.pi / 180
+        self._speed_x = float(self._MAX_SPEED_X * math.sin(angle))
+        self._speed_y = float(self._MAX_SPEED_Y * math.cos(angle))
+        
         temp = self.rect.center
-        self.image = pygame.transform.rotate(self.mainImage[self.image_switch], self.angle)
-
+        self.image = pygame.transform.rotate(self.mainImage[self.image_switch], self._angle)
         self.rect = self.image.get_rect()
         self.rect.center = temp
 
@@ -242,14 +175,31 @@ class EnemyInterceptor(EnemyII):
         EnemyInterceptor.NUM -= 1
 
     @classmethod
+    def _init_speed(cls):
+        if not hasattr(cls, "_INIT_FLAG_SPEED") or not cls._INIT_FLAG_SPEED:
+            cls._MAX_SPEED_R = cls._MAX_SPEED_L = 5
+            cls._MAX_SPEED_DOWN = cls._MAX_SPEED_UP = 10
+            cls._INIT_FLAG_SPEED = True
+
+    @classmethod
+    def _init_acc(cls):
+        if not hasattr(cls, "_INIT_FLAG_ACC") or not cls._INIT_FLAG_ACC:
+            cls._ACC_L = cls._ACC_R = 0.3
+            cls._ACC_DOWN = cls._ACC_UP = 0.3
+            cls._INIT_FLAG_ACC = True
+            
+    @classmethod
     def _init_image(cls):
         if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            cls._IMAGE = dict()
+            cls.IMAGE = dict()
             from ..generic_loader.image_loader import load_image
-            cls._IMAGE["Base"] = [load_image("Enemy/Interceptor.png")]
-            cls._IMAGE.setdefault("Normal", [load_image("Enemy/Interceptor.png")])
-            cls._IMAGE.setdefault("Explode", [load_image("Enemy/Interceptor.png")])
+            cls.IMAGE["Base"] = [load_image("Enemy/Interceptor.png")]
+            cls.IMAGE.setdefault("Normal", [load_image("Enemy/Interceptor.png")])
+            cls.IMAGE.setdefault("Explode", [load_image("Enemy/Interceptor.png")])
 
     @classmethod
     def init(cls):
+        cls._SCORE = 500
+        cls._MAX_HEALTH = 1000
         cls._init_image()
+"""
