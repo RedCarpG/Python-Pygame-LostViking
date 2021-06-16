@@ -2,114 +2,83 @@
 Includes:
     -> PlayerPlane
 """
-from abc import abstractmethod, ABC
+from abc import ABC
 import pygame
-
 from ..generic_items.SoundHelper import SoundHelper
-from ..generic_items.ImageHelper import LoopImageHelper
-from ..generic_items.MovementHelper import InertialMoveHelper
+from ..generic_items.PlaneEntity import BasicPlaneEntity
 from .PlayerBullet import PlayerBullet1
 from ..constants import SCREEN
 from ..groups import Player1_G, Player2_G
 
 
-class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.sprite.Sprite, ABC):
-    """ Basic Player Abstract class with behavior defined below:
-     -> movement (from StaticMoveHelper)
-     -> acceleration (from InertialMoveHelper)
-     -> shoot
-     -> damaged
-     To implement this Class:
-        -> set _init_image() (from LoopImageHelper)
-        -> set _init_speed() (from StaticMoveHelper)
-        -> set _init_acc() (from InertialMoveHelper)
-        -> set init() for globally initialize every properties
-        -> (optional) set self.start_position (from StaticMoveHelper)
-     """
+class BasicPlayerPlane(BasicPlaneEntity, ABC):
+    """ Basic Player Abstract class
+    """
 
-    def __init__(self, point=None):
+    def __init__(self, point=None, **kwargs):
         # Init
-        if not hasattr(self, "_INIT_FLAG") or not self._INIT_FLAG:
-            raise Exception("!!!ERROR: class is not init! {}".format(self))
-        if not self._MAX_HEALTH:
-            raise Exception("!!!ERROR: _MAX_HEALTH value is not set! {}".format(self))
-        SoundHelper.__init__(self)
-        LoopImageHelper.__init__(self)
-        InertialMoveHelper.__init__(self)
-        pygame.sprite.Sprite.__init__(self)
+        BasicPlaneEntity.__init__(self, **kwargs)
 
         # Set bullet type
         ''' Init Weapon '''
         self.start_position = (int(pygame.display.get_surface().get_width() // 2),
                                int(pygame.display.get_surface().get_height() - self.rect.height // 2 - 30))
 
-        self._set_image_type("MoveNormal")
-
         ''' Init States '''
-        self.is_active = True
         self.is_invincible = False
-        # self.invincible_reset = 0
-        # self.crash_animation = 0
 
         ''' Init Weapon '''
         self._bullet_type = PlayerBullet1
         self._lever = 1
 
         self._attack_speed = 500
+        self._count_attack_interval = 0
 
-        self._health = self._MAX_HEALTH
+        self._move_flag_x = False
+        self._move_flag_y = False
 
         # Set init position
         self.set_pos(point)
 
     """ --------------------- Player Plane Behavior --------------------- """
 
-    def _damaged(self, damage) -> bool:
-        if self._health > 0:
-            self._health -= damage
-            return False
-        else:
-            self._health = 0
-            return True
-
     def _shoot(self):
         self._bullet_type.shoot_bullets(self.rect.center, self._lever)
 
     """ ------------------ Real-time methods ------------------ """
 
-    def update(self) -> None:
-        """
-        Overwrites update from Sprite,
-        This method is called in every frame
-        """
-        # If alive
-        if self.is_active:
-            # When _speed_x/_speed_y is not 0
-            if self._speed_y != 0 or self._speed_x != 0:
-                # Move this object
-                # (Note: this is the only place when the object is really moving)
-                self._move()
-                # Speed down if there's no movement command on X or Y
-                # (Note: Only values of _speed_x/_speed_y will be changed here)
-                self._inertial_deceleration()
-                # Restrict the plane inside the screen
-                if self.rect.bottom > SCREEN.get_h():
-                    self.rect.bottom = SCREEN.get_h()
-                if self.rect.left < 0:
-                    self.rect.left = 0
-                if self.rect.right > SCREEN.get_w():
-                    self.rect.right = SCREEN.get_w()
-                if self.rect.top < 0:
-                    self.rect.top = 0
-            self._switch_image()
-        else:
-            finished = self._switch_image()
-            if finished:
-                self.reset()
+    def _action(self, *args, **kwargs) -> None:
+        # When _speed_x/_speed_y is not 0
+        if self._speed_y != 0 or self._speed_x != 0:
+            # Move this object
+            # (Note: this is the only place when the object is really moving)
+            self._move()
+
+            # Speed down if there's no movement command on X or Y
+            # (Note: Only values of _speed_x/_speed_y will be changed here)
+            if not self._move_flag_x:
+                self._deceleration_x()
+            if not self._move_flag_y:
+                self._deceleration_y()
+
+            # Restrict the plane inside the screen
+            if self.rect.bottom > SCREEN.get_h():
+                self.rect.bottom = SCREEN.get_h()
+            if self.rect.left < 0:
+                self.rect.left = 0
+            if self.rect.right > SCREEN.get_w():
+                self.rect.right = SCREEN.get_w()
+            if self.rect.top < 0:
+                self.rect.top = 0
+
+    def _destroy(self) -> None:
+        finished = self._switch_image()
+        if finished:
+            self.reset()
 
     """ ------------------ Collision detect ------------------ """
 
-    def hit(self, damage=100) -> bool:
+    def hit(self, damage=100, **kwargs) -> bool:
         """
         This function is called in collision detection
         """
@@ -117,8 +86,8 @@ class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.
             if self._damaged(damage):
                 self.is_active = False
                 self._image_switch = 0
-                self._set_image_type("Explode")
-                self._SOUND["Player_Explo"].play()
+                self._set_image_type("EXPLODE")
+                # self._SOUND["Player_Explo"].play()
             return True
         else:
             return False
@@ -138,8 +107,8 @@ class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.
         This method is called from a user attack event
         """
         if self.is_active:
-            self._SOUND["Player_Shoot"].stop()
-            self._SOUND["Player_Shoot"].play()
+            # self._SOUND["Player_Shoot"].stop()
+            # self._SOUND["Player_Shoot"].play()
             self._shoot()
 
     """ ------------------ Trigger-Movement-Commands ------------------"""
@@ -152,14 +121,15 @@ class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.
         """
         # If it was not moving before, change image
         if not self._move_flag_y:
-            self._set_image_type("MoveUp")
+            self._move_flag_y = True
+            self._set_image_type("MOVE_UP")
         # If not outside the screen
         if self.rect.top > 0:
             self._accelerate_up()
         else:
             self._speed_y = 0
             self.rect.top = 0
-            self._set_image_type("MoveNormal")
+            self._set_image_type("IDLE")
 
     # Trigger Move Down
     def trigger_move_back(self) -> None:
@@ -169,14 +139,15 @@ class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.
         """
         # If it was not moving before, change image
         if not self._move_flag_y:
-            self._set_image_type("MoveDown")
+            self._move_flag_y = True
+            self._set_image_type("MOVE_DOWN")
         # If not outside the screen
         if self.rect.bottom < SCREEN.get_h():
             self._accelerate_down()
         else:
             self._speed_y = 0
             self.rect.bottom = SCREEN.get_h()
-            self._set_image_type("MoveNormal")
+            self._set_image_type("IDLE")
 
     # Trigger Move Left
     def trigger_move_left(self) -> None:
@@ -186,6 +157,7 @@ class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.
         """
         # If not outside the screen
         if self.rect.left > 0:
+            self._move_flag_x = True
             self._accelerate_left()
         else:
             self._speed_x = 0
@@ -199,6 +171,7 @@ class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.
         """
         # If not outside the screen
         if self.rect.right < SCREEN.get_w():
+            self._move_flag_x = True
             self._accelerate_right()
         else:
             self._speed_x = 0
@@ -212,6 +185,7 @@ class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.
         by _inertial_deceleration automatically in update)
         """
         self._move_flag_y = False
+        self._set_image_type("IDLE")
 
     # Trigger Brake x
     def trigger_stop_x(self) -> None:
@@ -266,6 +240,14 @@ class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.
     def get_health(self) -> int:
         return self._health
 
+    def set_pos(self, point) -> None:
+        if not point:
+            self.rect.center = self.start_position
+        else:
+            """ Move its rect to a point, or a default position """
+            self.rect.center = point
+
+
     """ ----------------- Reset methods -----------------"""
 
     # Reset
@@ -274,30 +256,12 @@ class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.
         self._image_switch = 0
         self.set_pos(point)
         # self.is_invincible = True
-        self._set_image_type("MoveNormal")
+        self._set_image_type("IDLE")
         self._bullet_type = PlayerBullet1
         self._lever = 1
-        self._health = self._MAX_HEALTH
+        self._health = self.MAX_HEALTH
 
     """ ----------------- Class init methods -----------------"""
-
-    @classmethod
-    def _init_speed(cls) -> None:
-        if not hasattr(cls, "_INIT_FLAG_SPEED") or not cls._INIT_FLAG_SPEED:
-            cls._MAX_SPEED_L = 8
-            cls._MAX_SPEED_R = 8
-            cls._MAX_SPEED_UP = 10
-            cls._MAX_SPEED_DOWN = 5
-            cls._INIT_FLAG_SPEED = True
-
-    @classmethod
-    def _init_acc(cls) -> None:
-        if not hasattr(cls, "_INIT_FLAG_ACC") or not cls._INIT_FLAG_ACC:
-            cls._ACC_L = 0.8
-            cls._ACC_R = 0.8
-            cls._ACC_UP = 1
-            cls._ACC_DOWN = 0.6
-            cls._INIT_FLAG_ACC = True
 
     @classmethod
     def _init_sound(cls) -> None:
@@ -310,42 +274,43 @@ class BasicPlayerPlane(SoundHelper, LoopImageHelper, InertialMoveHelper, pygame.
             cls._INIT_FLAG_SOUND = True
 
     @classmethod
-    def init(cls) -> None:
-        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
-            cls._init_image()
-            cls._init_speed()
-            cls._init_acc()
-            cls._init_sound()
-            cls._MAX_HEALTH = 300
-            cls._INIT_FLAG = True
+    def _init_attributes(cls) -> None:
+        cls.MAX_SPEED_X = 8
+        cls.MAX_SPEED_UP = 10
+        cls.MAX_SPEED_DOWN = 5
+        cls.ACC_X = 0.8
+        cls.ACC_UP = 1
+        cls.ACC_DOWN = 0.6
+        cls.MAX_HEALTH = 300
+        cls._IS_SET_ATTRS = True
 
 
 class Player1(BasicPlayerPlane):
 
     def __init__(self):
-        BasicPlayerPlane.__init__(self)
-        self.add(Player1_G)
+        BasicPlayerPlane.__init__(self, group=Player1_G)
+        # self.add(Player1_G)
 
     @classmethod
     def _init_image(cls) -> None:
         if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            cls._IMAGE = dict()
+            cls.IMAGE = dict()
             from LostViking.src.generic_loader.image_loader import load_image
-            cls._IMAGE["Base"] = [load_image("PlayerPlane/Viking_body.png")]
-            cls._IMAGE.setdefault("Invincible", [load_image("PlayerPlane/PlayerPlane_Invincible.png")])
-            cls._IMAGE.setdefault("MoveUp", [load_image("PlayerPlane/PlayerPlane_moveUp1.png"),
-                                             load_image("PlayerPlane/PlayerPlane_moveUp2.png")])
-            cls._IMAGE.setdefault("MoveDown", [load_image("PlayerPlane/PlayerPlane_moveDown1.png"),
-                                               load_image("PlayerPlane/PlayerPlane_moveDown2.png")])
-            cls._IMAGE.setdefault("MoveNormal", [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
-                                                 load_image("PlayerPlane/PlayerPlane_moveNormal2.png")])
-            cls._IMAGE.setdefault("Explode", [load_image("PlayerPlane/PlayerPlane_explode1.png"),
-                                              load_image("PlayerPlane/PlayerPlane_explode2.png"),
-                                              load_image("PlayerPlane/PlayerPlane_explode3.png"),
-                                              load_image("PlayerPlane/PlayerPlane_explode4.png"),
-                                              load_image("PlayerPlane/PlayerPlane_explode5.png"),
-                                              load_image("PlayerPlane/PlayerPlane_explode6.png")])
-            cls._INIT_FLAG_IMAGE = True
+            cls.IMAGE["BASE"] = [load_image("PlayerPlane/Viking_body.png")]
+            cls.IMAGE["IDLE"] = [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
+                                 load_image("PlayerPlane/PlayerPlane_moveNormal2.png")]
+            cls.IMAGE["MOVE_UP"] = [load_image("PlayerPlane/PlayerPlane_moveUp1.png"),
+                                    load_image("PlayerPlane/PlayerPlane_moveUp2.png")]
+            cls.IMAGE["MOVE_DOWN"] = [load_image("PlayerPlane/PlayerPlane_moveDown1.png"),
+                                      load_image("PlayerPlane/PlayerPlane_moveDown2.png")]
+            cls.IMAGE["EXPLODE"] = [load_image("PlayerPlane/PlayerPlane_explode1.png"),
+                                    load_image("PlayerPlane/PlayerPlane_explode2.png"),
+                                    load_image("PlayerPlane/PlayerPlane_explode3.png"),
+                                    load_image("PlayerPlane/PlayerPlane_explode4.png"),
+                                    load_image("PlayerPlane/PlayerPlane_explode5.png"),
+                                    load_image("PlayerPlane/PlayerPlane_explode6.png")]
+            cls.IMAGE["INVINCIBLE"] = [load_image("PlayerPlane/PlayerPlane_Invincible.png")]
+            cls._IS_SET_IMAGE = True
 
 
 class Player2(BasicPlayerPlane):
@@ -373,4 +338,4 @@ class Player2(BasicPlayerPlane):
                                               load_image("PlayerPlane/PlayerPlane_explode4.png"),
                                               load_image("PlayerPlane/PlayerPlane_explode5.png"),
                                               load_image("PlayerPlane/PlayerPlane_explode6.png")])
-            cls._INIT_FLAG_IMAGE = True
+            cls._IS_SET_IMAGE = True
