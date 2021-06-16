@@ -1,30 +1,22 @@
+from ..enemy.enemyBoss import EnemyBoss
+from ..enemy.enemyPlane import EnemyII
 
-# Enemy 类
-class Enemy_Carrier(Enemy_Boss):
-    mainImage = []
-    crashImage = []
-    shootImage = []
-    sendInterceptorImage = []
-    destroySound = None
+
+class EnemyCarrier(EnemyBoss):
     CARRIER_BULLET_NUMBER = 9
 
     def __init__(self):
-        Enemy_Boss.__init__(self)
+        EnemyBoss.__init__(self)
         self.move_interval = MYTIME(250)
         self.stay_interval = MYTIME(250)
         self.attack1_flag = False
         self.attack2_flag = False
-        self.move_flag = False
         self.attack1_interval = MYTIME(2000, 1850)
         self.attack2_interval = MYTIME(1800, 900)
         self.sendI_interval = MyTime2(25)
         self.shoot_interval = MyTime2(25)
-        self.speedY = 9
-        self.speedX = 0
-        self.directionX = 1
-        self.accelerate = [0.1, 0.1]
 
-    def action(self):
+    def _action(self):
         if self.speedY > 0:
             self.rect.top += self.speedY
             self.speedY -= self.accelerate[1]
@@ -52,7 +44,7 @@ class Enemy_Carrier(Enemy_Boss):
             if self.rect.left < 0 or self.rect.right > SCREEN.get_w():
                 self.directionX = -self.directionX
 
-    def attack(self, point):
+    def send_interceptor(self, point):
         if self.attack1_flag:
             if self.sendI_interval.check() and Enemy_Interceptor.NUM < 9:
                 add_enemy_Interceptor(self.rect.center)
@@ -88,13 +80,33 @@ class Enemy_Carrier(Enemy_Boss):
             self.shoot_interval.tick()
 
     @classmethod
-    def LOAD(cls):
-        cls.mainImage = [CARRIER_IMAGE["Body"]]
-        cls.crashImage = [CARRIER_IMAGE["Body"]]
-        cls.destroySound = SOUNDS["Explosion"][1]
+    def _init_image(cls):
+        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
+            cls._IMAGE = dict()
+            from ..generic_loader.image_loader import load_image
+            cls._IMAGE["Base"] = [load_image("Enemy/Carrier.png")]
+            cls._IMAGE.setdefault("Normal", [load_image("Enemy/Carrier.png")])
+            cls._IMAGE.setdefault("Explode", [load_image("Enemy/Carrier.png")])
+
+    @classmethod
+    def _init_sound(cls):
+        if not hasattr(cls, "_INIT_FLAG_SOUND") or not cls._INIT_FLAG_SOUND:
+            cls._SOUND = dict()
+            from LostViking.src.generic_loader.sound_loader import load_sound
+            from LostViking.src.constants import MAIN_VOLUME
+            cls._SOUND.setdefault("Explode", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
+                                              load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
+
+    @classmethod
+    def init(cls):
+        super().init()
+        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
+            cls._init_image()
+            cls._init_sound()
+            cls._INIT_FLAG = True
 
 
-class Enemy_Interceptor(EnemyII):
+class EnemyInterceptor(EnemyII):
     INTERCEPTOR_MaxHealth = 1000
     INTERCEPTOR_MaxSpeed = 10.0
     INTERCEPTOR_Score = 500
@@ -114,7 +126,7 @@ class Enemy_Interceptor(EnemyII):
         self.rotate_flag = False
         self.attack_flag = False
         self.stage1_flag = True
-        Enemy_Interceptor.NUM += 1
+        EnemyInterceptor.NUM += 1
 
     def update(self, point):
         self.change_image()
@@ -227,11 +239,17 @@ class Enemy_Interceptor(EnemyII):
         self.rect.center = temp
 
     def __del__(self):
-        Enemy_Interceptor.NUM -= 1
+        EnemyInterceptor.NUM -= 1
 
     @classmethod
-    def LOAD(cls):
-        cls.mainImage = [INTERCEPTOR_IMAGE["Body"]]
-        cls.crashImage = [INTERCEPTOR_IMAGE["Body"]]
-        n = random.choice((0, 1))
-        cls.destroySound = SOUNDS["Explosion"][n]
+    def _init_image(cls):
+        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
+            cls._IMAGE = dict()
+            from ..generic_loader.image_loader import load_image
+            cls._IMAGE["Base"] = [load_image("Enemy/Interceptor.png")]
+            cls._IMAGE.setdefault("Normal", [load_image("Enemy/Interceptor.png")])
+            cls._IMAGE.setdefault("Explode", [load_image("Enemy/Interceptor.png")])
+
+    @classmethod
+    def init(cls):
+        cls._init_image()
