@@ -55,7 +55,7 @@ class BasicPlaneEntity(Sprite, ABC):
         else:
             Sprite.__init__(self)
 
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             if key == "start_point":
                 self.set_pos(value)
             elif key == "speed_x":
@@ -262,17 +262,38 @@ class BasicSpinPlaneEntity(BasicPlaneEntity, ABC):
 
         self.angle = 0
 
-    def aim(self, point):
-        angle = self.cal_angle(self.rect.center, point)
-        self._rotate_angle(angle)
+    def _switch_image(self, switch_rate=0) -> bool:
+        """
+        Switch image function should be called per frame
+        :param switch_rate: switch rate between each change
+        :return: True if loop finished, False if loop not finished
+        """
+        if self._image_switch_interval >= switch_rate:
+            self._image_switch = (self._image_switch + 1) % len(self._main_image_type)
+            self.image = self._main_image_type[self._image_switch]
+            self._image_switch_interval = 0
+
+            # Rotate Image
+            self.image = rotate(self._main_image_type[self._image_switch], self.angle)
+            temp = self.rect.center
+            self.rect = self.image.get_rect()
+            self.rect.center = temp
+
+            if self._image_switch == 0:
+                return True
+        else:
+            self._image_switch_interval += 1
+
+        return False
+
+    def aim(self, point) -> None:
+        """ Aim the plane at a target point
+        :param point
+        """
+        self.angle = self.cal_angle(self.rect.center, point)
 
     def _rotate_angle(self, angle):
         self.angle = angle
-        temp = self.rect.center
-        self.image = rotate(self._main_image_type[self._image_switch], self.angle)
-
-        self.rect = self.image.get_rect()
-        self.rect.center = temp
         """
         angle = angle * math.pi / 180
         self._speed_x = float(self._MAX_SPEED_L * math.sin(angle))
@@ -280,7 +301,12 @@ class BasicSpinPlaneEntity(BasicPlaneEntity, ABC):
         """
 
     @classmethod
-    def cal_angle(cls, base_point, target_point):
+    def cal_angle(cls, base_point, target_point) -> int:
+        """ Calculate angle between two points
+        :param base_point
+        :param target_point
+        :return int angle degree value
+        """
         if base_point[1] == target_point[1]:
             if target_point[0] > base_point[0]:
                 angle = 90
