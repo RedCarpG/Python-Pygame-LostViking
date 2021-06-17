@@ -5,6 +5,7 @@ Initialization should be made in the implementation of the class
 from abc import ABC
 import math
 from ..generic_items.PlaneEntity import BasicSpinPlaneEntity
+from ..groups import Enemy_G
 
 
 class EnemyII(BasicSpinPlaneEntity, ABC):
@@ -13,6 +14,7 @@ class EnemyII(BasicSpinPlaneEntity, ABC):
 
     def __init__(self, position, path=None, **kwargs):
         BasicSpinPlaneEntity.__init__(self, start_position=position, **kwargs)
+        self.add(Enemy_G)
 
         self.path = path
         self.current_path = 0

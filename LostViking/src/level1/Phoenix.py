@@ -8,11 +8,10 @@ from ..generic_items.ImageHelper import LoopImageHelper
 import pygame
 
 
-class EnemyPhoenix(SoundHelper, EnemyIII):
+class EnemyPhoenix(EnemyIII):
 
     def __init__(self, pos, side):
-        SoundHelper.__init__(self)
-        EnemyIII.__init__(self, pos, side)
+        EnemyIII.__init__(self, position=pos, side=side)
         self.add(Enemy_Phoenix_G)
 
         self.shield = Shield(self)
@@ -22,64 +21,57 @@ class EnemyPhoenix(SoundHelper, EnemyIII):
         del self.shield
 
     # Rewrite hit to add Shield
-    def hit(self, damage=100):
+    def hit(self, damage=100, **kwargs):
         if self.shield.is_active:
             self.shield.hit(damage)
         else:
             super().hit(damage)
 
-    def _shoot(self):
+    def _action_attack(self):
         BulletPhoenix(self.rect.center, self.angle)
-        # Bullet.BULLETS.add(Bullet_Phoenix(self.rect.center, self._angle))
+        self.enter_attack_idle_phase()
 
     @classmethod
     def _init_image(cls):
-        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            cls._IMAGE = dict()
-            from ..generic_loader.image_loader import load_image
-            cls._IMAGE["Base"] = [load_image("Enemy/Enemy_Phoenix1.png")]
-            cls._IMAGE.setdefault("Normal", [load_image("Enemy/Enemy_Phoenix1.png"),
-                                             load_image("Enemy/Enemy_Phoenix2.png")])
-            cls._IMAGE.setdefault("Explode", [load_image("Enemy/Destroy_Phoenix1.png"),
-                                              load_image("Enemy/Destroy_Phoenix2.png"),
-                                              load_image("Enemy/Destroy_Phoenix3.png"),
-                                              load_image("Enemy/Destroy_Phoenix4.png"),
-                                              load_image("Enemy/Destroy_Phoenix5.png"),
-                                              load_image("Enemy/Destroy_Phoenix6.png")])
-            cls._IMAGE.setdefault("Stop", [load_image("Enemy/Enemy_Phoenix_Stop1.png"),
-                                           load_image("Enemy/Enemy_Phoenix_Stop2.png")])
-            cls._IMAGE.setdefault("Attack", [load_image("Enemy/Enemy_Phoenix_AttackLight1.png"),
-                                             load_image("Enemy/Enemy_Phoenix_AttackLight2.png"),
-                                             load_image("Enemy/Enemy_Phoenix_AttackLight3.png"),
-                                             load_image("Enemy/Enemy_Phoenix_AttackLight4.png"),
-                                             load_image("Enemy/Enemy_Phoenix_AttackLight5.png"),
-                                             load_image("Enemy/Enemy_Phoenix_AttackLight6.png"),
-                                             load_image("Enemy/Enemy_Phoenix_AttackLight7.png"),
-                                             load_image("Enemy/Enemy_Phoenix_AttackLight8.png"),
-                                             load_image("Enemy/Enemy_Phoenix_AttackLight9.png")])
-            cls._INIT_FLAG_IMAGE = True
+        cls.IMAGE = dict()
+        from ..generic_loader.image_loader import load_image
+        cls.IMAGE["BASE"] = [load_image("Enemy/Enemy_Phoenix1.png")]
+        cls.IMAGE["IDLE"] = [load_image("Enemy/Enemy_Phoenix1.png"),
+                             load_image("Enemy/Enemy_Phoenix2.png")]
+        cls.IMAGE["EXPLODE"] = [load_image("Enemy/Destroy_Phoenix1.png"),
+                                load_image("Enemy/Destroy_Phoenix2.png"),
+                                load_image("Enemy/Destroy_Phoenix3.png"),
+                                load_image("Enemy/Destroy_Phoenix4.png"),
+                                load_image("Enemy/Destroy_Phoenix5.png"),
+                                load_image("Enemy/Destroy_Phoenix6.png")]
+        cls.IMAGE["STOP"] = [load_image("Enemy/Enemy_Phoenix_Stop1.png"),
+                             load_image("Enemy/Enemy_Phoenix_Stop2.png")]
+        cls.IMAGE["ATTACK"] = [load_image("Enemy/Enemy_Phoenix_AttackLight1.png"),
+                               load_image("Enemy/Enemy_Phoenix_AttackLight2.png"),
+                               load_image("Enemy/Enemy_Phoenix_AttackLight3.png"),
+                               load_image("Enemy/Enemy_Phoenix_AttackLight4.png"),
+                               load_image("Enemy/Enemy_Phoenix_AttackLight5.png"),
+                               load_image("Enemy/Enemy_Phoenix_AttackLight6.png"),
+                               load_image("Enemy/Enemy_Phoenix_AttackLight7.png"),
+                               load_image("Enemy/Enemy_Phoenix_AttackLight8.png"),
+                               load_image("Enemy/Enemy_Phoenix_AttackLight9.png")]
+        cls._IS_SET_IMAGE = True
 
     @classmethod
     def _init_sound(cls):
-        if not hasattr(cls, "_INIT_FLAG_SOUND") or not cls._INIT_FLAG_SOUND:
-            cls._SOUND = dict()
-            from LostViking.src.generic_loader.sound_loader import load_sound
-            from LostViking.src.constants import MAIN_VOLUME
-            cls._SOUND.setdefault("Shield", load_sound("Shield.wav", MAIN_VOLUME - 0.3))
-            cls._SOUND.setdefault("Laser", load_sound("Laser.wav", MAIN_VOLUME - 0.2))
-            cls._SOUND.setdefault("Explode", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
-                                              load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
-            cls._INIT_FLAG_SOUND = True
+        cls._SOUND = dict()
+        from LostViking.src.generic_loader.sound_loader import load_sound
+        from LostViking.src.constants import MAIN_VOLUME
+        cls._SOUND.setdefault("Shield", load_sound("Shield.wav", MAIN_VOLUME - 0.3))
+        cls._SOUND.setdefault("Laser", load_sound("Laser.wav", MAIN_VOLUME - 0.2))
+        cls._SOUND.setdefault("Explode", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
+                                          load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
+        cls._INIT_FLAG_SOUND = True
 
     @classmethod
-    def init(cls):
-        super().init()
-        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
-            cls._init_image()
-            cls._init_sound()
-            cls._MAX_HEALTH = 100
-            cls._SCORE = 200
-            cls._INIT_FLAG = True
+    def _init_attributes(cls):
+        super()._init_attributes()
+        cls.MAX_HEALTH = 100
 
 
 class BulletPhoenix(SingleImageHelper, BasicSpinBullet):
@@ -150,10 +142,10 @@ class Shield(LoopImageHelper, SoundHelper, pygame.sprite.DirtySprite):
             from ..generic_loader.image_loader import load_image
             cls._IMAGE["Base"] = [load_image("Enemy/Shield1.png")]
             cls._IMAGE.setdefault("Normal", [load_image("Enemy/Shield1.png"),
-                                             load_image("Enemy/Shield2.png"),
-                                             load_image("Enemy/Shield3.png"),
-                                             load_image("Enemy/Shield4.png"),
-                                             load_image("Enemy/Shield5.png")])
+                                            load_image("Enemy/Shield2.png"),
+                                            load_image("Enemy/Shield3.png"),
+                                            load_image("Enemy/Shield4.png"),
+                                            load_image("Enemy/Shield5.png")])
             cls._INIT_FLAG_IMAGE = True
 
     @classmethod

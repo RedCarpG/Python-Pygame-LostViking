@@ -8,12 +8,13 @@ from LostViking.src.generic_loader.sound_loader import *
 from LostViking.src.constants import SCREEN
 from ..generic_items.PlaneEntity import BasicSpinPlaneEntity
 from enum import Enum
+from ..groups import Enemy_G
 
 
 class EnemyIIIActionPhase(Enum):
-    MoveX = 0
-    Idle = 1
-    MoveDown = 2
+    Entrance = 0
+    Stay = 1
+    Leave = 2
 
 
 class EnemyIIIAttackPhase(Enum):
@@ -21,35 +22,34 @@ class EnemyIIIAttackPhase(Enum):
     Attack = 1
 
 
+class EnemyIIISide(Enum):
+    Left = 1
+    Right = -1
+
+
 class EnemyIII(BasicSpinPlaneEntity, ABC):
-    SCORE = 100
+    SCORE = 500
 
     _STAY_DURATION = 500
-    _ATTACK_INTERVAL = 100
+    _ATTACK_SPEED = 100
 
     def __init__(self, position, side='L', **kwargs):
-        BasicSpinPlaneEntity.__init__(self, start_position=position, **kwargs)
+        BasicSpinPlaneEntity.__init__(self, start_point=position, **kwargs)
+        self.add(Enemy_G)
 
-        self.action_status = EnemyIIIActionPhase.MoveX
+        self.action_status = EnemyIIIActionPhase.Entrance
         self.attack_status = EnemyIIIAttackPhase.Idle
-
-        self.attack_interval = pygame.time.Clock()
-        self.stay_duration = pygame.time.Clock()
-
-        if side == 'L':
-            self.side = -1
-            self._speed_x = self.MAX_SPEED_X
-        else:
-            self.side = 1
-            self._speed_x = -self.MAX_SPEED_X
-        self.angle = 90 * -self.side
-
-        self._speed_y = 0
 
         self._count_stay_time = self._STAY_DURATION
 
-        self._attack_speed = 100
-        self._count_attack_interval = self._ATTACK_INTERVAL
+        self._count_attack_interval = self._ATTACK_SPEED
+
+        if side == 'L':
+            self.side = EnemyIIISide.Left
+        else:
+            self.side = EnemyIIISide.Right
+
+        self.enter_action_entrance_phase()
 
     '''
     def rotate1(self,_angle):  -180<_angle<180
@@ -80,51 +80,91 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
         #angle_ = self._angle * math.pi / 180
 
     def _action(self):
-        if self.stage1_flag:
-            self._entrance()
+        if self.action_status == EnemyIIIActionPhase.Entrance:
+            self._action_entrance()
         else:
-
-            if self._count_stay_time < 0:
-                self._leave()
+            if self.action_status == EnemyIIIActionPhase.Stay:
+                self._action_stay()
             else:
-                self._count_stay_time -= 1
+                self._action_leave()
+
+            if self.attack_status == EnemyIIIAttackPhase.Attack:
+                self._action_attack()
+            else:
+                self._action_attack_idle()
 
             from ..groups import Player1_G
             player_point = Player1_G.sprites()[0].rect.center
             self.aim(player_point)
 
-            self._count_attack_interval += 1
-            if self._count_attack_interval > self._attack_speed:
-                self._count_attack_interval = 0
-                self._shoot()
+    def enter_action_entrance_phase(self):
+        if self.side == EnemyIIISide.Left:
+            self._speed_x = self.MAX_SPEED_X
+            self.angle = 90
+            self._rotate_angle(self.angle)
+        else:
+            self._speed_x = -self.MAX_SPEED_X
+            self.angle = -90
+            self._rotate_angle(self.angle)
 
-    def _leave(self):
+        self._speed_y = 0
+        self.action_status = EnemyIIIActionPhase.Entrance
+
+    def _action_entrance(self):
+        self._move()
+        if self._deceleration_x():
+            self.enter_action_stay_phase()
+            self._set_image_type("STOP")
+
+    def enter_action_stay_phase(self):
+        self.action_status = EnemyIIIActionPhase.Stay
+        self._speed_x = self._speed_y = 0
+        self._count_stay_time = self._STAY_DURATION
+
+    def _action_stay(self):
+        self._count_stay_time -= 1
+        if not self._count_stay_time:
+            self.enter_action_leave_phase()
+
+    def enter_action_leave_phase(self):
+        self.action_status = EnemyIIIActionPhase.Leave
+        self._speed_x = 0
+        self._speed_y = self.MAX_SPEED_DOWN
+
+    def _action_leave(self):
         if self.rect.top < SCREEN.get_h():
-            self.rect.move_ip(0, self._speed_y)
+            self._move()
         else:
             self.kill()
 
-    def _entrance(self):
-        if self._speed_x * self.side <= 0:
-            self._speed_x += self.ACC_X * self.side
-            self.rect.move_ip(self._speed_x, 0)
+    def enter_attack_idle_phase(self):
+        self._count_attack_interval = self._ATTACK_SPEED
+        self.attack_status = EnemyIIIAttackPhase.Idle
+
+    def _action_attack_idle(self):
+        if self._count_attack_interval <= 0:
+            self.enter_attack_phase()
         else:
-            self.stage1_flag = False
-            self._set_image_type("Stop")
+            self._count_attack_interval -= 1
+
+    def enter_attack_phase(self):
+        self.attack_status = EnemyIIIAttackPhase.Attack
+
+    @abstractmethod
+    def _action_attack(self):
+        pass
 
     @classmethod
     def _init_attributes(cls):
         cls.MAX_SPEED_DOWN = cls.MAX_SPEED_UP = 1
         cls.MAX_SPEED_X = 10
+        cls.SCORE = 500
+        cls.MAX_HEALTH = 500
         # s = t*v0/2 => t = 2s/v0
         # v0 - a * t = 0 => a = v0**2 / 2s
         cls.ACC_X = round((cls.MAX_SPEED_X ** 2) / (SCREEN.get_w()*7/4), 2)
         cls.ACC_UP = cls.ACC_DOWN = 0
         cls._IS_SET_ATTRS = True
-
-    @abstractmethod
-    def _shoot(self):
-        pass
 
 
 """
