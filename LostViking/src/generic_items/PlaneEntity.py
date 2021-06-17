@@ -1,12 +1,14 @@
 import abc
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 
 from pygame.sprite import Sprite
+from pygame.transform import rotate
 import warnings
 from ..groups import Destroyed_Plane_G, Plane_G
+import math
 
 
-class BasicPlaneEntity(Sprite):
+class BasicPlaneEntity(Sprite, ABC):
     IMAGE = {"BASE": None,
              "IDLE": None}
     _IS_SET_IMAGE = False
@@ -252,3 +254,49 @@ class BasicPlaneEntity(Sprite):
         """
         self._main_image_type = self.IMAGE[image_type]
 
+
+class BasicSpinPlaneEntity(BasicPlaneEntity, ABC):
+
+    def __init__(self, **kwargs):
+        BasicPlaneEntity.__init__(self, **kwargs)
+
+        self.angle = 0
+
+    def aim(self, point):
+        angle = self.cal_angle(self.rect.center, point)
+        self._rotate_angle(angle)
+
+    def _rotate_angle(self, angle):
+        self.angle = angle
+        temp = self.rect.center
+        self.image = rotate(self._main_image_type[self._image_switch], self.angle)
+
+        self.rect = self.image.get_rect()
+        self.rect.center = temp
+        """
+        angle = angle * math.pi / 180
+        self._speed_x = float(self._MAX_SPEED_L * math.sin(angle))
+        self._speed_y = float(self._MAX_SPEED_DOWN * math.cos(angle))
+        """
+
+    @classmethod
+    def cal_angle(cls, base_point, target_point):
+        if base_point[1] == target_point[1]:
+            if target_point[0] > base_point[0]:
+                angle = 90
+            else:
+                angle = -90
+        elif base_point[0] == target_point[0]:
+            if target_point[1] > base_point[1]:
+                angle = 0
+            else:
+                angle = 180
+        else:
+            angle = math.atan((target_point[0] - base_point[0]) / (target_point[1] - base_point[1]))
+            angle = angle * 360 / 2 / math.pi
+            if base_point[1] > target_point[1]:
+                if base_point[0] < target_point[0]:
+                    angle += 180
+                else:
+                    angle -= 180
+        return angle

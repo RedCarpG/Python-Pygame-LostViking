@@ -1,7 +1,7 @@
 import math
 
 from ..enemy.enemyBoss import EnemyBoss, BossActionPhase, BossAttackPhase
-from ..enemy.enemyPlane import BasicEnemy, cal_angle
+from ..enemy.EnemyIII import BasicEnemy, cal_angle
 from ..generic_items.MovementHelper import InertialMoveHelper
 
 
@@ -199,7 +199,7 @@ class EnemyInterceptor(EnemyII, InertialMoveHelper):
 
     @classmethod
     def init(cls):
-        cls._SCORE = 500
-        cls._MAX_HEALTH = 1000
+        cls.SCORE = 500
+        cls.MAX_HEALTH = 1000
         cls._init_image()
 """

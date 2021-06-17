@@ -6,7 +6,7 @@ PLAYER_IMAGE = {}
 
 
 # 主音量
-MAIN_VOLUME = 1
+MAIN_VOLUME = 0.5
 # 背景卷动速度
 BG_SPEED = 25
 
@@ -122,7 +122,7 @@ class RESOURCES(object):
         RESOURCES.SOUNDS.setdefault("Player_Explo", _load_sound("Player_Explo.wav", MAIN_VOLUME))
         RESOURCES.SOUNDS.setdefault("NuclearLaunch_Detected",
                                     _load_sound("NuclearLaunch_Detected.wav", MAIN_VOLUME - 0.1))
-        RESOURCES.SOUNDS.setdefault("NuclearMissle_Ready", _load_sound("NuclearMissle_Ready.wav", MAIN_VOLUME - 0.1))
+        RESOURCES.SOUNDS.setdefault("NuclearMissle_Ready", _load_sound("NuclearMissile_Ready.wav", MAIN_VOLUME - 0.1))
         RESOURCES.SOUNDS.setdefault("UI1", _load_sound("UI1.wav", MAIN_VOLUME - 0.2))
         RESOURCES.SOUNDS.setdefault("Liftoff1", _load_sound("Liftoff1.wav", MAIN_VOLUME))
         RESOURCES.SOUNDS.setdefault("Liftoff2", _load_sound("Liftoff2.wav", MAIN_VOLUME - 0.2))

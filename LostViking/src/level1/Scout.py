@@ -1,4 +1,4 @@
-from ..enemy.enemyPlane import EnemyI
+from ..enemy.EnemyIII import EnemyI
 from ..generic_loader.image_loader import load_image
 from ..generic_items.SoundHelper import SoundHelper
 from .level1_group import Enemy_Scout_G

@@ -1,7 +1,7 @@
 import random
 from enum import Enum
 from abc import ABC, abstractmethod
-from .enemyPlane import BasicEnemy
+from .EnemyIII import BasicEnemy
 from ..generic_items.MovementHelper import InertialMoveHelper
 from ..constants import SCREEN
 
@@ -18,8 +18,8 @@ class BossAttackPhase(Enum):
 
 
 class EnemyBoss(BasicEnemy, InertialMoveHelper, ABC):
-    _SCORE = 5000
-    _MAX_HEALTH = 30000
+    SCORE = 5000
+    MAX_HEALTH = 30000
 
     _STAY_DURATION = 200
     _MOVE_X_DURATION = 200

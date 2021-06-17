@@ -1,5 +1,5 @@
 from LostViking.src.groups import *
-from LostViking.src.enemy.enemyPlane import BasicEnemy
+from LostViking.src.enemy.EnemyIII import BasicEnemy
 from pygame.locals import *
 from pygame.sprite import spritecollideany, collide_rect_ratio, groupcollide
 from LostViking.src.generic_loader.color import *

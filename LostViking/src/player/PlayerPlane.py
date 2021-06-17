@@ -293,24 +293,23 @@ class Player1(BasicPlayerPlane):
 
     @classmethod
     def _init_image(cls) -> None:
-        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            cls.IMAGE = dict()
-            from LostViking.src.generic_loader.image_loader import load_image
-            cls.IMAGE["BASE"] = [load_image("PlayerPlane/Viking_body.png")]
-            cls.IMAGE["IDLE"] = [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
-                                 load_image("PlayerPlane/PlayerPlane_moveNormal2.png")]
-            cls.IMAGE["MOVE_UP"] = [load_image("PlayerPlane/PlayerPlane_moveUp1.png"),
-                                    load_image("PlayerPlane/PlayerPlane_moveUp2.png")]
-            cls.IMAGE["MOVE_DOWN"] = [load_image("PlayerPlane/PlayerPlane_moveDown1.png"),
-                                      load_image("PlayerPlane/PlayerPlane_moveDown2.png")]
-            cls.IMAGE["EXPLODE"] = [load_image("PlayerPlane/PlayerPlane_explode1.png"),
-                                    load_image("PlayerPlane/PlayerPlane_explode2.png"),
-                                    load_image("PlayerPlane/PlayerPlane_explode3.png"),
-                                    load_image("PlayerPlane/PlayerPlane_explode4.png"),
-                                    load_image("PlayerPlane/PlayerPlane_explode5.png"),
-                                    load_image("PlayerPlane/PlayerPlane_explode6.png")]
-            cls.IMAGE["INVINCIBLE"] = [load_image("PlayerPlane/PlayerPlane_Invincible.png")]
-            cls._IS_SET_IMAGE = True
+        cls.IMAGE = dict()
+        from LostViking.src.generic_loader.image_loader import load_image
+        cls.IMAGE["BASE"] = [load_image("PlayerPlane/Viking_body.png")]
+        cls.IMAGE["IDLE"] = [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
+                             load_image("PlayerPlane/PlayerPlane_moveNormal2.png")]
+        cls.IMAGE["MOVE_UP"] = [load_image("PlayerPlane/PlayerPlane_moveUp1.png"),
+                                load_image("PlayerPlane/PlayerPlane_moveUp2.png")]
+        cls.IMAGE["MOVE_DOWN"] = [load_image("PlayerPlane/PlayerPlane_moveDown1.png"),
+                                  load_image("PlayerPlane/PlayerPlane_moveDown2.png")]
+        cls.IMAGE["EXPLODE"] = [load_image("PlayerPlane/PlayerPlane_explode1.png"),
+                                load_image("PlayerPlane/PlayerPlane_explode2.png"),
+                                load_image("PlayerPlane/PlayerPlane_explode3.png"),
+                                load_image("PlayerPlane/PlayerPlane_explode4.png"),
+                                load_image("PlayerPlane/PlayerPlane_explode5.png"),
+                                load_image("PlayerPlane/PlayerPlane_explode6.png")]
+        cls.IMAGE["INVINCIBLE"] = [load_image("PlayerPlane/PlayerPlane_Invincible.png")]
+        cls._IS_SET_IMAGE = True
 
 
 class Player2(BasicPlayerPlane):
@@ -321,21 +320,20 @@ class Player2(BasicPlayerPlane):
 
     @classmethod
     def _init_image(cls) -> None:
-        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            cls._IMAGE = dict()
-            from LostViking.src.generic_loader.image_loader import load_image
-            cls._IMAGE["Base"] = [load_image("PlayerPlane/Viking_body.png")]
-            cls._IMAGE.setdefault("Invincible", [load_image("PlayerPlane/PlayerPlane_Invincible.png")])
-            cls._IMAGE.setdefault("MoveUp", [load_image("PlayerPlane/PlayerPlane_moveUp1.png"),
-                                             load_image("PlayerPlane/PlayerPlane_moveUp2.png")])
-            cls._IMAGE.setdefault("MoveDown", [load_image("PlayerPlane/PlayerPlane_moveDown1.png"),
-                                               load_image("PlayerPlane/PlayerPlane_moveDown2.png")])
-            cls._IMAGE.setdefault("MoveNormal", [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
-                                                 load_image("PlayerPlane/PlayerPlane_moveNormal2.png")])
-            cls._IMAGE.setdefault("Explode", [load_image("PlayerPlane/PlayerPlane_explode1.png"),
-                                              load_image("PlayerPlane/PlayerPlane_explode2.png"),
-                                              load_image("PlayerPlane/PlayerPlane_explode3.png"),
-                                              load_image("PlayerPlane/PlayerPlane_explode4.png"),
-                                              load_image("PlayerPlane/PlayerPlane_explode5.png"),
-                                              load_image("PlayerPlane/PlayerPlane_explode6.png")])
-            cls._IS_SET_IMAGE = True
+        cls._IMAGE = dict()
+        from LostViking.src.generic_loader.image_loader import load_image
+        cls._IMAGE["Base"] = [load_image("PlayerPlane/Viking_body.png")]
+        cls._IMAGE.setdefault("Invincible", [load_image("PlayerPlane/PlayerPlane_Invincible.png")])
+        cls._IMAGE.setdefault("MoveUp", [load_image("PlayerPlane/PlayerPlane_moveUp1.png"),
+                                         load_image("PlayerPlane/PlayerPlane_moveUp2.png")])
+        cls._IMAGE.setdefault("MoveDown", [load_image("PlayerPlane/PlayerPlane_moveDown1.png"),
+                                           load_image("PlayerPlane/PlayerPlane_moveDown2.png")])
+        cls._IMAGE.setdefault("MoveNormal", [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
+                                             load_image("PlayerPlane/PlayerPlane_moveNormal2.png")])
+        cls._IMAGE.setdefault("Explode", [load_image("PlayerPlane/PlayerPlane_explode1.png"),
+                                          load_image("PlayerPlane/PlayerPlane_explode2.png"),
+                                          load_image("PlayerPlane/PlayerPlane_explode3.png"),
+                                          load_image("PlayerPlane/PlayerPlane_explode4.png"),
+                                          load_image("PlayerPlane/PlayerPlane_explode5.png"),
+                                          load_image("PlayerPlane/PlayerPlane_explode6.png")])
+        cls._IS_SET_IMAGE = True

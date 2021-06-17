@@ -1,4 +1,4 @@
-from ..enemy.enemyPlane import EnemyIII
+from ..enemy.EnemyIII import EnemyIII
 from .level1_group import Enemy_Phoenix_G
 from ..groups import Enemy_Bullet_G, Shield_G
 from ..generic_items.BasicBullet import BasicSpinBullet
