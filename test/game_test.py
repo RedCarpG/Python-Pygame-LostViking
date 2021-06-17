@@ -1,5 +1,4 @@
 from LostViking.src.groups import *
-from LostViking.src.enemy.EnemyIII import BasicEnemy
 from pygame.locals import *
 from pygame.sprite import spritecollideany, collide_rect_ratio, groupcollide
 from LostViking.src.generic_loader.color import *
@@ -34,7 +33,7 @@ def collide_detection(player1):
                     bullet_hit.hit()
                     # G.LIFE -= 1
         enemy_hit = spritecollideany(player1, Enemy_G)
-        if enemy_hit is not None and isinstance(enemy_hit, BasicEnemy):
+        if enemy_hit is not None:
             if collide_rect_ratio(0.65)(player1, enemy_hit):
                 if enemy_hit.is_active:
                     if player1.hit(100):

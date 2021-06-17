@@ -4,6 +4,7 @@ from LostViking.src.groups import *
 from pygame.locals import *
 from LostViking.src.generic_loader.color import *
 from LostViking.src.level1 import *
+import time
 
 
 def test_enemy():
@@ -14,6 +15,7 @@ def test_enemy():
 
     EnemyScout.init()
     EnemyPhoenix.init()
+    Shield.init()
 
     add_enemy_phoenix()
     #pygame.time.set_timer(EVENT_CREATE_SCOUT, 500)
@@ -24,7 +26,7 @@ def test_enemy():
 
     running = True
     while running:
-
+        t0 = time.time()
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
@@ -45,6 +47,9 @@ def test_enemy():
         # Display
         pygame.display.flip()
 
+        t1 = time.time()
+        print("Time: {}".format(t1-t0))
+        #print("\r Time: {}".format(t1-t0), end="", flush=True)
         clock.tick(60)
 
 
