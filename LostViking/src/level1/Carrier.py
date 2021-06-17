@@ -1,7 +1,7 @@
 import math
 
-from ..enemy.enemyBoss import EnemyBoss, BossActionPhase, BossAttackPhase
-from ..enemy.EnemyIII import BasicEnemy, cal_angle
+from ..enemy.EnemyBoss import EnemyBoss, BossActionPhase, BossAttackPhase
+from ..enemy.EnemyIII import EnemyIII
 from ..generic_items.MovementHelper import InertialMoveHelper
 
 
@@ -25,29 +25,21 @@ class EnemyCarrier(EnemyBoss):
         """
     @classmethod
     def _init_image(cls):
-        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            cls._IMAGE = dict()
-            from ..generic_loader.image_loader import load_image
-            cls._IMAGE["Base"] = [load_image("Enemy/Carrier.png")]
-            cls._IMAGE.setdefault("Normal", [load_image("Enemy/Carrier.png")])
-            cls._IMAGE.setdefault("Explode", [load_image("Enemy/Carrier.png")])
+        cls.IMAGE = dict()
+        from ..generic_loader.image_loader import load_image
+        cls.IMAGE["BASE"] = [load_image("Enemy/Carrier.png")]
+        cls.IMAGE["IDLE"] = [load_image("Enemy/Carrier.png")]
+        cls.IMAGE["EXPLODE"] = [load_image("Enemy/Carrier.png")]
+        cls._IS_SET_IMAGE = False
 
     @classmethod
     def _init_sound(cls):
-        if not hasattr(cls, "_INIT_FLAG_SOUND") or not cls._INIT_FLAG_SOUND:
-            cls._SOUND = dict()
-            from LostViking.src.generic_loader.sound_loader import load_sound
-            from LostViking.src.constants import MAIN_VOLUME
-            cls._SOUND.setdefault("Explode", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
-                                              load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
+        cls._SOUND = dict()
+        from LostViking.src.generic_loader.sound_loader import load_sound
+        from LostViking.src.constants import MAIN_VOLUME
+        cls._SOUND.setdefault("Explode", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
+                                          load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
 
-    @classmethod
-    def init(cls):
-        super().init()
-        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
-            cls._init_image()
-            cls._init_sound()
-            cls._INIT_FLAG = True
 
 """
 class EnemyInterceptor(EnemyII, InertialMoveHelper):
@@ -76,10 +68,10 @@ class EnemyInterceptor(EnemyII, InertialMoveHelper):
         EnemyInterceptor.NUM += 1
 
     def _action(self):
-        if self.action_status == BossActionPhase.MoveDown:
+        if self.action_status == BossActionPhase.Leave:
             self._action_move_down()
         else:
-            if self.action_status == BossActionPhase.MoveX:
+            if self.action_status == BossActionPhase.Entrance:
                 self._action_move_x()
             else:
                 self._action_idle()
