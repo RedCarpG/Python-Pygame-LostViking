@@ -2,6 +2,7 @@ import random
 from enum import Enum
 from abc import ABC, abstractmethod
 from ..generic_items.PlaneEntity import BasicPlaneEntity
+from ..groups import BOSS_G
 from ..constants import SCREEN
 
 
@@ -25,12 +26,12 @@ class EnemyBoss(BasicPlaneEntity, ABC):
     _ATTACK_SPEED = 100
 
     def __init__(self, **kwargs):
-        BasicPlaneEntity.__init__(self, **kwargs)
+        BasicPlaneEntity.__init__(self, group=BOSS_G, **kwargs)
 
         self.action_status = BossActionPhase.MoveDown
         self.attack_status = BossAttackPhase.Idle
 
-        self._speed_y = self._MAX_SPEED_DOWN
+        self._speed_y = self.MAX_SPEED_DOWN
         self._move_x_direction = None
 
         self._count_action_idle = self._STAY_DURATION
@@ -44,7 +45,7 @@ class EnemyBoss(BasicPlaneEntity, ABC):
 
     def _action_move_down(self):
         self._move()
-        if self.rect.bottom > 0:
+        if self.rect.top > 0:
             self._deceleration_y()
             if self._speed_y == 0:
                 self.enter_action_idle_phase()
@@ -66,7 +67,7 @@ class EnemyBoss(BasicPlaneEntity, ABC):
 
     def _action_move_x(self):
         self._move()
-        if not self._count_action_idle:
+        if not self._count_action_move_x:
             # Decelerate in X direction and enter idle phase
             self._deceleration_x()
             if self._speed_x == 0:
@@ -117,10 +118,10 @@ class EnemyBoss(BasicPlaneEntity, ABC):
 
     @classmethod
     def _init_attributes(cls) -> None:
-        cls._MAX_SPEED_X = 2
-        cls._MAX_SPEED_DOWN = cls._MAX_SPEED_UP = 2
-        cls._ACC_X = 0.1
-        cls._ACC_DOWN = cls._ACC_UP = 0.1
+        cls.MAX_SPEED_X = 1
+        cls.MAX_SPEED_DOWN = cls.MAX_SPEED_UP = 2
+        cls.ACC_X = 0.1
+        cls.ACC_DOWN = cls.ACC_UP = 0.2
         cls.MAX_HEALTH = 30000
         cls.SCORE = 5000
         cls._IS_SET_ATTRS = True
