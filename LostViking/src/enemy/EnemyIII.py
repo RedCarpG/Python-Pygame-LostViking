@@ -101,11 +101,9 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
         if self.side == EnemyIIISide.Left:
             self._speed_x = self.MAX_SPEED_X
             self.angle = 90
-            self._rotate_angle(self.angle)
         else:
             self._speed_x = -self.MAX_SPEED_X
             self.angle = -90
-            self._rotate_angle(self.angle)
 
         self._speed_y = 0
         self.action_status = EnemyIIIActionPhase.Entrance

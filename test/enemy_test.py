@@ -4,6 +4,7 @@ from LostViking.src.groups import *
 from pygame.locals import *
 from LostViking.src.generic_loader.color import *
 from LostViking.src.level1 import *
+from LostViking.src.constants import SCREEN
 import time
 
 
@@ -11,13 +12,12 @@ def test_enemy():
     # Init Environment
     pygame.init()
     clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((SCREEN.WIDTH, SCREEN.HEIGHT))
+    screen = pygame.display.set_mode(SCREEN.get_s())
 
     EnemyScout.init()
     EnemyPhoenix.init()
     Shield.init()
 
-    add_enemy_phoenix()
     #pygame.time.set_timer(EVENT_CREATE_SCOUT, 500)
     #pygame.time.set_timer(EVENT_CREATE_PHOENIX, 500)
     from LostViking.src.player import create_player, init_player
@@ -34,7 +34,7 @@ def test_enemy():
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
-            level1_events(event=event)
+            level1_events_handler(event=event)
 
         screen.fill(BLACK)
         Player1_G.update()

@@ -13,25 +13,25 @@ BG_SPEED = 25
 
 # Screen
 class SCREEN(object):
-    SIZE = WIDTH, HEIGHT = (400, 500)
+    _SIZE = _WIDTH, _HEIGHT = (1000, 800)
 
     @classmethod
     def change_screen_size(cls, width, height):
-        SCREEN.SIZE = (width, height)
-        SCREEN.WIDTH = width
-        SCREEN.HEIGHT = height
+        SCREEN._SIZE = (width, height)
+        SCREEN._WIDTH = width
+        SCREEN._HEIGHT = height
 
     @classmethod
     def get_h(cls):
-        return SCREEN.HEIGHT
+        return SCREEN._HEIGHT
 
     @classmethod
     def get_w(cls):
-        return SCREEN.WIDTH
+        return SCREEN._WIDTH
 
     @classmethod
     def get_s(cls):
-        return SCREEN.SIZE
+        return SCREEN._SIZE
 
 
 class G(object):

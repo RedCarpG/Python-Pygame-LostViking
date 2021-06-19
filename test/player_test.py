@@ -10,7 +10,7 @@ def test_player():
     # Init Environment
     pygame.init()
     clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((SCREEN.WIDTH, SCREEN.HEIGHT))
+    screen = pygame.display.set_mode(SCREEN.get_s())
 
     # Init Player
     init_player()
