@@ -40,7 +40,7 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
         self.action_status = EnemyIIIActionPhase.Entrance
         self.attack_status = EnemyIIIAttackPhase.Idle
 
-        self._count_stay_time = self._STAY_DURATION
+        self._count_action_stay = self._STAY_DURATION
 
         self._count_attack_interval = self._ATTACK_SPEED
 
@@ -79,7 +79,7 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
 
         #angle_ = self._angle * math.pi / 180
 
-    def _action(self):
+    def _action(self, *args, **kwargs):
         if self.action_status == EnemyIIIActionPhase.Entrance:
             self._action_entrance()
         else:
@@ -89,7 +89,7 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
                 self._action_leave()
 
             if self.attack_status == EnemyIIIAttackPhase.Attack:
-                self._action_attack()
+                self._action_attack(*args, **kwargs)
             else:
                 self._action_attack_idle()
 
@@ -119,11 +119,11 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
     def enter_action_stay_phase(self):
         self.action_status = EnemyIIIActionPhase.Stay
         self._speed_x = self._speed_y = 0
-        self._count_stay_time = self._STAY_DURATION
+        self._count_action_stay = self._STAY_DURATION
 
     def _action_stay(self):
-        self._count_stay_time -= 1
-        if not self._count_stay_time:
+        self._count_action_stay -= 1
+        if not self._count_action_stay:
             self.enter_action_leave_phase()
 
     def enter_action_leave_phase(self):
@@ -151,7 +151,7 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
         self.attack_status = EnemyIIIAttackPhase.Attack
 
     @abstractmethod
-    def _action_attack(self):
+    def _action_attack(self, *args, **kwargs):
         pass
 
     @classmethod
@@ -165,78 +165,3 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
         cls.ACC_X = round((cls.MAX_SPEED_X ** 2) / (SCREEN.get_w()*7/4), 2)
         cls.ACC_UP = cls.ACC_DOWN = 0
         cls._IS_SET_ATTRS = True
-
-
-"""
-
-class Enemy_ShooterI(EnemyI):
-    def __init__(self, pos):
-        EnemyI.__init__(self, pos)
-
-    def update(self):
-        self.change_image()
-        self.action()
-        self.shoot()
-
-    def shoot(self):
-        if self.whenShoot():
-            self.attackSound.stop()
-            self.attackSound.play()
-            self.bullets.add(self.creatBullet())
-
-    def shoot_blit(self):
-        if self.attackImage:
-            if self.attack_flag:
-                if self.attack_animation < len(self.attackImage):
-                    image = self.transImage(self.attackImage, self.attack_animation)
-                    rect = image.get_rect()
-                    rect.center = self.rect.center
-                    # self.screen.blit(image, rect)
-                else:
-                    self.attack_animation = 0
-                    self.attack_flag = False
-                    self.attackSound.stop()
-                    self.attackSound.play()
-                    return True
-            return False
-        return True
-
-    @abc.abstractmethod
-    def whenShoot(self):
-        pass
-
-    @abc.abstractmethod
-    def creatBullet(self):
-        pass
-
-
-class Enemy_ShooterII(Enemy_ShooterI, EnemyIII):
-    def __init__(self, pos, bullets):
-        Enemy_ShooterI.__init__(self, pos, bullets)
-        EnemyII.__init__(self, pos)
-
-    def update(self, point):
-        self.change_image()
-        self.action()
-        self.spin(point)
-        self.shoot()
-
-    def spin(self, point):
-        if not self.move_flag:
-            self.rotate(A)
-
-    def action(self):
-        pass
-
-    @abc.abstractmethod
-    def creatBullet(self):
-        pass
-
-    @abc.abstractmethod
-    def whenShoot(self):
-        pass
-
-    @abc.abstractmethod
-    def action(self):
-        pass
-"""
