@@ -1,13 +1,19 @@
 import pygame
-from .level1_event_type import *
+from .level1_event_type import EVENT_CREATE_SCOUT, EVENT_CREATE_PHOENIX, EVENT_CREATE_CARRIER
+from .level1_constant import *
 import random
 from ..constants import SCREEN
-from .Scout import EnemyScout
-from .Phoenix import EnemyPhoenix
+from .Enemy_Scout import EnemyScout
+from .Enemy_Phoenix import EnemyPhoenix
+from .Enemy_Carrier import EnemyCarrier
 from .level1_group import Enemy_Scout_G
+import logging
+import sys
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
-# 生成敌机
+# Create Enemy
 def add_enemy_scout(num):
     for i in range(num):
         x = random.randint(50, SCREEN.get_w() - 50)
@@ -24,24 +30,32 @@ def add_enemy_phoenix():
     EnemyPhoenix((x2, y), 'L')
 
 
-def level1_events(event):
+def add_enemy_carrier():
+    EnemyCarrier()
+
+
+def level1_event_config():
+    pygame.time.set_timer(EVENT_CREATE_SCOUT, SPAWN_SPEED_SCOUT)
+    pygame.time.set_timer(EVENT_CREATE_PHOENIX, SPAWN_SPEED_PHOENIX)
+    pygame.time.set_timer(EVENT_CREATE_CARRIER, SPAWN_SPEED_CARRIER)
+    # pygame.time.set_timer(Game.CREATE_SUPPLY, 40000)
+
+
+def level1_events_handler(event):
     if event.type == EVENT_CREATE_SCOUT:
         if len(Enemy_Scout_G.sprites()) < 25:
             add_enemy_scout(1)
-            print("CREATE_Scout:")
+            logging.info('Create Scout')
         return True
     elif event.type == EVENT_CREATE_PHOENIX:
         add_enemy_phoenix()
-        print("CREATE_Phoenix:")
+        logging.info('Create Phoenix')
         return True
     elif event.type == EVENT_CREATE_CARRIER:
-        """
-        pygame.time.set_timer(self.CREATE_Scout, 0)
-        pygame.time.set_timer(self.CREATE_Phoenix, 0)
-        pygame.time.set_timer(self.CREATE_Carrier, 0)
-        pygame.time.set_timer(Game.CREATE_SUPPLY, 40000)
-        add_enemy_Carrier()
-        print("CREATE_Carrier:")
-        """
+        add_enemy_carrier()
+        logging.info('Create Carrier')
+        pygame.time.set_timer(EVENT_CREATE_CARRIER, 0)
+        pygame.time.set_timer(EVENT_CREATE_PHOENIX, 0)
+        pygame.time.set_timer(EVENT_CREATE_SCOUT, 0)
         return True
     return False
