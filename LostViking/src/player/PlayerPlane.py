@@ -31,7 +31,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         self._bullet_type = PlayerBullet1
         self._lever = 1
 
-        self._attack_speed = 500
+        self._attack_speed = 20
         self._count_attack_interval = 0
 
         self._move_flag_x = False
@@ -71,6 +71,9 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
             if self.rect.top < 0:
                 self.rect.top = 0
 
+        if self._count_attack_interval > 0:
+            self._count_attack_interval -= 1
+
     def _destroy(self) -> None:
         finished = self._switch_image()
         if finished:
@@ -109,7 +112,9 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         if self.is_active:
             # self._SOUND["Player_Shoot"].stop()
             # self._SOUND["Player_Shoot"].play()
-            self._shoot()
+            if self._count_attack_interval == 0:
+                self._shoot()
+                self._count_attack_interval = self._attack_speed
 
     """ ------------------ Trigger-Movement-Commands ------------------"""
     """ ------------------ (Instant trigger method called by events) --"""
