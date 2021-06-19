@@ -1,5 +1,5 @@
 from ..enemy.EnemyBoss import EnemyBoss
-from .Interceptor import EnemyInterceptor
+from .Enemy_Interceptor import EnemyInterceptor
 
 
 class EnemyCarrier(EnemyBoss):

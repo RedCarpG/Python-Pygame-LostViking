@@ -1,6 +1,7 @@
 from ..enemy.EnemyII import EnemyII
 from ..groups import Player1_G
-from .Phoenix import BulletPhoenix
+from .level1_group import Enemy_Interceptor_G
+from .Enemy_Phoenix import BulletPhoenix
 from ..constants import SCREEN
 import random
 
@@ -16,7 +17,7 @@ class EnemyInterceptor(EnemyII):
     MOVE_UP_LIMIT = int(SCREEN.get_h() / 5)
 
     def __init__(self, position, path):
-        EnemyII.__init__(self, position, path)
+        EnemyII.__init__(self, position, path, group=Enemy_Interceptor_G)
 
         self._speed_x = 0
         self._speed_y = self.MAX_SPEED_X
