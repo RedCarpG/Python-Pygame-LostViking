@@ -44,9 +44,6 @@ class BasicPlaneEntity(Sprite, ABC):
 
         # Set basic properties
         self.is_active = True
-        self._speed_x = 0
-        self._speed_y = 0
-        self._health = self.MAX_HEALTH
 
         # Init Sprite
         if "group" in kwargs:
@@ -55,13 +52,12 @@ class BasicPlaneEntity(Sprite, ABC):
         else:
             Sprite.__init__(self)
 
-        for key, value in kwargs.items():
-            if key == "start_point":
-                self.set_pos(value)
-            elif key == "speed_x":
-                self._speed_x = value
-            elif key == "speed_y":
-                self._speed_y = value
+        self.start_point = kwargs.pop("start_point", (0, 0))
+        self._speed_x = kwargs.pop("speed_x", 0)
+        self._speed_y = kwargs.pop("speed_y", 0)
+        self._health = kwargs.pop("health", self.MAX_HEALTH)
+
+        self.set_pos(self.start_point)
 
     def update(self, *args, **kwargs) -> None:
         """ Update method from Sprite, is called per frame """
@@ -291,14 +287,6 @@ class BasicSpinPlaneEntity(BasicPlaneEntity, ABC):
         :param point
         """
         self.angle = self.cal_angle(self.rect.center, point)
-
-    def _rotate_angle(self, angle):
-        self.angle = angle
-        """
-        angle = angle * math.pi / 180
-        self._speed_x = float(self._MAX_SPEED_L * math.sin(angle))
-        self._speed_y = float(self._MAX_SPEED_DOWN * math.cos(angle))
-        """
 
     @classmethod
     def cal_angle(cls, base_point, target_point) -> int:
