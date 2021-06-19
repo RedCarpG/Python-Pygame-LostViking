@@ -27,7 +27,7 @@ class EnemyPhoenix(EnemyIII):
         else:
             super().hit(damage)
 
-    def _action_attack(self):
+    def _action_attack(self, *args, **kwargs):
         BulletPhoenix(self.rect.center, self.angle)
         self.enter_attack_idle_phase()
 
