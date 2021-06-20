@@ -30,7 +30,7 @@ def load_font(name, size):
     return font
 
 
-class _PGFont:
+class PGFont:
     def __init__(self, screen, font, text='', position=(0, 0), antialias=True, color=WHITE, background=None):
         self.font = font
         self.antialias = antialias
