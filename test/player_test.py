@@ -45,11 +45,11 @@ def test_player():
         Player_NucBomb_G.update()
         Player_Bullet_G.update()
         Player1_G.update()
-        NucBomb_Explosion_G.update()
+        Player_NucBomb_G.update()
         Player_Bullet_G.draw(screen)
         Player_NucBomb_G.draw(screen)
         Player1_G.draw(screen)
-        NucBomb_Explosion_G.draw(screen)
+        Player_NucBomb_G.draw(screen)
         # Display
         pygame.display.flip()
 

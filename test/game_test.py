@@ -4,6 +4,7 @@ from pygame.sprite import spritecollideany, collide_rect_ratio, groupcollide
 from LostViking.src.generic_loader.color import *
 from LostViking.src.level1 import *
 from LostViking.src.player import *
+from LostViking.src.constants import SCREEN
 
 
 def collide_test(a, b):
@@ -70,26 +71,15 @@ def test_game():
     # Init Environment
     pygame.init()
     clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((SCREEN.WIDTH, SCREEN.HEIGHT))
+    screen = pygame.display.set_mode(SCREEN.get_s())
 
     # Init Player
     init_player()
     player1 = create_player()
-    set_player_bullet_type(player1, 1)
-    player_upgrade(player1)
-    player_upgrade(player1)
-    add_nuc_bomb()
-    add_nuc_bomb()
-    add_nuc_bomb()
 
     # Init Enemy
-    EnemyScout.init()
-    EnemyPhoenix.init()
-    Shield.init()
-
-    add_enemy_phoenix()
-    #pygame.time.set_timer(EVENT_CREATE_SCOUT, 800)
-    # pygame.time.set_timer(EVENT_CREATE_PHOENIX, 500)
+    level1_init()
+    level1_event_config()
 
     running = True
     while running:
@@ -101,24 +91,27 @@ def test_game():
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
-            level1_events(event=event)
+            level1_events_handler(event=event)
             detect_player_event(event, player1=player1)
-
         detect_key_pressed(player1)
 
         collide_detection(player1=player1)
 
         screen.fill(BLACK)
+
         Destroyed_Plane_G.update()
         Destroyed_Plane_G.draw(screen)
+
         Bullet_G.update()
         Bullet_G.draw(screen)
         Enemy_G.update()
         Enemy_G.draw(screen)
-        Player1_G.update()
-        Player1_G.draw(screen)
         Shield_G.update()
         Shield_G.draw(screen)
+        Player1_G.update()
+        Player1_G.draw(screen)
+        BOSS_G.update()
+        BOSS_G.draw(screen)
 
         # Display
         pygame.display.flip()

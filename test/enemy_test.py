@@ -14,19 +14,17 @@ def test_enemy():
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode(SCREEN.get_s())
 
-    EnemyScout.init()
-    EnemyPhoenix.init()
-    Shield.init()
+    level1_init()
 
-    #pygame.time.set_timer(EVENT_CREATE_SCOUT, 500)
-    #pygame.time.set_timer(EVENT_CREATE_PHOENIX, 500)
+    pygame.time.set_timer(EVENT_CREATE_SCOUT, 1000)
+    pygame.time.set_timer(EVENT_CREATE_PHOENIX, 15000)
+
     from LostViking.src.player import create_player, init_player
     init_player()
     create_player(1)
 
     running = True
     while running:
-        t0 = time.time()
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
@@ -47,9 +45,6 @@ def test_enemy():
         # Display
         pygame.display.flip()
 
-        t1 = time.time()
-        print("Time: {}".format(t1-t0))
-        #print("\r Time: {}".format(t1-t0), end="", flush=True)
         clock.tick(60)
 
 
