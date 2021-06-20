@@ -1,5 +1,5 @@
 from .PlayerPlane import BasicPlayerPlane
-from .PlayerBullet import PlayerBullet1
+from .PlayerWeapon import PlayerBullet1
 
 
 class _PlayerProperty(object):

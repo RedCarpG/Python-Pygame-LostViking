@@ -1,35 +1,36 @@
 """ This file includes:
     -> PlayerNucBomb class which creates a bomb entity
-    -> Explosion class which handles with the drawing of explosion image"""
-
-from ..generic_items.ImageHelper import SingleImageHelper
-from ..generic_items.SoundHelper import SoundHelper
+    -> NucExplosion class which handles with the drawing of explosion image"""
+from pygame.sprite import Sprite
 from ..constants import SCREEN
 from ..generic_loader.image_loader import load_image
-from ..generic_items.ImageHelper import LoopImageHelper
-from ..groups import Player_NucBomb_G, NucBomb_Explosion_G
+from ..groups import Player_NucBomb_G
+from ..generic_items.BasicExplosion import BasicExplosion
 from .player_interface import get_nuc_count
-import pygame
 
 
-class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
+class PlayerNucBomb(Sprite):
     """ Player Nuclear Bomb
     -> Implements StraightBullet class :
             -> SingleImageHelper
             -> pygame.sprite.Sprite
     """
+    IMAGE = None
     _Is_Already_Activate = False
 
     def __init__(self, init_position: (list, tuple)):
-        if not hasattr(self, "_INIT_FLAG") or not self._INIT_FLAG:
+        if not hasattr(self, "INIT_FLAG") or not self.INIT_FLAG:
             raise Exception("!!!ERROR: class is not init! {}".format(self))
-        SingleImageHelper.__init__(self)
-        pygame.sprite.Sprite.__init__(self, Player_NucBomb_G)
-        self._play_sound("NuclearMissile_Ready")
+        Sprite.__init__(self, Player_NucBomb_G)
+        # self._play_sound("NuclearMissile_Ready")
 
+        # Set Image properties
+        self.image = self.IMAGE
+        # Set Rect & Position
         self.rect = self.image.get_rect()
         self.rect.center = init_position
 
+        # Set Attributes
         self.accelerate = 0.2
         self.speed = -2
 
@@ -39,9 +40,9 @@ class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
         if self.rect.bottom > SCREEN.get_h() // 3:
             self._move()
         else:
-            Explosion(self.rect.center)
+            NucExplosion(self.rect.center)
             PlayerNucBomb._Is_Already_Activate = False
-            self._play_sound("Explode")
+            # self._play_sound("Explode")
             self.kill()
             del self
 
@@ -52,7 +53,8 @@ class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
     @classmethod
     def launch(cls, player_position) -> None:
         if cls._Is_Already_Activate or get_nuc_count() < 0:
-            cls._play_sound("Error")
+            pass
+            # cls._play_sound("Error")
         else:
             from .player_interface import dec_nuc_bomb
             dec_nuc_bomb()
@@ -61,12 +63,10 @@ class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
 
     @classmethod
     def _init_image(cls) -> None:
-        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            cls._IMAGE = dict()
-            cls._IMAGE = load_image("PlayerPlane/bullet.png")
+        cls.IMAGE = load_image("PlayerPlane/bullet.png")
+        cls._IS_SET_IMAGE = True
 
-            cls._INIT_FLAG_IMAGE = True
-
+    # TODO Sound
     @classmethod
     def _init_sound(cls) -> None:
         if not hasattr(cls, "_INIT_FLAG_SOUND") or not cls._INIT_FLAG_SOUND:
@@ -84,44 +84,25 @@ class PlayerNucBomb(SoundHelper, SingleImageHelper, pygame.sprite.Sprite):
 
     @classmethod
     def init(cls):
-        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
-            cls._init_sound()
+        if not hasattr(cls, "INIT_FLAG") or not cls.INIT_FLAG:
             cls._init_image()
-            cls._INIT_FLAG = True
+            cls.INIT_FLAG = True
 
 
-class Explosion(LoopImageHelper, pygame.sprite.Sprite):
+class NucExplosion(BasicExplosion):
 
     def __init__(self, init_position):
-        if not hasattr(self, "_INIT_FLAG") or not self._INIT_FLAG:
-            raise Exception("!!!ERROR: class is not init! {}".format(self))
-        LoopImageHelper.__init__(self)
-        pygame.sprite.Sprite.__init__(self, NucBomb_Explosion_G)
-        self.rect = self.image.get_rect()
-        self.rect.center = init_position
-
-    def update(self) -> None:
-        self._switch_image()
-        if self._image_switch == len(self._main_image_type) - 1:
-            self.kill()
-            del self
+        BasicExplosion.__init__(self, init_position=init_position)
 
     @classmethod
     def _init_image(cls) -> None:
-        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            cls._IMAGE = dict()
-            # TODO Image here
-            cls._IMAGE["Base"] = [load_image("PlayerPlane/PlayerPlane_explode1.png"),
-                                  load_image("PlayerPlane/PlayerPlane_explode2.png"),
-                                  load_image("PlayerPlane/PlayerPlane_explode3.png"),
-                                  load_image("PlayerPlane/PlayerPlane_explode4.png"),
-                                  load_image("PlayerPlane/PlayerPlane_explode5.png"),
-                                  load_image("PlayerPlane/PlayerPlane_explode6.png")]
+        cls.IMAGE = dict()
+        # TODO Image here
+        cls.IMAGE["BASE"] = [load_image("PlayerPlane/PlayerPlane_explode1.png"),
+                             load_image("PlayerPlane/PlayerPlane_explode2.png"),
+                             load_image("PlayerPlane/PlayerPlane_explode3.png"),
+                             load_image("PlayerPlane/PlayerPlane_explode4.png"),
+                             load_image("PlayerPlane/PlayerPlane_explode5.png"),
+                             load_image("PlayerPlane/PlayerPlane_explode6.png")]
 
-            cls._INIT_FLAG_IMAGE = True
-
-    @classmethod
-    def init(cls):
-        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
-            cls._init_image()
-            cls._INIT_FLAG = True
+        cls._IS_SET_IMAGE = True

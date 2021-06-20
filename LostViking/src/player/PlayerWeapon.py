@@ -1,17 +1,13 @@
 """
 Player controllable object
 """
-from abc import ABC
-
 import pygame
-
 from ..generic_loader.image_loader import load_image
-from ..generic_items.BasicBullet import BasicBullet, BasicSpinBullet
+from ..generic_items.BasicBullet import BasicBullet
 from ..groups import Player_Bullet_G
-from LostViking.src.generic_items.ImageHelper import SingleImageHelper
 
 
-class PlayerBullet1(SingleImageHelper, BasicBullet):
+class PlayerBullet1(BasicBullet):
     """ Player's Bullet 1 type,
     -> Implements StraightBullet class :
             -> SingleImageHelper
@@ -23,9 +19,6 @@ class PlayerBullet1(SingleImageHelper, BasicBullet):
 
     def __init__(self, init_position: (list, tuple),
                  speed: list[int, int]):
-        if not hasattr(self, "_INIT_FLAG") or not self._INIT_FLAG:
-            raise Exception("!!!ERROR: class is not init! {}".format(self))
-        SingleImageHelper.__init__(self)
         BasicBullet.__init__(self, init_position=init_position,
                              speed=speed)
         self.damage = 150
@@ -61,17 +54,13 @@ class PlayerBullet1(SingleImageHelper, BasicBullet):
 
     @classmethod
     def _init_image(cls) -> None:
-        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            cls._IMAGE = load_image("PlayerPlane/bullet.png")
-
-            cls._INIT_FLAG_IMAGE = True
+        cls.IMAGE = load_image("PlayerPlane/bullet.png")
+        cls._IS_SET_IMAGE = True
 
     @classmethod
-    def init(cls):
-        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
-            cls._init_image()
-            cls._MAX_LEVEL = 3
-            cls._INIT_FLAG = True
+    def _init_attrs(cls):
+        cls._MAX_LEVEL = 3
+        cls._IS_SET_ATTRS = True
 
 
 # TODO Bullet2
@@ -86,7 +75,7 @@ class PlayerBullet2(BasicBullet):
     _MAX_LEVEL = 3
 
     def __init__(self, init_position: (list, tuple), level: (list, tuple)):
-        if not hasattr(self, "_INIT_FLAG_SPEED") or not self._INIT_FLAG:
+        if not hasattr(self, "_INIT_FLAG_SPEED") or not self.INIT_FLAG:
             raise Exception("!!!ERROR: class is not init! {}".format(self))
 
         self.damage = 150
@@ -124,14 +113,12 @@ class PlayerBullet2(BasicBullet):
 
     @classmethod
     def _init_image(cls) -> None:
-        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            cls._IMAGE = load_image("PlayerPlane/bullet.png")
+        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._IS_SET_IMAGE:
+            cls.IMAGE = load_image("PlayerPlane/bullet.png")
 
-            cls._INIT_FLAG_IMAGE = True
+            cls._IS_SET_IMAGE = True
 
     @classmethod
-    def init(cls):
-        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
-            cls._init_image()
-            cls._MAX_LEVEL = 3
-            cls._INIT_FLAG = True
+    def _init_attrs(cls):
+        cls._MAX_LEVEL = 3
+        cls._IS_SET_ATTRS = True

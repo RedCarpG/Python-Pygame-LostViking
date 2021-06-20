@@ -5,8 +5,8 @@ Includes:
 from abc import ABC
 import pygame
 from ..generic_items.SoundHelper import SoundHelper
-from ..generic_items.PlaneEntity import BasicPlaneEntity
-from .PlayerBullet import PlayerBullet1
+from ..generic_items.BasicPlaneEntity import BasicPlaneEntity
+from .PlayerWeapon import PlayerBullet1
 from ..constants import SCREEN
 from ..groups import Player1_G, Player2_G
 
@@ -28,7 +28,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         self.is_invincible = False
 
         ''' Init Weapon '''
-        self._bullet_type = PlayerBullet1
+        self._weapon_type = PlayerBullet1
         self._lever = 1
 
         self._attack_speed = 20
@@ -43,7 +43,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
     """ --------------------- Player Plane Behavior --------------------- """
 
     def _shoot(self):
-        self._bullet_type.shoot_bullets(self.rect.center, self._lever)
+        self._weapon_type.shoot_bullets(self.rect.center, self._lever)
 
     """ ------------------ Real-time methods ------------------ """
 
@@ -208,17 +208,17 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         from LostViking.src.generic_items.BasicBullet import BasicBullet
         if not issubclass(bul_class, BasicBullet):
             raise Exception("ERROR: Bullet type {} is not supported".format(bul_class))
-        if self._bullet_type != bul_class:
-            self._bullet_type = bul_class
+        if self._weapon_type != bul_class:
+            self._weapon_type = bul_class
             self._lever = 1
 
     def get_bullet_type(self):
-        return self._bullet_type
+        return self._weapon_type
 
     # Bullet Level
     def set_level(self, up=True) -> None:
         if up:
-            if self._bullet_type.get_max_level() > self._lever:
+            if self._weapon_type.get_max_level() > self._lever:
                 self._lever += 1
             else:
                 print("Max level")
@@ -252,7 +252,6 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
             """ Move its rect to a point, or a default position """
             self.rect.center = point
 
-
     """ ----------------- Reset methods -----------------"""
 
     # Reset
@@ -262,7 +261,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         self.set_pos(point)
         # self.is_invincible = True
         self._set_image_type("IDLE")
-        self._bullet_type = PlayerBullet1
+        self._weapon_type = PlayerBullet1
         self._lever = 1
         self._health = self.MAX_HEALTH
 
@@ -342,3 +341,12 @@ class Player2(BasicPlayerPlane):
                                 load_image("PlayerPlane/PlayerPlane_explode6.png")]
         cls.IMAGE["INVINCIBLE"] = [load_image("PlayerPlane/PlayerPlane_Invincible.png")]
         cls._IS_SET_IMAGE = True
+
+
+def create_player(player_num=1):
+    if player_num == 1:
+        return Player1()
+    else:
+        # TODO Point for P1, P2
+        #return PlayerPlane(point=None), PlayerPlane(point=None, p_id=2)
+        return None
