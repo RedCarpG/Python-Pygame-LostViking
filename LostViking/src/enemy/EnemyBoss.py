@@ -1,7 +1,7 @@
 import random
 from enum import Enum
 from abc import ABC, abstractmethod
-from ..generic_items.PlaneEntity import BasicPlaneEntity
+from ..generic_items.BasicPlaneEntity import BasicPlaneEntity
 from ..groups import BOSS_G
 from ..constants import SCREEN
 
