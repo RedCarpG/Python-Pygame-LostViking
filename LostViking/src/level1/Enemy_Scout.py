@@ -1,6 +1,5 @@
 from ..enemy.EnemyI import EnemyI
 from ..generic_loader.image_loader import load_image
-from ..generic_items.SoundHelper import SoundHelper
 from .level1_group import Enemy_Scout_G
 
 import random
@@ -37,10 +36,13 @@ class EnemyScout(EnemyI):
         cls._IS_SET_SOUND = True
 
 
-# 生成敌机
+# Create event
 def add_enemy_scout(num):
-    for i in range(num):
-        x = random.randint(50, SCREEN.get_w() - 50)
-        y = random.randint(-0.5 * SCREEN.get_h(), 0 - 100)
+    if len(Enemy_Scout_G.sprites()) < 25:
+        for i in range(num):
+            x = random.randint(50, SCREEN.get_w() - 50)
+            y = random.randint(-0.5 * SCREEN.get_h(), 0 - 100)
 
-        EnemyScout([x, y])
+            EnemyScout([x, y])
+        return True
+    return False

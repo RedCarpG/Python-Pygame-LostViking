@@ -1,11 +1,8 @@
 from ..enemy.EnemyIII import EnemyIII
 from .level1_group import Enemy_Phoenix_G
-from ..groups import Enemy_Bullet_G, Shield_G
+from ..groups import Enemy_Bullet_G
 from ..generic_items.BasicBullet import BasicSpinBullet
-from ..generic_items.ImageHelper import SingleImageHelper
-from ..generic_items.SoundHelper import SoundHelper
-from ..generic_items.ImageHelper import LoopImageHelper
-import pygame
+from ..generic_items.BasicShield import BasicShield
 
 
 class EnemyPhoenix(EnemyIII):
@@ -14,7 +11,7 @@ class EnemyPhoenix(EnemyIII):
         EnemyIII.__init__(self, position=pos, side=side)
         self.add(Enemy_Phoenix_G)
 
-        self.shield = Shield(self)
+        self.shield = ShieldPhoenix(self)
 
     def __del__(self):
         self.shield.kill()
@@ -57,6 +54,7 @@ class EnemyPhoenix(EnemyIII):
                                load_image("Enemy/Enemy_Phoenix_AttackLight9.png")]
         cls._IS_SET_IMAGE = True
 
+    # TODO Sound
     @classmethod
     def _init_sound(cls):
         cls._SOUND = dict()
@@ -74,93 +72,51 @@ class EnemyPhoenix(EnemyIII):
         cls.MAX_HEALTH = 100
 
 
-class BulletPhoenix(SingleImageHelper, BasicSpinBullet):
+class BulletPhoenix(BasicSpinBullet):
 
     def __init__(self, position, angle):
-        self.init()
-        SingleImageHelper.__init__(self)
         BasicSpinBullet.__init__(self, position, angle)
         self.add(Enemy_Bullet_G)
 
     @classmethod
     def _init_image(cls):
-        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            from ..generic_loader.image_loader import load_image
-            cls._IMAGE = load_image("Enemy/laser.png")
-            cls._INIT_FLAG_IMAGE = True
+        from ..generic_loader.image_loader import load_image
+        cls.IMAGE = load_image("Enemy/laser.png")
+        cls._IS_SET_IMAGE = True
 
     @classmethod
-    def init(cls):
-        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
-            cls._init_image()
-            cls._MAX_SPEED_X = cls._MAX_SPEED_Y = 15
-            cls._INIT_FLAG = True
+    def _init_attrs(cls):
+        cls.MAX_SPEED_X = cls.MAX_SPEED_Y = 15
+        cls._IS_SET_ATTRS = True
 
 
-class Shield(LoopImageHelper, SoundHelper, pygame.sprite.DirtySprite):
+class ShieldPhoenix(BasicShield):
 
     def __init__(self, owner):
-        if not hasattr(self, "_INIT_FLAG") or not self._INIT_FLAG:
-            raise Exception("!!! ERROR class not init! {}".format(self))
-        LoopImageHelper.__init__(self)
-        SoundHelper.__init__(self)
-        pygame.sprite.DirtySprite.__init__(self, Shield_G)
-
-        self.health = self._MAX_HEALTH
-
-        self.is_active = True
-        self.dirty = 2
-        self.visible = 0
-
-        self.rect = self.image.get_rect()
-        self._set_image_type("Normal")
-
-        self.owner = owner
-
-    def hit(self, damage):
-        self._play_sound('Shield')
-        if self.health <= 0:
-            self.is_active = False
-            self.health = 0
-        else:
-            self.health -= damage
-            self.visible = 1
-
-    def _reposition(self):
-        self.rect.center = self.owner.rect.center
-
-    def update(self):
-        if self.visible:
-            self._reposition()
-            if self._switch_image():
-                self.visible = 0
+        BasicShield.__init__(self, owner)
 
     @classmethod
     def _init_image(cls):
-        if not hasattr(cls, "_INIT_FLAG_IMAGE") or not cls._INIT_FLAG_IMAGE:
-            cls._IMAGE = dict()
-            from ..generic_loader.image_loader import load_image
-            cls._IMAGE["Base"] = [load_image("Enemy/Shield1.png")]
-            cls._IMAGE.setdefault("Normal", [load_image("Enemy/Shield1.png"),
-                                            load_image("Enemy/Shield2.png"),
-                                            load_image("Enemy/Shield3.png"),
-                                            load_image("Enemy/Shield4.png"),
-                                            load_image("Enemy/Shield5.png")])
-            cls._INIT_FLAG_IMAGE = True
+        cls.IMAGE = dict()
+        from ..generic_loader.image_loader import load_image
+        cls.IMAGE["BASE"] = [load_image("Enemy/Shield1.png")]
+        cls.IMAGE["IDLE"] = [load_image("Enemy/Shield1.png"),
+                             load_image("Enemy/Shield2.png"),
+                             load_image("Enemy/Shield3.png"),
+                             load_image("Enemy/Shield4.png"),
+                             load_image("Enemy/Shield5.png")]
+        cls._IS_SET_IMAGE = True
 
     @classmethod
-    def _init_sound(cls):
-        if not hasattr(cls, "_INIT_FLAG_SOUND") or not cls._INIT_FLAG_SOUND:
-            cls._SOUND = dict()
-            from ..generic_loader.sound_loader import load_sound
-            from ..constants import MAIN_VOLUME
-            cls._SOUND.setdefault("Shield", load_sound("Shield.wav", MAIN_VOLUME - 0.3))
-            cls._INIT_FLAG_SOUND = True
+    def _init_attrs(cls):
+        cls.MAX_HEALTH = 1000
+        cls._IS_SET_ATTRS = True
 
-    @classmethod
-    def init(cls):
-        if not hasattr(cls, "_INIT_FLAG") or not cls._INIT_FLAG:
-            cls._init_sound()
-            cls._init_image()
-            cls._MAX_HEALTH = 900
-            cls._INIT_FLAG = True
+
+def add_enemy_phoenix():
+    from ..constants import SCREEN
+    x1 = SCREEN.get_w()
+    x2 = 0
+    y = 200
+    EnemyPhoenix((x1, y), 'R')
+    EnemyPhoenix((x2, y), 'L')

@@ -44,3 +44,5 @@ class EnemyCarrier(EnemyBoss):
                                           load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
 
 
+def add_enemy_carrier():
+    EnemyCarrier()
