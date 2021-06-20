@@ -4,7 +4,7 @@ Initialization should be made in the implementation of the class
 """
 from abc import ABC
 from LostViking.src.constants import SCREEN
-from ..generic_items.PlaneEntity import BasicPlaneEntity
+from ..generic_items.BasicPlaneEntity import BasicPlaneEntity
 from ..groups import Enemy_G
 
 

@@ -1,17 +1,14 @@
 import abc
 from abc import abstractmethod, ABC
-
-from pygame.sprite import Sprite
-from pygame.transform import rotate
 import warnings
-from ..groups import Destroyed_Plane_G, Plane_G
 import math
+from pygame.transform import rotate
+
+from ..groups import Destroyed_Plane_G
+from .ImageEntity import LoopImageEntity
 
 
-class BasicPlaneEntity(Sprite, ABC):
-    IMAGE = {"BASE": None,
-             "IDLE": None}
-    _IS_SET_IMAGE = False
+class BasicPlaneEntity(LoopImageEntity, ABC):
 
     MAX_SPEED_X = 0
     MAX_SPEED_UP = 0
@@ -25,39 +22,20 @@ class BasicPlaneEntity(Sprite, ABC):
     _IS_SET_ATTRS = False
 
     def __init__(self, **kwargs):
-
+        # Check Initialization
         if not hasattr(self, "INIT_FLAG") or not self.INIT_FLAG:
             raise Exception("!!!ERROR: Class is not init! {}".format(self.__class__))
-        # Check Initialization
-        if not self._IS_SET_IMAGE:
-            raise Exception("!!!ERROR: Entity IMAGE is not set! {}".format(self.__class__))
         if not self._IS_SET_ATTRS:
             warnings.warn("!!!ERROR: Entity SPEED is not set! {}".format(self.__class__))
-
-        # Set Image properties
-        self._main_image_type = self.IMAGE["BASE"]
-        self._image_switch = 0
-        self._image_switch_interval = 0
-        self.image = self._main_image_type[self._image_switch]
-        self._set_image_type("IDLE")
-        self.rect = self.image.get_rect()
+        LoopImageEntity.__init__(self)
 
         # Set basic properties
         self.is_active = True
 
-        # Init Sprite
-        if "group" in kwargs:
-            Sprite.__init__(self, kwargs["group"])
-            kwargs.pop("group")
-        else:
-            Sprite.__init__(self)
-
-        self.start_point = kwargs.pop("start_point", (0, 0))
         self._speed_x = kwargs.pop("speed_x", 0)
         self._speed_y = kwargs.pop("speed_y", 0)
         self._health = kwargs.pop("health", self.MAX_HEALTH)
-
-        self.set_pos(self.start_point)
+        self.set_pos(kwargs.pop("start_point", (0, 0)))
 
     def update(self, *args, **kwargs) -> None:
         """ Update method from Sprite, is called per frame """
@@ -225,42 +203,18 @@ class BasicPlaneEntity(Sprite, ABC):
             cls._init_attributes()
             cls.INIT_FLAG = True
 
-    # --------------- Image blit helper --------------- #
-
-    def _switch_image(self, switch_rate=5) -> bool:
-        """
-        Switch image function should be called per frame
-        :param switch_rate: switch rate between each change
-        :return: True if loop finished, False if loop not finished
-        """
-        if self._image_switch_interval >= switch_rate:
-            self._image_switch = (self._image_switch + 1) % len(self._main_image_type)
-            self.image = self._main_image_type[self._image_switch]
-            self._image_switch_interval = 0
-            if self._image_switch == 0:
-                return True
-        else:
-            self._image_switch_interval += 1
-        return False
-
-    def _set_image_type(self, image_type) -> None:
-        """
-        Change main loop image
-        :param image_type: Name of the type of image to put into loop
-        """
-        self._main_image_type = self.IMAGE[image_type]
-
 
 class BasicSpinPlaneEntity(BasicPlaneEntity, ABC):
 
     def __init__(self, **kwargs):
+        # Init
         BasicPlaneEntity.__init__(self, **kwargs)
-
+        # Angle
         self.angle = 0
 
     def _switch_image(self, switch_rate=0) -> bool:
         """
-        Switch image function should be called per frame
+        This method rewrites the method from LoopImageEntity
         :param switch_rate: switch rate between each change
         :return: True if loop finished, False if loop not finished
         """

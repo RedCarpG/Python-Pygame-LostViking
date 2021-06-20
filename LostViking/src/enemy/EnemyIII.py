@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 
 from LostViking.src.generic_loader.sound_loader import *
 from LostViking.src.constants import SCREEN
-from ..generic_items.PlaneEntity import BasicSpinPlaneEntity
+from ..generic_items.BasicPlaneEntity import BasicSpinPlaneEntity
 from enum import Enum
 from ..groups import Enemy_G
 

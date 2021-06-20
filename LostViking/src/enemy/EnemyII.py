@@ -6,7 +6,7 @@ from abc import ABC
 import math
 from enum import Enum
 
-from ..generic_items.PlaneEntity import BasicSpinPlaneEntity
+from ..generic_items.BasicPlaneEntity import BasicSpinPlaneEntity
 from ..groups import Enemy_G
 
 
