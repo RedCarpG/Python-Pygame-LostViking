@@ -75,7 +75,7 @@ class LostViking(object):
     CREATE_SUPPLY = USEREVENT + 2
     #
     if pygame.get_init():
-        SCREEN = pygame.display.set_mode(SCREEN.SIZE, DOUBLEBUF)
+        SCREEN = pygame.display.set_mode(SCREEN._SIZE, DOUBLEBUF)
         CLOCK = pygame.time.Clock()  # Init clock
     else:
         raise Exception("Pygame not initialized!")

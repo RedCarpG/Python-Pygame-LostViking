@@ -117,7 +117,7 @@ class RESOURCES(object):
         RESOURCES.SOUNDS.setdefault("Shield", _load_sound("Shield.wav", MAIN_VOLUME - 0.3))
         RESOURCES.SOUNDS.setdefault("Player_Shoot", _load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2))
         RESOURCES.SOUNDS.setdefault("Laser", _load_sound("Laser.wav", MAIN_VOLUME - 0.2))
-        RESOURCES.SOUNDS.setdefault("Explosion", [_load_sound("Explo.wav", MAIN_VOLUME - 0.4),
+        RESOURCES.SOUNDS.setdefault("NucExplosion", [_load_sound("Explo.wav", MAIN_VOLUME - 0.4),
                                                   _load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
         RESOURCES.SOUNDS.setdefault("Player_Explo", _load_sound("Player_Explo.wav", MAIN_VOLUME))
         RESOURCES.SOUNDS.setdefault("NuclearLaunch_Detected",
