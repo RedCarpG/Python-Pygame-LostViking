@@ -5,7 +5,7 @@ Player1_G = pygame.sprite.GroupSingle(None)
 Player2_G = pygame.sprite.GroupSingle(None)
 
 Player_NucBomb_G = pygame.sprite.GroupSingle(None)
-NucBomb_Explosion_G = pygame.sprite.GroupSingle(None)
+Explosion_G = pygame.sprite.GroupSingle(None)
 
 Enemy_G = pygame.sprite.Group()
 
