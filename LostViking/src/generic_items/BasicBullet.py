@@ -1,32 +1,44 @@
 """ Basic classes for bullets
 Includes:
     -> BasicBullet()
-    -> StraightBullet()
+    -> BasicSpinBullet()
 """
-from abc import ABC
+from abc import ABC, abstractmethod
 import pygame
 import math
 
 from LostViking.src.constants import SCREEN
 from LostViking.src.groups import Bullet_G
+from .ImageEntity import SingleImageEntity
 
 
-class BasicBullet(pygame.sprite.Sprite, ABC):
+class BasicBullet(SingleImageEntity, ABC):
     """ Basic Bullet Class
-    To implement this Class:
-        -> Set _init_image() from SingleImageHelper
-        -> Set set_speed(_speed_x, _speed_y) in __init__()
     """
+
+    MAX_SPEED_X = 0
+    MAX_SPEED_Y = 0
+
+    _IS_SET_ATTRS = False
+
     def __init__(self,
                  init_position: (list, tuple),
-                 speed: (list, tuple)):
-        if not self._INIT_FLAG:
-            raise Exception("!!! ERROR: class is not init! {}".format(self))
-        pygame.sprite.Sprite.__init__(self, Bullet_G)
+                 speed: (list, tuple) = None, **kwargs):
+        # Check Initialization
+        if not hasattr(self, "INIT_FLAG") or not self.INIT_FLAG:
+            raise Exception("!!!ERROR: Class is not init! {}".format(self.__class__))
+        SingleImageEntity.__init__(self)
+        self.add(Bullet_G)
 
-        self._speed_x = speed[0]
-        self._speed_y = speed[1]
-        self.rect = self.image.get_rect()
+        # Set Attributes
+        if speed:
+            self._speed_x = speed[0]
+            self._speed_y = speed[1]
+        else:
+            self._speed_x = self.MAX_SPEED_X
+            self._speed_y = self.MAX_SPEED_Y
+
+        # Set Position
         self.rect.center = init_position
 
     # General update method for bullets
@@ -55,8 +67,17 @@ class BasicBullet(pygame.sprite.Sprite, ABC):
         return False
 
     @classmethod
+    @abstractmethod
+    def _init_attrs(cls):
+        cls.MAX_SPEED_X = 0
+        cls.MAX_SPEED_Y = 0
+        cls._IS_SET_ATTRS = False
+
+    @classmethod
     def init(cls):
-        cls._INIT_FLAG = False
+        cls._init_image()
+        cls._init_attrs()
+        cls.INIT_FLAG = True
 
 
 class BasicSpinBullet(BasicBullet, ABC):
@@ -64,49 +85,19 @@ class BasicSpinBullet(BasicBullet, ABC):
     def __init__(self, init_position: (list, tuple), angle=0):
         self.angle = angle
         angle = angle * math.pi / 180.0
-        speed_x_ = round(self._MAX_SPEED_X * math.sin(angle))
-        speed_y_ = round(self._MAX_SPEED_Y * math.cos(angle))
+        speed_x_ = round(self.MAX_SPEED_X * math.sin(angle))
+        speed_y_ = round(self.MAX_SPEED_Y * math.cos(angle))
 
         BasicBullet.__init__(self,
                              init_position=init_position,
                              speed=[speed_x_, speed_y_])
-
+        # Rotate Image
         self.image = pygame.transform.rotate(self.image, self.angle)
 
     def _trans_image(self):
-        temp = self.rect.center
         image_ = pygame.transform.rotate(self.image, self.angle)
+        temp = self.rect.center
         self.rect = image_.get_rect()
         self.rect.center = temp
         return image_
 
-    @classmethod
-    def init(cls):
-        cls._MAX_SPEED_X = 0
-        cls._MAX_SPEED_Y = 0
-        cls._INIT_FLAG = False
-
-"""
-class BulletViking(StraightBullet):
-    _MAX_SPEED = 15
-
-    def __init__(self, init_position):
-        StraightBullet.__init__(self, init_position=init_position, direction=[0, -1])
-        self.MaxSpeed = self._MAX_SPEED
-
-    @classmethod
-    def init_image(cls):
-        cls.IMAGE = load_image_alpha("PlayerPlane/bullet.png")
-
-
-class BulletInterceptor(BasicSpinBullet):
-    _MAX_SPEED = 5
-
-    def __init__(self, position, _angle):
-        BasicSpinBullet.__init__(self, position, _angle)
-
-    @classmethod
-    def init_image(cls):
-        cls.IMAGE = load_image("Enemy/laser.png")
-
-"""
