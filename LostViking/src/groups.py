@@ -1,21 +1,20 @@
+from pygame.sprite import GroupSingle, Group, LayeredDirty
 
-import pygame
+Player1_G = GroupSingle(None)
+Player2_G = GroupSingle(None)
 
-Player1_G = pygame.sprite.GroupSingle(None)
-Player2_G = pygame.sprite.GroupSingle(None)
+Player_NucBomb_G = GroupSingle(None)
+Explosion_G = GroupSingle(None)
 
-Player_NucBomb_G = pygame.sprite.GroupSingle(None)
-Explosion_G = pygame.sprite.GroupSingle(None)
+Enemy_G = Group()
 
-Enemy_G = pygame.sprite.Group()
+BOSS_G = GroupSingle(None)
 
-BOSS_G = pygame.sprite.GroupSingle(None)
+Bullet_G = Group()
+Player_Bullet_G = Group()
+Enemy_Bullet_G = Group()
 
-Bullet_G = pygame.sprite.Group()
-Player_Bullet_G = pygame.sprite.Group()
-Enemy_Bullet_G = pygame.sprite.Group()
+Plane_G = Group()
+Destroyed_Plane_G = Group()
 
-Plane_G = pygame.sprite.Group()
-Destroyed_Plane_G = pygame.sprite.Group()
-
-Shield_G = pygame.sprite.LayeredDirty()
+Shield_G = LayeredDirty()
