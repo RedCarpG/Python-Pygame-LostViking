@@ -4,7 +4,6 @@ Includes:
 """
 from abc import ABC
 import pygame
-from ..generic_items.SoundHelper import SoundHelper
 from ..generic_items.BasicPlaneEntity import BasicPlaneEntity
 from .PlayerWeapon import PlayerBullet1
 from ..constants import SCREEN
@@ -292,8 +291,8 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
 class Player1(BasicPlayerPlane):
 
     def __init__(self):
-        BasicPlayerPlane.__init__(self, group=Player1_G)
-        # self.add(Player1_G)
+        BasicPlayerPlane.__init__(self)
+        self.add(Player1_G)
 
     @classmethod
     def _init_image(cls) -> None:
