@@ -7,8 +7,8 @@ from abc import ABC, abstractmethod
 import pygame
 import math
 
-from LostViking.src.constants import SCREEN
-from LostViking.src.groups import Bullet_G
+from ..constants import SCREEN
+from ..groups import Bullet_G
 from .ImageEntity import SingleImageEntity
 
 

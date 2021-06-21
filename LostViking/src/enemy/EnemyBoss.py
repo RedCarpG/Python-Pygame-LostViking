@@ -26,7 +26,8 @@ class EnemyBoss(BasicPlaneEntity, ABC):
     _ATTACK_SPEED = 100
 
     def __init__(self, **kwargs):
-        BasicPlaneEntity.__init__(self, group=BOSS_G, **kwargs)
+        BasicPlaneEntity.__init__(self, **kwargs)
+        self.add(BOSS_G)
 
         self.action_status = BossActionPhase.MoveDown
         self.attack_status = BossAttackPhase.Idle
@@ -40,6 +41,27 @@ class EnemyBoss(BasicPlaneEntity, ABC):
 
         self.set_pos([SCREEN.get_w() // 2, -self.rect.height])
 
+    # -------------------- Behaviors --------------------
+    def _action(self):
+        if self.action_status == BossActionPhase.MoveDown:
+            self._action_move_down()
+        else:
+            if self.action_status == BossActionPhase.MoveX:
+                self._action_move_x()
+            else:
+                self._action_idle()
+            if self.attack_status == BossAttackPhase.Attack:
+                self._action_attack()
+            else:
+                self._action_attack_idle()
+
+    def _move(self) -> None:
+        super()._move()
+        if self.rect.left < 0 or self.rect.right > SCREEN.get_w():
+            self._move_x_direction = -self._move_x_direction
+            self._speed_x = -self._speed_x
+
+    # -------------------- Action States --------------------
     def enter_action_move_down_phase(self):
         self.action_status = BossActionPhase.MoveDown
 
@@ -80,6 +102,7 @@ class EnemyBoss(BasicPlaneEntity, ABC):
                 self._accelerate_right()
             self._count_action_move_x -= 1
 
+    # -------------------- Attack States --------------------
     def enter_attack_phase(self):
         self.attack_status = BossAttackPhase.Attack
 
@@ -97,25 +120,11 @@ class EnemyBoss(BasicPlaneEntity, ABC):
         else:
             self._count_attack_interval -= 1
 
-    def _action(self):
-        if self.action_status == BossActionPhase.MoveDown:
-            self._action_move_down()
-        else:
-            if self.action_status == BossActionPhase.MoveX:
-                self._action_move_x()
-            else:
-                self._action_idle()
-            if self.attack_status == BossAttackPhase.Attack:
-                self._action_attack()
-            else:
-                self._action_attack_idle()
+    # -------------------- Interface --------------------
+    def get_health(self):
+        return self._health
 
-    def _move(self) -> None:
-        super()._move()
-        if self.rect.left < 0 or self.rect.right > SCREEN.get_w():
-            self._move_x_direction = -self._move_x_direction
-            self._speed_x = -self._speed_x
-
+    # -------------------- Init --------------------
     @classmethod
     def _init_attributes(cls) -> None:
         cls.MAX_SPEED_X = 1

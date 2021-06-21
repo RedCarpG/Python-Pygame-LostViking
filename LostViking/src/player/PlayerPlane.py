@@ -297,7 +297,7 @@ class Player1(BasicPlayerPlane):
     @classmethod
     def _init_image(cls) -> None:
         cls.IMAGE = dict()
-        from LostViking.src.generic_loader.image_loader import load_image
+        from ..generic_loader.image_loader import load_image
         cls.IMAGE["BASE"] = [load_image("PlayerPlane/Viking_body.png")]
         cls.IMAGE["IDLE"] = [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
                              load_image("PlayerPlane/PlayerPlane_moveNormal2.png")]
@@ -324,7 +324,7 @@ class Player2(BasicPlayerPlane):
     @classmethod
     def _init_image(cls) -> None:
         cls._IMAGE = dict()
-        from LostViking.src.generic_loader.image_loader import load_image
+        from ..generic_loader.image_loader import load_image
         cls.IMAGE["BASE"] = [load_image("PlayerPlane/Viking_body.png")]
         cls.IMAGE["IDLE"] = [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
                              load_image("PlayerPlane/PlayerPlane_moveNormal2.png")]
@@ -344,7 +344,7 @@ class Player2(BasicPlayerPlane):
 
 def create_player(player_num=1):
     if player_num == 1:
-        return Player1()
+        return Player1(), None
     else:
         # TODO Point for P1, P2
         #return PlayerPlane(point=None), PlayerPlane(point=None, p_id=2)
