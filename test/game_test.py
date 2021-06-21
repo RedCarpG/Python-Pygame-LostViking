@@ -1,10 +1,10 @@
-from LostViking.src.groups import *
 from pygame.locals import *
 from pygame.sprite import spritecollideany, collide_rect_ratio, groupcollide
-from LostViking.src.generic_loader.color import *
+import pygame
+from LostViking.src.groups import *
+from LostViking.src.constants import *
 from LostViking.src.level1 import *
 from LostViking.src.player import *
-from LostViking.src.constants import SCREEN
 
 
 def collide_test(a, b):
@@ -71,15 +71,15 @@ def test_game():
     # Init Environment
     pygame.init()
     clock = pygame.time.Clock()
-    screen = pygame.display.set_mode(SCREEN.get_s())
+    screen = pygame.display.set_mode(SCREEN_SIZE)
 
     # Init Player
     init_player()
     player1 = create_player()
 
     # Init Enemy
-    level1_init()
-    level1_event_config()
+    init_level()
+    level_event_config()
 
     running = True
     while running:
@@ -91,7 +91,7 @@ def test_game():
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
-            level1_events_handler(event=event)
+            level_events_handler(event=event)
             detect_player_event(event, player1=player1)
         detect_key_pressed(player1)
 

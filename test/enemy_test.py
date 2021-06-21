@@ -1,20 +1,19 @@
-
-from LostViking.src.groups import *
-
+import pygame
 from pygame.locals import *
-from LostViking.src.generic_loader.color import *
-from LostViking.src.level1 import *
-from LostViking.src.constants import SCREEN
 import time
+from LostViking.src.groups import *
+from LostViking.src.constants import *
+from LostViking.src.level1 import *
+from LostViking.src.constants import SCREEN_SIZE
 
 
 def test_enemy():
     # Init Environment
     pygame.init()
     clock = pygame.time.Clock()
-    screen = pygame.display.set_mode(SCREEN.get_s())
+    screen = pygame.display.set_mode(SCREEN_SIZE)
 
-    level1_init()
+    init_level()
 
     pygame.time.set_timer(EVENT_CREATE_SCOUT, 1000)
     pygame.time.set_timer(EVENT_CREATE_PHOENIX, 15000)
@@ -32,7 +31,7 @@ def test_enemy():
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
-            level1_events_handler(event=event)
+            level_events_handler(event=event)
 
         screen.fill(BLACK)
         Player1_G.update()
