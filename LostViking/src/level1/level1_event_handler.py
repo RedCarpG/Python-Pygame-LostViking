@@ -10,14 +10,14 @@ from .Enemy_Carrier import add_enemy_carrier
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
-def level1_event_config():
+def level_event_config():
     pygame.time.set_timer(EVENT_CREATE_SCOUT, SPAWN_SPEED_SCOUT)
     pygame.time.set_timer(EVENT_CREATE_PHOENIX, SPAWN_SPEED_PHOENIX)
     pygame.time.set_timer(EVENT_CREATE_CARRIER, SPAWN_SPEED_CARRIER)
     # pygame.time.set_timer(Game.CREATE_SUPPLY, 40000)
 
 
-def level1_events_handler(event):
+def level_events_handler(event):
     if event.type == EVENT_CREATE_SCOUT:
         if add_enemy_scout(1):
             logging.info('Create Scout')

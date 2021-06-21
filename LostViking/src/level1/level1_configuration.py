@@ -5,7 +5,7 @@ from .Enemy_Interceptor import EnemyInterceptor
 from .level1_group import *
 
 
-def level1_init():
+def init_level():
     EnemyScout.init()
 
     EnemyPhoenix.init()
@@ -17,7 +17,7 @@ def level1_init():
     EnemyInterceptor.init()
 
 
-def level1_del():
+def end_level():
     del EnemyScout
     del EnemyPhoenix
     del BulletPhoenix
