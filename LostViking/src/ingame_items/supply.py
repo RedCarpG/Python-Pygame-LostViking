@@ -2,8 +2,7 @@ from LostViking.src.generic_loader.image_loader import *
 from enum import Enum
 import abc
 import random
-from GLOBAL import *
-from LostViking.src.player.PlayerPlane import PlayerBulletType
+from ..player.PlayerWeapon import PlayerBullet1
 
 
 class SUPPLY_TYPE(Enum):
