@@ -3,7 +3,7 @@ Enemy Basic abstract classes, which defines its general behaviors,
 Initialization should be made in the implementation of the class
 """
 from abc import ABC
-from ..constants import SCREEN
+from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ..generic_items.BasicPlaneEntity import BasicPlaneEntity
 from ..groups import Enemy_G
 
@@ -13,13 +13,13 @@ class EnemyI(BasicPlaneEntity, ABC):
     SCORE = 100
 
     def __init__(self, position, **kwargs):
-        BasicPlaneEntity.__init__(self, start_point=position,**kwargs)
+        BasicPlaneEntity.__init__(self, start_point=position, **kwargs)
         self.add(Enemy_G)
 
         self._speed_y = self.MAX_SPEED_DOWN
 
     def _action(self):
-        if self.rect.top < SCREEN.get_h():
+        if self.rect.top < SCREEN_HEIGHT:
             self._move()
         else:
             self.kill()

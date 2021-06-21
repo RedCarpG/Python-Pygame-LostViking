@@ -3,6 +3,7 @@ from .level1_group import Enemy_Phoenix_G
 from ..groups import Enemy_Bullet_G
 from ..generic_items.BasicBullet import BasicSpinBullet
 from ..generic_items.BasicShield import BasicShield
+from ..constants import SCREEN_WIDTH
 
 
 class EnemyPhoenix(EnemyIII):
@@ -114,8 +115,7 @@ class ShieldPhoenix(BasicShield):
 
 
 def add_enemy_phoenix():
-    from ..constants import SCREEN
-    x1 = SCREEN.get_w()
+    x1 = SCREEN_WIDTH
     x2 = 0
     y = 200
     EnemyPhoenix((x1, y), 'R')

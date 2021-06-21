@@ -5,7 +5,7 @@ Initialization should be made in the implementation of the class
 from abc import ABC, abstractmethod
 
 from ..generic_loader.sound_loader import *
-from ..constants import SCREEN
+from ..constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from ..generic_items.BasicPlaneEntity import BasicSpinPlaneEntity
 from enum import Enum
 from ..groups import Enemy_G
@@ -130,7 +130,7 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
         self._speed_y = self.MAX_SPEED_DOWN
 
     def _action_leave(self):
-        if self.rect.top < SCREEN.get_h():
+        if self.rect.top < SCREEN_HEIGHT:
             self._move()
         else:
             self.kill()
@@ -160,6 +160,6 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
         cls.MAX_HEALTH = 500
         # s = t*v0/2 => t = 2s/v0
         # v0 - a * t = 0 => a = v0**2 / 2s
-        cls.ACC_X = round((cls.MAX_SPEED_X ** 2) / (SCREEN.get_w()*7/4), 2)
+        cls.ACC_X = round((cls.MAX_SPEED_X ** 2) / (SCREEN_WIDTH*7/4), 2)
         cls.ACC_UP = cls.ACC_DOWN = 0
         cls._IS_SET_ATTRS = True

@@ -2,7 +2,7 @@
     -> PlayerNucBomb class which creates a bomb entity
     -> NucExplosion class which handles with the drawing of explosion image"""
 from pygame.sprite import Sprite
-from ..constants import SCREEN
+from ..constants import SCREEN_HEIGHT
 from ..generic_loader.image_loader import load_image
 from ..groups import Player_NucBomb_G
 from ..generic_items.BasicExplosion import BasicExplosion
@@ -37,7 +37,7 @@ class PlayerNucBomb(Sprite):
         self.explode_flag = False
 
     def update(self) -> None:
-        if self.rect.bottom > SCREEN.get_h() // 3:
+        if self.rect.bottom > SCREEN_HEIGHT // 3:
             self._move()
         else:
             NucExplosion(self.rect.center)

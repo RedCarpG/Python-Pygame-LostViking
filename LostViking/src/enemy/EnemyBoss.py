@@ -3,7 +3,7 @@ from enum import Enum
 from abc import ABC, abstractmethod
 from ..generic_items.BasicPlaneEntity import BasicPlaneEntity
 from ..groups import BOSS_G
-from ..constants import SCREEN
+from ..constants import SCREEN_WIDTH
 
 
 class BossActionPhase(Enum):
@@ -39,7 +39,7 @@ class EnemyBoss(BasicPlaneEntity, ABC):
         self._count_action_move_x = self._MOVE_X_DURATION
         self._count_attack_interval = self._ATTACK_SPEED
 
-        self.set_pos([SCREEN.get_w() // 2, -self.rect.height])
+        self.set_pos([SCREEN_WIDTH // 2, -self.rect.height])
 
     # -------------------- Behaviors --------------------
     def _action(self):
@@ -57,7 +57,7 @@ class EnemyBoss(BasicPlaneEntity, ABC):
 
     def _move(self) -> None:
         super()._move()
-        if self.rect.left < 0 or self.rect.right > SCREEN.get_w():
+        if self.rect.left < 0 or self.rect.right > SCREEN_WIDTH:
             self._move_x_direction = -self._move_x_direction
             self._speed_x = -self._speed_x
 

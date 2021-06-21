@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 import pygame
 import math
 
-from ..constants import SCREEN
+from ..constants import SCREEN_HEIGHT
 from ..groups import Bullet_G
 from .ImageEntity import SingleImageEntity
 
@@ -59,10 +59,10 @@ class BasicBullet(SingleImageEntity, ABC):
 
     # General method to detect whether in screen
     def _hit_screen_edge(self):
-        if self.rect.top > SCREEN.get_h() \
+        if self.rect.top > SCREEN_HEIGHT \
                 or self.rect.bottom < 0 \
                 or self.rect.right < 0 \
-                or self.rect.left > SCREEN.get_w():
+                or self.rect.left > SCREEN_HEIGHT:
             return True
         return False
 

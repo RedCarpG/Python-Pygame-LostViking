@@ -2,7 +2,7 @@ from ..enemy.EnemyII import EnemyII
 from ..groups import Player1_G
 from .level1_group import Enemy_Interceptor_G
 from .Enemy_Phoenix import BulletPhoenix
-from ..constants import SCREEN
+from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT
 import random
 
 
@@ -11,10 +11,10 @@ class EnemyInterceptor(EnemyII):
 
     NUM = 0
 
-    MOVE_BOTTOM_LIMIT = int(SCREEN.get_h() * 2 / 3)
-    MOVE_LEFT_LIMIT = int(SCREEN.get_w() / 5)
-    MOVE_RIGHT_LIMIT = int(SCREEN.get_w() * 4 / 5)
-    MOVE_UP_LIMIT = int(SCREEN.get_h() / 5)
+    MOVE_BOTTOM_LIMIT = int(SCREEN_HEIGHT * 2 / 3)
+    MOVE_LEFT_LIMIT = int(SCREEN_WIDTH / 5)
+    MOVE_RIGHT_LIMIT = int(SCREEN_WIDTH * 4 / 5)
+    MOVE_UP_LIMIT = int(SCREEN_HEIGHT / 5)
 
     def __init__(self, position, path):
         EnemyII.__init__(self, position, path, group=Enemy_Interceptor_G)
@@ -61,11 +61,11 @@ class EnemyInterceptor(EnemyII):
             self.angle = -self.angle
             #self.path[0][0] = -self.path[0][0]
             # self.aim(self.path[0])
-        elif self.rect.right > SCREEN.get_w():
-            self.rect.right = SCREEN.get_w()
+        elif self.rect.right > SCREEN_WIDTH:
+            self.rect.right = SCREEN_WIDTH
             self._speed_x = -self._speed_x
             self.angle = -self.angle
-            #self.path[0][0] = 2 * SCREEN.get_w() - self.path[0][0]
+            #self.path[0][0] = 2 * SCREEN_WIDTH - self.path[0][0]
             # self.aim(self.path[0])
         self.rect.move_ip(self._speed_x, self._speed_y)
 

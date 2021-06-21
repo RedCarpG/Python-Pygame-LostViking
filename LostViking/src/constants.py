@@ -8,29 +8,9 @@ MAIN_VOLUME = 0.5
 # 背景卷动速度
 BG_SPEED = 25
 
-
-# Screen
-class SCREEN(object):
-    _SIZE = _WIDTH, _HEIGHT = (1000, 800)
-
-    @classmethod
-    def change_screen_size(cls, width, height):
-        SCREEN._SIZE = (width, height)
-        SCREEN._WIDTH = width
-        SCREEN._HEIGHT = height
-
-    @classmethod
-    def get_h(cls):
-        return SCREEN._HEIGHT
-
-    @classmethod
-    def get_w(cls):
-        return SCREEN._WIDTH
-
-    @classmethod
-    def get_s(cls):
-        return SCREEN._SIZE
-
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 800
+SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 """
 class RESOURCES(object):

@@ -6,7 +6,7 @@ from abc import ABC
 import pygame
 from ..generic_items.BasicPlaneEntity import BasicPlaneEntity
 from .PlayerWeapon import PlayerBullet1
-from ..constants import SCREEN
+from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ..groups import Player1_G, Player2_G
 
 
@@ -61,12 +61,12 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
                 self._deceleration_y()
 
             # Restrict the plane inside the screen
-            if self.rect.bottom > SCREEN.get_h():
-                self.rect.bottom = SCREEN.get_h()
+            if self.rect.bottom > SCREEN_HEIGHT:
+                self.rect.bottom = SCREEN_HEIGHT
             if self.rect.left < 0:
                 self.rect.left = 0
-            if self.rect.right > SCREEN.get_w():
-                self.rect.right = SCREEN.get_w()
+            if self.rect.right > SCREEN_WIDTH:
+                self.rect.right = SCREEN_WIDTH
             if self.rect.top < 0:
                 self.rect.top = 0
 
@@ -146,11 +146,11 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
             self._move_flag_y = True
             self._set_image_type("MOVE_DOWN")
         # If not outside the screen
-        if self.rect.bottom < SCREEN.get_h():
+        if self.rect.bottom < SCREEN_HEIGHT:
             self._accelerate_down()
         else:
             self._speed_y = 0
-            self.rect.bottom = SCREEN.get_h()
+            self.rect.bottom = SCREEN_HEIGHT
             self._set_image_type("IDLE")
 
     # Trigger Move Left
@@ -174,12 +174,12 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         (Note: This method only change the value of _speed_x / _speed_y)
         """
         # If not outside the screen
-        if self.rect.right < SCREEN.get_w():
+        if self.rect.right < SCREEN_WIDTH:
             self._move_flag_x = True
             self._accelerate_right()
         else:
             self._speed_x = 0
-            self.rect.right = SCREEN.get_w()
+            self.rect.right = SCREEN_WIDTH
 
     # Trigger Brake y, only triggered when lease the button
     def trigger_stop_y(self) -> None:

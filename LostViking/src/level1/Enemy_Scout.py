@@ -3,7 +3,7 @@ from ..generic_loader.image_loader import load_image
 from .level1_group import Enemy_Scout_G
 
 import random
-from ..constants import SCREEN
+from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 
 class EnemyScout(EnemyI):
@@ -40,8 +40,8 @@ class EnemyScout(EnemyI):
 def add_enemy_scout(num):
     if len(Enemy_Scout_G.sprites()) < 25:
         for i in range(num):
-            x = random.randint(50, SCREEN.get_w() - 50)
-            y = random.randint(-0.5 * SCREEN.get_h(), 0 - 100)
+            x = random.randint(50, SCREEN_WIDTH - 50)
+            y = random.randint(-0.5 * SCREEN_HEIGHT, 0 - 100)
 
             EnemyScout([x, y])
         return True
