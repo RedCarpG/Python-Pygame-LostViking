@@ -21,7 +21,7 @@ def test_enemy():
 
     from LostViking.src.player import create_player, init_player
     init_player()
-    create_player(1)
+    player1 = create_player(1)
 
     running = True
     while running:

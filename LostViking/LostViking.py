@@ -1,71 +1,75 @@
 from src.constants import *
+from src.generic_loader.sound_loader import load_music, load_sound, play_sound
+from src.generic_loader.image_loader import load_image
+from src.generic_loader.font_loader import load_font, PGFont
+from pygame.locals import *
+import pygame
+import sys
 
 if not pygame.font:
     print("Warning, fonts disabled!")
 if not pygame.mixer:
     print("Warning, sounds disabled!")
 
-from LostViking.src.level1.Lever1 import *
+from LostViking.src.level1 import *
 
 
-def col(a, b):
+def collide_test(a, b):
     if pygame.sprite.collide_rect(a, b):
         if pygame.sprite.collide_rect_ratio(0.5)(a, b):
             return True
     return False
 
 
-class Enter:
+def enter(screen, clock):
+    # Load music
+    load_music(['bgm.ogg', 'bgm2.ogg'], MAIN_VOLUME - 0.7)
+    # Play music
+    pygame.mixer.music.play(0)
 
-    def enter(self, screen, clock):
-        # 加载播放 enter界面音乐
-        Main.MUSIC = ['bgm.ogg', 'bgm2.ogg']
-        _load_music(Main.MUSIC, MAIN_VOLUME - 0.7)
-        # enter音乐播放
-        pygame.mixer.music.play(0)
-        # 加载 enter界面背景
-        Main.BACKGROUND = _load_image("Space.png")
-        # enter界面字体
-        begin_font = load_font("arialbd.ttf", 50)
-        title_font = load_font("arialbd.ttf", 120)
-        begin_text = myFont(screen, begin_font, "Press Space To Begin", (0, 0), color=WHITE)
-        title_text = myFont(screen, title_font, "LOST VIKING", (0, 0), color=WHITE)
-        title_text.move_center((screen.get_width() // 2, screen.get_height() // 2))
-        begin_text.move_center((screen.get_width() // 2, 3 * screen.get_height() // 5))
-        UI1 = _load_sound("UI1.wav", MAIN_VOLUME - 0.2)
-        # enter入场等待
-        enter = True
-        delay = 100
-        while enter:
-            # 绘制背景，文本
-            screen.fill(BLACK)
-            title_text.blit()
-            if delay % 5:
-                begin_text.blit()
-            pygame.display.flip()
-            # 全部事件
-            for event in pygame.event.get():
-                # 退出事件
-                if event.type == QUIT:
+    # Load bg image
+    bg_surface = load_image("Space.png")
+
+    # enter font
+    begin_font = load_font("arialbd.ttf", 50)
+    title_font = load_font("arialbd.ttf", 120)
+    begin_text = PGFont(screen, begin_font, "Press Space To Begin", (0, 0), color=WHITE)
+    title_text = PGFont(screen, title_font, "LOST VIKING", (0, 0), color=WHITE)
+    title_text.move_center((screen.get_width() // 2, screen.get_height() // 2))
+    begin_text.move_center((screen.get_width() // 2, 3 * screen.get_height() // 5))
+    ui1 = load_sound("ui1.wav", MAIN_VOLUME - 0.2)
+
+    # enter loop
+    delay = 100
+    while True:
+        # 绘制背景，文本
+        screen.fill(BLACK)
+        title_text.blit()
+        if delay % 5:
+            begin_text.blit()
+        pygame.display.flip()
+        # 全部事件
+        for event in pygame.event.get():
+            # 退出事件
+            if event.type == QUIT:
+                pygame.font.quit()
+                pygame.mixer.quit()
+                pygame.quit()
+                sys.exit()
+            # 按键事件
+            elif event.type == KEYDOWN:
+                # 按ESCAPE退出
+                if event.key == K_ESCAPE:
                     pygame.font.quit()
                     pygame.mixer.quit()
                     pygame.quit()
                     sys.exit()
-                # 按键事件
-                elif event.type == KEYDOWN:
-                    # 按ESCAPE退出
-                    if event.key == K_ESCAPE:
-                        pygame.font.quit()
-                        pygame.mixer.quit()
-                        pygame.quit()
-                        sys.exit()
-                    elif event.key == K_SPACE or event.key == K_RETURN:
-                        UI1.play()
-                        begin = False
-                        enter = False
-            delay = (delay - 1) % 100
-            # 帧数设置
-            clock.tick(10)
+                elif event.key == K_SPACE or event.key == K_RETURN:
+                    ui1.play()
+                    return
+        delay = (delay - 1) % 100
+        # Frame rate
+        clock.tick(10)
 
 
 class LostViking(object):
@@ -75,7 +79,7 @@ class LostViking(object):
     CREATE_SUPPLY = USEREVENT + 2
     #
     if pygame.get_init():
-        SCREEN = pygame.display.set_mode(SCREEN._SIZE, DOUBLEBUF)
+        SCREEN = pygame.display.set_mode(SCREEN.get_s(), DOUBLEBUF)
         CLOCK = pygame.time.Clock()  # Init clock
     else:
         raise Exception("Pygame not initialized!")
@@ -134,7 +138,7 @@ class LostViking(object):
         self.Lever = Level1()
 
     def play(self, clock):
-        # 主循�?
+        # Main loop
         while self.running:
             clock.tick(30)
             ticks = pygame.time.get_ticks()
@@ -332,27 +336,28 @@ class LostViking(object):
     def begin_animation(self):
 
         # 生成背景
-        BG = _load_image_alpha("BackGround.png")
-        BG2 = _load_image_alpha("BackGround2.png")
-        BG_rect = BG.get_rect()
-        BG2_rect = BG2.get_rect()
-        BG_rect.bottom = SCREEN.getH()
-        BG2_rect.bottom = SCREEN.getH()
+        bg1_image = load_image("BackGround.png")
+        bg2_image = load_image("BackGround2.png")
+        bg1_rect = bg1_image.get_rect()
+        bg2_rect = bg2_image.get_rect()
+        bg1_rect.bottom = SCREEN.get_h()
+        bg2_rect.bottom = SCREEN.get_h()
+
         accelerate = 0
-        DELAY = 100
+        delay = 100
         lift_flag1 = 0
         lift_flag2 = 0
         init_speed = 0
         end_flag = -1
-        SOUNDS["Liftoff2"].play()
+        play_sound("Liftoff2")
 
-        while begin:
+        while True:
             self.screen.blit(BACKGROUND, (0, 0))
 
-            if BG2 is not None:
-                self.screen.blit(BG2, BG2_rect)
-            if BG is not None:
-                self.screen.blit(BG, BG_rect)
+            if bg2_image is not None:
+                self.screen.blit(bg2_image, bg2_rect)
+            if bg1_image is not None:
+                self.screen.blit(bg1_image, bg1_rect)
             # 绘制我方飞机
             self.player.blit()
 
@@ -360,11 +365,11 @@ class LostViking(object):
                 accelerate += 0.005
                 init_speed += accelerate
 
-            if BG2_rect.top >= screen.get_height():
+            if bg2_rect.top >= screen.get_height():
                 if end_flag == -1:
                     end_flag = 50
                 self.player.direction[1] = 0
-            elif BG_rect.top >= screen.get_height() // 2:
+            elif bg1_rect.top >= screen.get_height() // 2:
                 if lift_flag2 == 0:
                     lift_flag2 = 1
                     SOUNDS["Liftoff2"].play()
@@ -378,20 +383,20 @@ class LostViking(object):
                         # BG_rect1.top += init_speed
                 self.player.rect.top -= init_speed
             else:
-                BG_rect.top += init_speed
-                BG2_rect.top += 1 * init_speed // 6
+                bg1_rect.top += init_speed
+                bg2_rect.top += 1 * init_speed // 6
             if end_flag > 0:
                 end_flag -= 1
             elif end_flag == 0:
                 begin = False
-            DELAY = (DELAY - 1) % 100
+            delay = (delay - 1) % 100
             # Display
             pygame.display.flip()
             # Frame rate
             self.clock.tick(60)
 
 
-def init():
+def init_pygame():
     # Init Pygame
     pygame.init()
     pygame.mixer.init()
@@ -401,7 +406,7 @@ def init():
 
 
 def main():
-    init()
+    init_pygame()
     game = LostViking()
     game.play()
 
