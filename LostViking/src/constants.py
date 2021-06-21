@@ -1,9 +1,7 @@
-from .generic_loader.sound_loader import *
-from .generic_loader.image_loader import *
-from enum import Enum
-
-PLAYER_IMAGE = {}
-
+# Color values
+GRAY = (128, 128, 128)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 # 主音量
 MAIN_VOLUME = 0.5
@@ -34,12 +32,7 @@ class SCREEN(object):
         return SCREEN._SIZE
 
 
-class G(object):
-    SCORE = 0
-    LIFE = 3
-    BOMB = 3
-
-
+"""
 class RESOURCES(object):
     SOUNDS = {}
     IMAGES = {}
@@ -127,3 +120,5 @@ class RESOURCES(object):
         RESOURCES.SOUNDS.setdefault("Liftoff1", _load_sound("Liftoff1.wav", MAIN_VOLUME))
         RESOURCES.SOUNDS.setdefault("Liftoff2", _load_sound("Liftoff2.wav", MAIN_VOLUME - 0.2))
         RESOURCES.SOUNDS.setdefault("Error", _load_sound("Error.wav", MAIN_VOLUME))
+        
+"""
