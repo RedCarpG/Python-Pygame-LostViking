@@ -1,6 +1,6 @@
 import pygame
 import os
-from .color import *
+from ..constants import WHITE
 from pygame.compat import geterror
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -45,8 +45,8 @@ class PGFont:
     def blit(self):
         self.screen.blit(self.render, (self.rect[0], self.rect[1]))
 
-    def move_center(self, center_positon):
-        self.rect.center = center_positon
+    def move_center(self, center_position):
+        self.rect.center = center_position
 
     def move(self, position):
         self.rect.move_ip(position)
