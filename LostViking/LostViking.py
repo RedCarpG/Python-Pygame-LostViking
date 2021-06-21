@@ -1,27 +1,30 @@
+import traceback
+import pygame
+from pygame.sprite import spritecollideany, collide_rect_ratio, groupcollide
+from pygame.locals import *
+import sys
 from src.constants import *
 from src.generic_loader.sound_loader import load_music, load_sound, play_sound
 from src.generic_loader.image_loader import load_image
 from src.generic_loader.font_loader import load_font, PGFont
-from pygame.locals import *
-import pygame
-import sys
+from src.player import *
+from src.groups import *
 
 if not pygame.font:
     print("Warning, fonts disabled!")
 if not pygame.mixer:
     print("Warning, sounds disabled!")
 
-from LostViking.src.level1 import *
-
-
+# TODO collide test separate file
 def collide_test(a, b):
     if pygame.sprite.collide_rect(a, b):
         if pygame.sprite.collide_rect_ratio(0.5)(a, b):
             return True
     return False
 
-
-def enter(screen, clock):
+# TODO enter UI
+""" 
+def enter(Screen, clock):
     # Load music
     load_music(['bgm.ogg', 'bgm2.ogg'], MAIN_VOLUME - 0.7)
     # Play music
@@ -33,17 +36,17 @@ def enter(screen, clock):
     # enter font
     begin_font = load_font("arialbd.ttf", 50)
     title_font = load_font("arialbd.ttf", 120)
-    begin_text = PGFont(screen, begin_font, "Press Space To Begin", (0, 0), color=WHITE)
-    title_text = PGFont(screen, title_font, "LOST VIKING", (0, 0), color=WHITE)
-    title_text.move_center((screen.get_width() // 2, screen.get_height() // 2))
-    begin_text.move_center((screen.get_width() // 2, 3 * screen.get_height() // 5))
+    begin_text = PGFont(Screen, begin_font, "Press Space To Begin", (0, 0), color=WHITE)
+    title_text = PGFont(Screen, title_font, "LOST VIKING", (0, 0), color=WHITE)
+    title_text.move_center((Screen.get_width() // 2, Screen.get_height() // 2))
+    begin_text.move_center((Screen.get_width() // 2, 3 * Screen.get_height() // 5))
     ui1 = load_sound("ui1.wav", MAIN_VOLUME - 0.2)
 
     # enter loop
     delay = 100
     while True:
         # 绘制背景，文本
-        screen.fill(BLACK)
+        Screen.fill(BLACK)
         title_text.blit()
         if delay % 5:
             begin_text.blit()
@@ -70,269 +73,58 @@ def enter(screen, clock):
         delay = (delay - 1) % 100
         # Frame rate
         clock.tick(10)
-
+"""
 
 class LostViking(object):
-    # Events
-    PLAYER_SHOOT = USEREVENT
-    NUCLEAR_LAUNCH = USEREVENT + 1
-    CREATE_SUPPLY = USEREVENT + 2
-    #
-    if pygame.get_init():
-        SCREEN = pygame.display.set_mode(SCREEN.get_s(), DOUBLEBUF)
-        CLOCK = pygame.time.Clock()  # Init clock
-    else:
-        raise Exception("Pygame not initialized!")
-    #
-    BACKGROUND = None
-
-    # Fonts Group
-    Text_G = {}
-    # Player
 
     #  ---------------------- Init ---------------------- #
     def __init__(self):
-        # --- Init Groups ---
-        # Item groups
-        #self.group_supply = pygame.sprite.Group()
-        #self.bomb = pygame.sprite.GroupSingle(None)
-        #self.shields = Shield.SHIELDS
-        # · Text Groups
+        # Init Pygame
+        pygame.init()
+        pygame.mixer.init()
+        pygame.font.init()
+        pygame.display.set_caption("LOST VIKING")
 
+        # Init screen surface
+        self.screen = pygame.display.set_mode(SCREEN_SIZE, DOUBLEBUF)
+        # Init clock
+        self.clock = pygame.time.Clock()
+
+        # Init Music
+        music = ['bgm2.ogg', 'bgm.ogg']
+        load_music(music, MAIN_VOLUME)
+        pygame.mixer.music.play(1)
+
+        # Load BG
+        self.background_image = load_image("Space.png")
+
+        # TODO Text
+        """
+        # · Text Groups
         fonts = {"score_font": load_font("arialbd.ttf", 30),
                  "life_font": load_font("arialbd.ttf", 30)}
         self.Text_G = {
-            'score_text': myFont(self.SCREEN, fonts["score_font"],
+            'score_text': PGFont(self.screen, fonts["score_font"],
                                  ("Score: " + str(G.SCORE)), (0, 30), color=WHITE),
-            'life_text': myFont(self.SCREEN, fonts["score_font"],
+            'life_text': PGFont(self.screen, fonts["score_font"],
                                 ("Life: " + str(G.LIFE)), (0, 60), color=WHITE),
-            'bomb_text': myFont(self.SCREEN, fonts["score_font"],
+            'bomb_text': PGFont(self.screen, fonts["score_font"],
                                 ("Bomb: " + str(G.BOMB)), (0, 90), color=WHITE)
         }
-        # BasicEnemy groups
-        self.enemies_hit = BasicEnemy.EnemyHit_G
-        self.enemies_die = BasicEnemy.EnemyDie_G
-        self.boss = BasicEnemy.BOSS
-        self.player_bullets = MyPlane.Player_Bullet_G
+        """
+        # TODO Supply Event
+        # pygame.time.set_timer(self.CREATE_SUPPLY, 10000)
 
-        # -* Set Timer *-
-        pygame.time.set_timer(self.CREATE_SUPPLY, 10000)
+        # create player
+        init_player()
+        self.player1, _ = create_player(player_num=1)
 
-        # --- Load Music ---
-        # MUSIC = ['bgm2.ogg', 'bgm.ogg']
-        # load_music(Main.MUSIC, MAIN_VOLUME)
-        _load_music(['bgm2.ogg', 'bgm.ogg'], MAIN_VOLUME)
-        pygame.mixer.music.play(1)
-        # Load BG
-        self.BACKGROUND = _load_image("Space.png")
+        self.level = None
 
-        # -* Load Images and Sounds
-        global_load_image()
-        LOAD_SOUNDS()
-        # 生成我方飞机
-        self.player_number = 1
-        if self.player_number == 1:
-            self.player = MyPlane()
-        self.players.add(self.player)
-        # 加载关卡
-        self.Lever = Level1()
+        self.running = True
 
-    def play(self, clock):
-        # Main loop
-        while self.running:
-            clock.tick(30)
-            ticks = pygame.time.get_ticks()
-
-            self.Events()
-            self.Collide()
-            self.Blit()
-            # 更新
-            self.Update(ticks)
-
-        pygame.font.quit()
-        pygame.mixer.quit()
-        pygame.quit()
-        sys.exit()
-
-    def Events(self):
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                self.running = False
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.running = False
-                # 空格键射�?
-                if event.key == K_SPACE:
-                    pygame.event.post(pygame.event.Event(self.PLAYER_SHOOT, {}))
-                    pygame.time.set_timer(self.PLAYER_SHOOT, 200)
-                    # Q键投掷核�?
-                if event.key == K_q:
-                    if G.BOMB > 0:
-                        if len(self.bomb) == 0:
-                            G.BOMB -= 1
-                            self.bomb_text.change_text("Bomb: " + str(G.BOMB))
-                            SOUNDS["NuclearLaunch_Detected"].stop()
-                            SOUNDS["NuclearLaunch_Detected"].play()
-                            nuclear_bomb = PlayerNucBomb(self.player.rect.center)
-                            self.bomb.add(nuclear_bomb)
-                    else:
-                        SOUNDS["Error"].stop()
-                        SOUNDS["Error"].play()
-
-            elif event.type == KEYUP:
-                if event.key == K_SPACE:
-                    pygame.time.set_timer(self.PLAYER_SHOOT, 0)
-                if event.key == K_w:
-                    self.player.move_flag_y[1] = False
-                if event.key == K_s:
-                    self.player.move_flag_y[1] = False
-                if event.key == K_a:
-                    self.player.move_flag_y[0] = False
-                if event.key == K_d:
-                    self.player.move_flag_y[0] = False
-                if event.key == K_UP:
-                    self.player.move_flag_y[1] = False
-                if event.key == K_DOWN:
-                    self.player.move_flag_y[1] = False
-                if event.key == K_LEFT:
-                    self.player.move_flag_y[0] = False
-                if event.key == K_RIGHT:
-                    self.player.move_flag_y[0] = False
-
-            elif event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    pygame.event.post(pygame.event.Event(self.PLAYER_SHOOT, {}))
-                    pygame.time.set_timer(self.PLAYER_SHOOT, 400)
-
-            elif event.type == MOUSEBUTTONUP:
-                if event.button == 1:
-                    pygame.time.set_timer(self.PLAYER_SHOOT, 0)
-
-            elif event.type == self.PLAYER_SHOOT:
-                SOUNDS["Player_Shoot"].stop()
-                SOUNDS["Player_Shoot"].play()
-                self.player._shoot()
-
-            elif self.Lever.events(event):
-                pass
-
-            elif event.type == self.CREATE_SUPPLY:
-                n = random.randint(1, 10)
-                if n < 3:
-                    self.group_supply.add(Supply.create(SUPPLY_TYPE(0)))
-                elif n > 8:
-                    self.group_supply.add(Supply.create(SUPPLY_TYPE(2)))
-                else:
-                    self.group_supply.add(Supply.create(SUPPLY_TYPE(1)))
-
-        # 检测用户键盘操�?
-        key_pressed = pygame.key.get_pressed()
-        if key_pressed[K_w] or key_pressed[K_UP]:
-            self.player.move_up()
-        if key_pressed[K_s] or key_pressed[K_DOWN]:
-            self.player.move_back()
-        if key_pressed[K_a] or key_pressed[K_LEFT]:
-            self.player.move_left()
-        if key_pressed[K_d] or key_pressed[K_RIGHT]:
-            self.player.move_right()
-
-    def Collide(self):
-        supply_get = pygame.sprite.spritecollideany(self.player, self.group_supply)
-        if supply_get != None:
-            if pygame.sprite.collide_circle_ratio(0.65)(self.player, supply_get):
-                supply_get.catched(self.player)
-                G.SCORE += supply_get.score
-                if supply_get.type == SUPPLY_TYPE.Bomb:
-                    self.bomb_text.change_text("Bomb: " + str(G.BOMB))
-                elif supply_get.type == SUPPLY_TYPE.Life:
-                    self.life_text.change_text("Life: " + str(G.LIFE))
-
-        if self.player.is_active and not self.player.is_invincible:
-            bullet_hit = pygame.sprite.spritecollideany(self.player, self.enemy_bullets)
-            if bullet_hit != None:
-                if pygame.sprite.collide_rect_ratio(0.65)(self.player, bullet_hit):
-                    if self.player.hit():
-                        bullet_hit.kill()
-                        G.LIFE -= 1
-            enemy_hit = pygame.sprite.spritecollideany(self.player, self.enemies)
-            if enemy_hit != None:
-                if pygame.sprite.collide_rect_ratio(0.65)(self.player, enemy_hit):
-                    if enemy_hit.active:
-                        if self.player.hit():
-                            if enemy_hit not in self.boss:
-                                enemy_hit.active = False
-                                enemy_hit.destroy()
-                                enemy_hit.kill()
-                                self.enemies_die.add(enemy_hit)
-                            G.LIFE -= 1
-
-        self.enemies_hit.add(pygame.sprite.groupcollide(self.enemies, self.player_bullets, False, True, col))
-        if len(self.enemies_hit) > 0:
-            for each in self.enemies_hit:
-                each.hit()
-                if not each.is_active:
-                    G.SCORE += each.score
-                    each.destroy()
-                    each.kill()
-                    self.enemies_die.add(each)
-                self.enemies_hit.remove(each)
-
-        if len(self.bomb) > 0:
-            if self.bomb.sprite.is_active and self.bomb.sprite.explode_flag:
-                self.bomb.sprite.is_active = False
-                for each in self.enemies:
-                    if each.rect.bottom > 0 and each.is_active:
-                        each.hit(800)
-                        if not each.is_active:
-                            G.SCORE += each.score
-                            each.destroy()
-                            each.kill()
-                            self.enemies_die.add(each)
-                self.enemy_bullets.empty()
-
-        self.life_text.change_text("Life: " + str(G.LIFE))
-        self.score_text.change_text("Score: " + str(G.SCORE))
-
-    def Blit(self):
-        # 星空背景
-        self.screen.fill(BLACK)
-        self.screen.blit(Main.BACKGROUND, (0, 0))
-        if self.boss.sprite:
-            pygame.draw.rect(self.screen, (100, 200, 100, 180), Rect(0, 0, SCREEN.get_w(), 25), 3)
-            pygame.draw.rect(self.screen, (100, 200, 100, 180),
-                             Rect(0, 0, SCREEN.get_w() * self.boss.sprite._health / self.boss.sprite.maxHealth, 25))
-
-        # 绘制字体
-        self.score_text.blit()
-        self.life_text.blit()
-        self.bomb_text.blit()
-        #
-        self.group_supply.draw(self.screen)
-        self.player_bullets.draw(self.screen)
-        self.enemy_bullets.draw(self.screen)
-        self.bomb.draw(self.screen)
-        self.players.draw(self.screen)
-        self.boss.draw(self.screen)
-        self.enemies.draw(self.screen)
-        self.enemies_die.draw(self.screen)
-        self.shields.draw(self.screen)
-        #
-
-    def Update(self, ticks):
-        self.group_supply.update()
-        self.player.update(ticks)
-        self.enemy_bullets.update()
-        self.player_bullets.update()
-        self.Lever.update(self.player.rect.center)
-        self.bomb.update()
-
-        for each in self.enemies_die:
-            if each.image_switch == len(each.main_image) - 1:
-                each.kill()
-            each.change_image()
-        # 显示
-        pygame.display.flip()
-
+    # TODO begin animation
+    """
     def begin_animation(self):
 
         # 生成背景
@@ -352,7 +144,7 @@ class LostViking(object):
         play_sound("Liftoff2")
 
         while True:
-            self.screen.blit(BACKGROUND, (0, 0))
+            self.screen.blit(self.background_image, (0, 0))
 
             if bg2_image is not None:
                 self.screen.blit(bg2_image, bg2_rect)
@@ -365,16 +157,16 @@ class LostViking(object):
                 accelerate += 0.005
                 init_speed += accelerate
 
-            if bg2_rect.top >= screen.get_height():
+            if bg2_rect.top >= self.screen.get_height():
                 if end_flag == -1:
                     end_flag = 50
                 self.player.direction[1] = 0
-            elif bg1_rect.top >= screen.get_height() // 2:
+            elif bg1_rect.top >= SCREEN.get_height() // 2:
                 if lift_flag2 == 0:
                     lift_flag2 = 1
                     SOUNDS["Liftoff2"].play()
 
-            if self.player.rect.bottom > 2 * screen.get_height() // 3:
+            if self.player.rect.bottom > 2 * SCREEN.get_height() // 3:
                 if init_speed > 2:
                     self.player.direction[1] = -1
                     if lift_flag1 == 0:
@@ -394,34 +186,148 @@ class LostViking(object):
             pygame.display.flip()
             # Frame rate
             self.clock.tick(60)
+    """
+    def load_level(self, level):
+        if self.level:
+            self.level.end_level()
+        self.level = level
+        self.level.level_event_config()
+        level.init_level()
 
+    def play(self):
+        import src.level1 as level1
+        self.load_level(level=level1)
 
-def init_pygame():
-    # Init Pygame
-    pygame.init()
-    pygame.mixer.init()
-    pygame.font.init()
+        # Main loop
+        while self.running:
+            self.clock.tick(60)
 
-    pygame.display.set_caption("LOST VIKING")
+            self._events_handler()
+            self._collide_detection()
+            self._blit_all()
+            self._update_all()
 
+    def _events_handler(self):
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                self.running = False
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    self.running = False
+            detect_player_event(event, self.player1)
+            self.level.level_events_handler(event)
+        detect_key_pressed(self.player1)
 
-def main():
-    init_pygame()
-    game = LostViking()
-    game.play()
+    def _collide_detection(self):
+        """
+        supply_get = pygame.sprite.spritecollideany(self.player, self.group_supply)
+        if supply_get != None:
+            if pygame.sprite.collide_circle_ratio(0.65)(self.player, supply_get):
+                supply_get.catched(self.player)
+                G.SCORE += supply_get.score
+                if supply_get.type == SUPPLY_TYPE.Bomb:
+                    self.bomb_text.change_text("Bomb: " + str(G.BOMB))
+                elif supply_get.type == SUPPLY_TYPE.Life:
+                    self.life_text.change_text("Life: " + str(G.LIFE))
+        """
+        if self.player1.is_active and not self.player1.is_invincible:
+            bullet_hit = spritecollideany(self.player1, Enemy_Bullet_G)
+            if bullet_hit is not None:
+                if collide_rect_ratio(0.65)(self.player1, bullet_hit):
+                    if self.player1.hit(100):
+                        bullet_hit.hit()
+                        # G.LIFE -= 1
+            enemy_hit = spritecollideany(self.player1, Enemy_G)
+            if enemy_hit is not None:
+                if collide_rect_ratio(0.65)(self.player1, enemy_hit):
+                    if enemy_hit.is_active:
+                        if self.player1.hit(100):
+                            if enemy_hit not in BOSS_G:
+                                enemy_hit.hit(1000)
+                            # G.LIFE -= 1
 
+        enemy_hit = groupcollide(Enemy_G, Player_Bullet_G, False, True, collide_test)
+        if len(enemy_hit) > 0:
+            for enemy, bullets in enemy_hit.items():
+                for each_bullets in bullets:
+                    enemy.hit(each_bullets.damage)
+                    each_bullets.hit()
+        """
+        if len(self.bomb) > 0:
+            if self.bomb.sprite.is_active and self.bomb.sprite.explode_flag:
+                self.bomb.sprite.is_active = False
+                for each in self.enemies:
+                    if each.rect.bottom > 0 and each.is_active:
+                        each.hit(800)
+                        if not each.is_active:
+                            G.SCORE += each.score
+                            each.destroy()
+                            each.kill()
+                            self.enemies_die.add(each)
+                self.enemy_bullets.empty()
 
-def end():
-    pygame.quit()
+        self.life_text.change_text("Life: " + str(G.LIFE))
+        self.score_text.change_text("Score: " + str(G.SCORE))
+        """
+
+    @classmethod
+    def _update_all(cls, *args, **kwargs):
+        # Destroyed plane
+        Destroyed_Plane_G.update()
+        # Enemies
+        BOSS_G.update()
+        Enemy_G.update()
+        # Player
+        Player1_G.update()
+        # Bullets
+        Enemy_Bullet_G.update()
+        Player_Bullet_G.update()
+        # Other entities
+        Shield_G.update()
+        Player_NucBomb_G.update()
+        # Flip all
+        pygame.display.flip()
+
+    def _blit_all(self):
+        # BG
+        self.screen.fill(BLACK)
+        self.screen.blit(self.background_image, (0, 0))
+        if BOSS_G.sprite:
+            pygame.draw.rect(self.screen, (100, 200, 100, 180), Rect(0, 0, SCREEN_WIDTH, 25), 3)
+            pygame.draw.rect(self.screen, (100, 200, 100, 180),
+                             Rect(0, 0, SCREEN_WIDTH * BOSS_G.sprite.get_health() / BOSS_G.sprite.MAX_HEALTH, 25))
+        """
+        # Fonts
+        self.score_text.blit()
+        self.life_text.blit()
+        self.bomb_text.blit()
+        """
+        # Groups
+        Destroyed_Plane_G.draw(self.screen)
+        Enemy_G.draw(self.screen)
+        Shield_G.draw(self.screen)
+        BOSS_G.draw(self.screen)
+        Bullet_G.draw(self.screen)
+        Player_NucBomb_G.draw(self.screen)
+        Player1_G.draw(self.screen)
+
+    def __del__(self):
+        pygame.font.quit()
+        pygame.mixer.quit()
+        pygame.quit()
 
 
 if __name__ == "__main__":
     try:
-        main()
+        game = LostViking()
+        game.play()
     except SystemExit:
         pass
     except (ValueError, Exception):
         print(traceback.format_exc())
         traceback.print_exc()
+        pygame.font.quit()
+        pygame.mixer.quit()
         pygame.quit()
         input()
+        sys.exit()
