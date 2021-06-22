@@ -3,12 +3,12 @@ from abc import abstractmethod, ABC
 import warnings
 import math
 from pygame.transform import rotate
-from ..generic_loader.sound_loader import play_sound
+from ..generic_loader.sound_loader import SoundHelper
 from ..groups import Destroyed_Plane_G
 from .ImageEntity import LoopImageEntity
 
 
-class BasicPlaneEntity(LoopImageEntity, ABC):
+class BasicPlaneEntity(LoopImageEntity, SoundHelper, ABC):
 
     MAX_SPEED_X = 0
     MAX_SPEED_UP = 0
@@ -39,11 +39,11 @@ class BasicPlaneEntity(LoopImageEntity, ABC):
 
     def update(self, *args, **kwargs) -> None:
         """ Update method from Sprite, is called per frame """
+        image_loop_finished = self._switch_image()
         if self.is_active:
-            self._switch_image()
-            self._action(*args, **kwargs)
+            self._action_phase(image_loop_finished, *args, **kwargs)
         else:
-            self._destroy()
+            self._destroy_phase(image_loop_finished, *args, **kwargs)
 
     def hit(self, damage=100, **kwargs) -> None:
         """
@@ -55,16 +55,23 @@ class BasicPlaneEntity(LoopImageEntity, ABC):
             self.add(Destroyed_Plane_G)
             self._image_switch = 0
             self._set_image_type("EXPLODE")
-            play_sound("EXPLODE")
+            self._play_sound("EXPLODE")
+        else:
+            self._play_sound("HIT")
 
-    # --------------- Behaviors --------------- #
-
+    # --------------- Status --------------- #
     @abc.abstractmethod
-    def _action(self, *args, **kwargs) -> None:
+    def _action_phase(self, *args, **kwargs) -> None:
         """ Method to be override for behaviors
         """
         pass
 
+    def _destroy_phase(self, image_loop_finished, *args, **kwargs) -> None:
+        if image_loop_finished:
+            self.kill()
+            del self
+
+    # --------------- Behaviors --------------- #
     def _damaged(self, damage, **kwargs) -> bool:
         if self._health > 0:
             self._health -= damage
@@ -77,28 +84,7 @@ class BasicPlaneEntity(LoopImageEntity, ABC):
         """ Move its rect by its _speed_x and _speed_y"""
         self.rect.move_ip(self._speed_x, self._speed_y)
 
-    def _destroy(self) -> None:
-        finished = self._switch_image()
-        if finished:
-            self.kill()
-            del self
-
-    # --------------- Properties --------------- #
-
-    # Position
-    def set_pos(self, point) -> None:
-        """ Move its rect to a point, or a default position """
-        self.rect.center = point
-
-    def get_position(self) -> tuple:
-        return self.rect.center
-
-    # Speed
-    def get_speed(self) -> tuple:
-        return self._speed_x, self._speed_y
-
     # --------------- Acceleration --------------- #
-
     def _accelerate_up(self) -> None:
         """ In crease the _speed_y by _ACC_UP (negative)
         (Note: This method only change the value of _speed_x / _speed_y)
@@ -136,7 +122,6 @@ class BasicPlaneEntity(LoopImageEntity, ABC):
             self._speed_x += self.ACC_X
 
     # --------------- Deceleration --------------- #
-
     def _deceleration_x(self) -> int:
         """ Decrease the _speed_x or _speed_y to 0 automatically
         (Note: This method only change the value of _speed_x / _speed_y)
@@ -168,6 +153,17 @@ class BasicPlaneEntity(LoopImageEntity, ABC):
                 self._speed_y = 0
                 return 1
         return 0
+
+    # --------------- Propertie Interface--------------- #
+    def set_pos(self, point) -> None:
+        """ Move its rect to a point, or a default position """
+        self.rect.center = point
+
+    def get_position(self) -> tuple:
+        return self.rect.center
+
+    def get_speed(self) -> tuple:
+        return self._speed_x, self._speed_y
 
     # --------------- Init Methods --------------- #
     @classmethod

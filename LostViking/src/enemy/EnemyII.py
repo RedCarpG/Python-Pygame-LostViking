@@ -34,7 +34,7 @@ class EnemyII(BasicSpinPlaneEntity, ABC):
         #self.enter_action_move_phase()
         self._count_action_idle = self._STAY_DURATION
 
-    def _action(self, *args, **kwargs):
+    def _action_phase(self, *args, **kwargs):
         if self.action_status == EnemyIIActionPhase.Move:
             self._action_move()
         elif self.action_status == EnemyIIActionPhase.Decelerate:

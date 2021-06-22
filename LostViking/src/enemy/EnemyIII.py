@@ -79,7 +79,7 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
             self.angle = -180
         #angle_ = self._angle * math.pi / 180
 
-    def _action(self, *args, **kwargs):
+    def _action_phase(self, *args, **kwargs):
         if self.action_status == EnemyIIIActionPhase.Entrance:
             self._action_entrance()
         else:

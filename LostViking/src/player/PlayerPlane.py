@@ -47,7 +47,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
 
     """ ------------------ Real-time methods ------------------ """
 
-    def _action(self, *args, **kwargs) -> None:
+    def _action_phase(self, *args, **kwargs) -> None:
         # When _speed_x/_speed_y is not 0
         if self._speed_y != 0 or self._speed_x != 0:
             # Move this object
@@ -74,9 +74,8 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         if self._count_attack_interval > 0:
             self._count_attack_interval -= 1
 
-    def _destroy(self) -> None:
-        finished = self._switch_image()
-        if finished:
+    def _destroy_phase(self, image_loop_finished, *args, **kwargs) -> None:
+        if image_loop_finished:
             self.reset()
 
     """ ------------------ Collision detect ------------------ """

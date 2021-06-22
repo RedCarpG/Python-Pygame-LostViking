@@ -42,7 +42,7 @@ class EnemyBoss(BasicPlaneEntity, ABC):
         self.set_pos([SCREEN_WIDTH // 2, -self.rect.height])
 
     # -------------------- Behaviors --------------------
-    def _action(self):
+    def _action_phase(self):
         if self.action_status == BossActionPhase.MoveDown:
             self._action_move_down()
         else:
