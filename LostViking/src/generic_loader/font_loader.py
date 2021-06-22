@@ -1,36 +1,38 @@
-import pygame
 import os
+import sys
+import pygame
 from ..constants import WHITE
 from pygame.compat import geterror
 
-main_dir = os.path.split(os.path.abspath(__file__))[0]
-font_dir = os.path.join(main_dir, '../../data/font')
+_font_dir = os.path.join(os.path.split(os.path.abspath(__file__))[0], '../../data/font')
 
 
-def load_font(name, size):
+def load_font(filename, size):
     """ Load from a font file ".ttf" to a Font object
-    :param name [Name of the file, from a default directory "font_dir"]
+    :param filename [Name of the file, from a default directory "_font_dir"]
     :param size
-    :return pygame.font.Font object"""
+    :return pygame.font.Font object
+    """
     class NoneFont:
-        def render(self):
-            print("--无字体")
+        @classmethod
+        def render(cls):
+            print("-- No font")
             return pygame.Surface((0, 0))
 
     if not pygame.font or not pygame.font.get_init():
-        print("--Font未启动,%s加载失败！" % name)
+        print("<WARNING> pygame.font not inited", file=sys.stderr)
         return NoneFont()
-    fullname = os.path.join(font_dir, name)
+    fullname = os.path.join(_font_dir, filename)
     try:
         font = pygame.font.Font(fullname, size)
-        print('--字体%s加载成功！' % name)
+        print("<SUCCESS> Font loaded !".format(filename))
     except pygame.error:
-        print('！！--找不到字体: %s' % fullname)
+        print("<ERROR> Font [{}] not found".format(filename), file=sys.stderr)
         raise SystemExit(str(geterror()))
     return font
 
 
-class PGFont:
+class FontEntity:
     def __init__(self, screen, font, text='', position=(0, 0), antialias=True, color=WHITE, background=None):
         self.font = font
         self.antialias = antialias
