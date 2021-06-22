@@ -24,15 +24,12 @@ class EnemyInterceptor(EnemyII):
 
         EnemyInterceptor.NUM += 1
 
-    def find_new_path(self):
-        x = random.randint(max(self.MOVE_LEFT_LIMIT, self.rect.center[0] - self.MOVE_RAD),
-                           min(self.MOVE_RIGHT_LIMIT, self.rect.center[0] + self.MOVE_RAD))
-        y = random.randint(max(self.MOVE_UP_LIMIT, self.rect.center[1] - self.MOVE_RAD),
-                           min(self.MOVE_BOTTOM_LIMIT, self.rect.center[1] + self.MOVE_RAD))
-        self.path[0] = [x, y]
+    def __del__(self):
+        EnemyInterceptor.NUM -= 1
 
+    # --------------- Action Status --------------- #
     def enter_action_move_phase(self):
-        self.find_new_path()
+        self._find_new_path()
         super().enter_action_move_phase()
 
     def _action_decelerate(self):
@@ -42,6 +39,14 @@ class EnemyInterceptor(EnemyII):
         if self._speed_y == 0 and self._speed_y == 0:
             self.enter_action_idle_phase()
 
+    # --------------- Attack Status --------------- #
+    def _action_attack(self):
+        if random.randint(0, 10) == 0:
+            player_point = Player1_G.sprites()[0].rect.center
+            angle = self.cal_angle(self.rect.center, player_point)
+            BulletPhoenix(self.rect.center, angle)
+
+    # --------------- Behaviors --------------- #
     def _move(self) -> None:
         if self.rect.top < 0:
             self.rect.top = 0
@@ -69,15 +74,14 @@ class EnemyInterceptor(EnemyII):
             # self.aim(self.path[0])
         self.rect.move_ip(self._speed_x, self._speed_y)
 
-    def _action_attack(self):
-        if random.randint(0, 10) == 0:
-            player_point = Player1_G.sprites()[0].rect.center
-            angle = self.cal_angle(self.rect.center, player_point)
-            BulletPhoenix(self.rect.center, angle)
+    def _find_new_path(self):
+        x = random.randint(max(self.MOVE_LEFT_LIMIT, self.rect.center[0] - self.MOVE_RAD),
+                           min(self.MOVE_RIGHT_LIMIT, self.rect.center[0] + self.MOVE_RAD))
+        y = random.randint(max(self.MOVE_UP_LIMIT, self.rect.center[1] - self.MOVE_RAD),
+                           min(self.MOVE_BOTTOM_LIMIT, self.rect.center[1] + self.MOVE_RAD))
+        self.path[0] = [x, y]
 
-    def __del__(self):
-        EnemyInterceptor.NUM -= 1
-
+    # --------------- Init Methods --------------- #
     @classmethod
     def _init_image(cls):
         cls.IMAGE = dict()

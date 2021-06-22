@@ -12,6 +12,7 @@ class EnemyScout(EnemyI):
         EnemyI.__init__(self, pos)
         self.add(Enemy_Scout_G)
 
+    # --------------- Init Methods --------------- #
     @classmethod
     def _init_image(cls):
         cls.IMAGE = dict()
@@ -27,7 +28,7 @@ class EnemyScout(EnemyI):
         cls._IS_SET_IMAGE = True
 
 
-# Create event
+# --------------- Create function --------------- #
 def add_enemy_scout(num):
     if len(Enemy_Scout_G.sprites()) < 25:
         for i in range(num):

@@ -40,13 +40,11 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         # Set init position
         self.set_pos(point)
 
-    """ --------------------- Player Plane Behavior --------------------- """
-
+    # --------------------- Player Plane Behavior ---------------------
     def _shoot(self):
         self._weapon_type.shoot_bullets(self.rect.center, self._lever)
 
-    """ ------------------ Real-time methods ------------------ """
-
+    # ------------------ Status ------------------
     def _action_phase(self, *args, **kwargs) -> None:
         # When _speed_x/_speed_y is not 0
         if self._speed_y != 0 or self._speed_x != 0:
@@ -78,8 +76,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         if image_loop_finished:
             self.reset()
 
-    """ ------------------ Collision detect ------------------ """
-
+    # ------------------ Collision detect ------------------
     def hit(self, damage=100, **kwargs) -> bool:
         """
         This function is called in collision detection
@@ -102,8 +99,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
                 if self.invincible_reset == 49:
                     self.is_invincible = False
     """
-    """ ------------------ Trigger-Action-Commands ------------------"""
-
+    # ------------------ Trigger-Action-Commands ------------------
     def attack(self) -> None:
         """
         This method is called from a user attack event
@@ -114,9 +110,8 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
                 self._shoot()
                 self._count_attack_interval = self._attack_speed
 
-    """ ------------------ Trigger-Movement-Commands ------------------"""
-    """ ------------------ (Instant trigger method called by events) --"""
-
+    # ------------------ Trigger-Movement-Commands ------------------
+    # ------------------ (Instant trigger method called by events) --
     # Trigger Move Up
     def trigger_move_up(self) -> None:
         """ Trigger this object to move Up (with acceleration)
@@ -199,8 +194,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         """
         self._move_flag_x = False
 
-    """ ------------------ Interface-----------------"""
-
+    # ------------------ Interface-----------------
     # Bullet Type
     def change_bullet_type(self, bul_class) -> None:
         from LostViking.src.generic_items.BasicBullet import BasicBullet
@@ -247,11 +241,10 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         if not point:
             self.rect.center = self.start_position
         else:
-            """ Move its rect to a point, or a default position """
+            # Move its rect to a point, or a default position
             self.rect.center = point
 
-    """ ----------------- Reset methods -----------------"""
-
+    # ----------------- Reset methods -----------------
     # Reset
     def reset(self, point=None) -> None:
         self.is_active = True
@@ -263,8 +256,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         self._lever = 1
         self._health = self.MAX_HEALTH
 
-    """ ----------------- Class init methods -----------------"""
-
+    # ----------------- Class init methods -----------------
     @classmethod
     def _init_attributes(cls) -> None:
         cls.MAX_SPEED_X = 8
@@ -331,6 +323,7 @@ class Player2(BasicPlayerPlane):
         cls._IS_SET_IMAGE = True
 
 
+# ----------------- Create Function -----------------
 def create_player(player_num=1):
     if player_num == 1:
         return Player1(), None

@@ -15,6 +15,7 @@ class EnemyCarrier(EnemyBoss):
         self._count_send_interceptor_interval = self.SEND_INTERCEPTOR_INTERVAL
         self.enter_attack_phase()
 
+    # --------------- Attack Status --------------- #
     def _action_attack(self, *args, **kwargs):
         if EnemyInterceptor.NUM < self.MAX_INTERCEPTOR_NUMBER:
             if self._count_send_interceptor_interval <= 0:
@@ -26,6 +27,7 @@ class EnemyCarrier(EnemyBoss):
         else:
             self.enter_attack_idle_phase()
 
+    # --------------- Init Methods --------------- #
     @classmethod
     def _init_image(cls):
         cls.IMAGE = dict()
@@ -36,5 +38,6 @@ class EnemyCarrier(EnemyBoss):
         cls._IS_SET_IMAGE = True
 
 
+# --------------- Create function --------------- #
 def add_enemy_carrier():
     EnemyCarrier()

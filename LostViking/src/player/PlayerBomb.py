@@ -48,6 +48,7 @@ class PlayerNucBomb(Sprite):
             self.kill()
             del self
 
+    # --------------- Behaviors --------------- #
     def _move(self) -> None:
         self.rect.top -= self.speed
         self.speed += self.accelerate
@@ -63,6 +64,7 @@ class PlayerNucBomb(Sprite):
             cls._Is_Already_Activate = True
             PlayerNucBomb(player_position)
 
+    # --------------- Init Methods --------------- #
     @classmethod
     def _init_image(cls) -> None:
         cls.IMAGE = load_image("PlayerPlane/bullet.png")
@@ -80,6 +82,7 @@ class NucExplosion(BasicExplosion):
     def __init__(self, init_position):
         BasicExplosion.__init__(self, init_position=init_position)
 
+    # --------------- Init Methods --------------- #
     @classmethod
     def _init_image(cls) -> None:
         cls.IMAGE = dict()
