@@ -5,34 +5,32 @@ Some methods to modify a Surface:
     pygame.transform.smoothscale(Surface) -> Surface
 """
 import os
+import sys
 from pygame.compat import geterror
 import pygame
 
-main_dir = os.path.split(os.path.abspath(__file__))[0]
-image_dir = os.path.join(main_dir, '../..', 'data', 'image')
+_image_dir = os.path.join(os.path.split(os.path.abspath(__file__))[0], '../..', 'data', 'image')
 
 
-def load_image(name: str,
+def load_image(filename: str,
                transparency=True,
                color_key=None,
                alpha=None,
                scale=None) -> pygame.surface.Surface:
     """ Load an image file to a Surface object.
     :param transparency: If a file has transparent pixels
-    :param name: File name, from a default directory "image_dir"
+    :param filename: File name, from a default directory "_image_dir"
     :param color_key: A color value which make certain color transparent if not None
     :param alpha: A value from 0-255 which controls full image alpha(transparency) if not None
     :param scale: Transform the image with scale if not None
     :return pygame.surface.Surface object
     """
-    fullname = os.path.join(image_dir, name)
+    fullname = os.path.join(_image_dir, filename)
     try:
-        # Try load from file
         image = pygame.image.load(fullname)
-        print('-- Success: Image load {}'.format(name))
+        print("<SUCCESS> Image loaded !".format(filename))
     except pygame.error:
-        # If error occurs
-        print('!!! Error: Can not find image {}'.format(fullname))
+        print("<ERROR> Image [{}] not found".format(filename), file=sys.stderr)
         raise SystemExit(str(geterror()))
     # Convert the Surface for better performance(convert_alpha() if with transparent pixels)
     image = image.convert_alpha() if transparency else image.convert()
