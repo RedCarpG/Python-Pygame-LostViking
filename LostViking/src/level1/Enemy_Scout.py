@@ -1,8 +1,6 @@
 from ..enemy.EnemyI import EnemyI
 from ..generic_loader.image_loader import load_image
 from .level1_group import Enemy_Scout_G
-from ..generic_loader.sound_loader import load_sound
-from ..constants import MAIN_VOLUME
 
 import random
 from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT

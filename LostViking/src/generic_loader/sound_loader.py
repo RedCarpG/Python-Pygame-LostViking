@@ -1,5 +1,6 @@
 import os
 import sys
+from abc import ABC
 
 import pygame
 from pygame.compat import geterror
@@ -97,3 +98,9 @@ def load_music(filename, volume):
             print('<ERROR> !!! Can not find audio file in: {}'.format(full_path), file=sys.stderr)
             raise SystemExit(str(geterror()))
     _MUSIC.set_volume(volume)
+
+
+class SoundHelper(ABC):
+    @classmethod
+    def _play_sound(cls, label):
+        play_sound(label)
