@@ -35,14 +35,6 @@ class EnemyCarrier(EnemyBoss):
         cls.IMAGE["EXPLODE"] = [load_image("Enemy/Carrier.png")]
         cls._IS_SET_IMAGE = True
 
-    @classmethod
-    def _init_sound(cls):
-        cls._SOUND = dict()
-        from LostViking.src.generic_loader.sound_loader import load_sound
-        from LostViking.src.constants import MAIN_VOLUME
-        cls._SOUND.setdefault("Explode", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
-                                          load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
-
 
 def add_enemy_carrier():
     EnemyCarrier()

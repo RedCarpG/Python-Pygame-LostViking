@@ -16,6 +16,14 @@ def init_level():
 
     EnemyInterceptor.init()
 
+    # Init sound
+    from LostViking.src.generic_loader.sound_loader import load_sound
+    from LostViking.src.constants import MAIN_VOLUME
+    load_sound("Explo.wav", MAIN_VOLUME - 0.4, "EXPLODE")
+    load_sound("Explo2.wav", MAIN_VOLUME - 0.2, "EXPLODE2")
+
+    load_sound("Shield.wav", MAIN_VOLUME - 0.3, "SHIELD")
+    load_sound("Laser.wav", MAIN_VOLUME - 0.2, "LASER")
 
 def end_level():
     del EnemyScout

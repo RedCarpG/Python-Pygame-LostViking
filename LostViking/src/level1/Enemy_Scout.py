@@ -1,6 +1,8 @@
 from ..enemy.EnemyI import EnemyI
 from ..generic_loader.image_loader import load_image
 from .level1_group import Enemy_Scout_G
+from LostViking.src.generic_loader.sound_loader import load_sound
+from LostViking.src.constants import MAIN_VOLUME
 
 import random
 from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT
@@ -25,15 +27,6 @@ class EnemyScout(EnemyI):
                                 load_image("Enemy/Destroy_Phoenix5.png"),
                                 load_image("Enemy/Destroy_Phoenix6.png")]
         cls._IS_SET_IMAGE = True
-
-    @classmethod
-    def _init_sound(cls):
-        cls._SOUND = dict()
-        from LostViking.src.generic_loader.sound_loader import load_sound
-        from LostViking.src.constants import MAIN_VOLUME
-        cls._SOUND.setdefault("Explode", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
-                                          load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
-        cls._IS_SET_SOUND = True
 
 
 # Create event

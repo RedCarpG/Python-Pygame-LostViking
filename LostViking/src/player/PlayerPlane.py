@@ -5,6 +5,7 @@ Includes:
 from abc import ABC
 import pygame
 from ..generic_items.BasicPlaneEntity import BasicPlaneEntity
+from ..generic_loader.sound_loader import play_sound
 from .PlayerWeapon import PlayerBullet1
 from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ..groups import Player1_G, Player2_G
@@ -89,7 +90,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
                 self.is_active = False
                 self._image_switch = 0
                 self._set_image_type("EXPLODE")
-                # self._SOUND["Player_Explo"].play()
+                play_sound("PLAYER_EXPLODE")
             return True
         else:
             return False
@@ -109,8 +110,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         This method is called from a user attack event
         """
         if self.is_active:
-            # self._SOUND["Player_Shoot"].stop()
-            # self._SOUND["Player_Shoot"].play()
+            play_sound("PLAYER_SHOOT")
             if self._count_attack_interval == 0:
                 self._shoot()
                 self._count_attack_interval = self._attack_speed
@@ -265,16 +265,6 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         self._health = self.MAX_HEALTH
 
     """ ----------------- Class init methods -----------------"""
-
-    @classmethod
-    def _init_sound(cls) -> None:
-        if not hasattr(cls, "_INIT_FLAG_SOUND") or not cls._INIT_FLAG_SOUND:
-            cls._SOUND = dict()
-            from LostViking.src.generic_loader.sound_loader import load_sound
-            from LostViking.src.constants import MAIN_VOLUME
-            cls._SOUND.setdefault("Player_Shoot", load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2))
-            cls._SOUND.setdefault("Player_Explo", load_sound("Player_Explo.wav", MAIN_VOLUME))
-            cls._INIT_FLAG_SOUND = True
 
     @classmethod
     def _init_attributes(cls) -> None:

@@ -76,7 +76,7 @@ class BasicShield(DirtySprite):
         cls._SOUND = dict()
         from ..generic_loader.sound_loader import load_sound
         from ..constants import MAIN_VOLUME
-        cls._SOUND.setdefault("Shield", load_sound("Shield.wav", MAIN_VOLUME - 0.3))
+        cls._SOUND.setdefault("Shield", load_sound("Shield.wav", MAIN_VOLUME - 0.3, ))
         cls._INIT_FLAG_SOUND = True
 
     @classmethod

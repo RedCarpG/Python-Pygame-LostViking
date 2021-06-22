@@ -3,7 +3,7 @@ from abc import abstractmethod, ABC
 import warnings
 import math
 from pygame.transform import rotate
-
+from ..generic_loader.sound_loader import play_sound
 from ..groups import Destroyed_Plane_G
 from .ImageEntity import LoopImageEntity
 
@@ -55,6 +55,7 @@ class BasicPlaneEntity(LoopImageEntity, ABC):
             self.add(Destroyed_Plane_G)
             self._image_switch = 0
             self._set_image_type("EXPLODE")
+            play_sound("EXPLODE")
 
     # --------------- Behaviors --------------- #
 

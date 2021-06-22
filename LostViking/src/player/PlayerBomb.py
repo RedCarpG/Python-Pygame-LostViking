@@ -4,6 +4,8 @@
 from pygame.sprite import Sprite
 from ..constants import SCREEN_HEIGHT
 from ..generic_loader.image_loader import load_image
+from ..generic_loader.sound_loader import load_sound, play_sound
+from ..constants import MAIN_VOLUME
 from ..groups import Player_NucBomb_G
 from ..generic_items.BasicExplosion import BasicExplosion
 from .player_interface import get_nuc_count
@@ -22,7 +24,7 @@ class PlayerNucBomb(Sprite):
         if not hasattr(self, "INIT_FLAG") or not self.INIT_FLAG:
             raise Exception("!!!ERROR: class is not init! {}".format(self))
         Sprite.__init__(self, Player_NucBomb_G)
-        # self._play_sound("NuclearMissile_Ready")
+        play_sound("NUC_LAUNCH")
 
         # Set Image properties
         self.image = self.IMAGE
@@ -42,7 +44,7 @@ class PlayerNucBomb(Sprite):
         else:
             NucExplosion(self.rect.center)
             PlayerNucBomb._Is_Already_Activate = False
-            # self._play_sound("Explode")
+            play_sound("NUC_EXPLODE")
             self.kill()
             del self
 
@@ -54,7 +56,7 @@ class PlayerNucBomb(Sprite):
     def launch(cls, player_position) -> None:
         if cls._Is_Already_Activate or get_nuc_count() < 0:
             pass
-            # cls._play_sound("Error")
+            play_sound("NUC_ERROR")
         else:
             from .player_interface import dec_nuc_bomb
             dec_nuc_bomb()
@@ -65,22 +67,6 @@ class PlayerNucBomb(Sprite):
     def _init_image(cls) -> None:
         cls.IMAGE = load_image("PlayerPlane/bullet.png")
         cls._IS_SET_IMAGE = True
-
-    # TODO Sound
-    @classmethod
-    def _init_sound(cls) -> None:
-        if not hasattr(cls, "_INIT_FLAG_SOUND") or not cls._INIT_FLAG_SOUND:
-            cls._SOUND = dict()
-            from LostViking.src.generic_loader.sound_loader import load_sound
-            from LostViking.src.constants import MAIN_VOLUME
-            cls._SOUND.setdefault("NuclearLaunch_Detected",
-                                  load_sound("NuclearLaunch_Detected.wav",
-                                             MAIN_VOLUME - 0.1))
-            cls._SOUND.setdefault("NuclearMissile_Ready", load_sound("NuclearMissile_Ready.wav", MAIN_VOLUME - 0.1))
-            cls._SOUND.setdefault("Error", load_sound("Error.wav", MAIN_VOLUME))
-            # TODO Sound here
-            cls._SOUND.setdefault("Explode", load_sound("Player_Explo.wav", MAIN_VOLUME))
-            cls._INIT_FLAG_SOUND = True
 
     @classmethod
     def init(cls):

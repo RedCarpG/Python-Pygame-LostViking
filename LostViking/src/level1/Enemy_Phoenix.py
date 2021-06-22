@@ -3,6 +3,7 @@ from .level1_group import Enemy_Phoenix_G
 from ..groups import Enemy_Bullet_G
 from ..generic_items.BasicBullet import BasicSpinBullet
 from ..generic_items.BasicShield import BasicShield
+from ..generic_loader.sound_loader import play_sound
 from ..constants import SCREEN_WIDTH
 
 
@@ -21,11 +22,13 @@ class EnemyPhoenix(EnemyIII):
     # Rewrite hit to add Shield
     def hit(self, damage=100, **kwargs):
         if self.shield.is_active:
+            play_sound("SHIELD")
             self.shield.hit(damage)
         else:
             super().hit(damage)
 
     def _action_attack(self, *args, **kwargs):
+        play_sound("LASER")
         BulletPhoenix(self.rect.center, self.angle)
         self.enter_attack_idle_phase()
 
@@ -54,18 +57,6 @@ class EnemyPhoenix(EnemyIII):
                                load_image("Enemy/Enemy_Phoenix_AttackLight8.png"),
                                load_image("Enemy/Enemy_Phoenix_AttackLight9.png")]
         cls._IS_SET_IMAGE = True
-
-    # TODO Sound
-    @classmethod
-    def _init_sound(cls):
-        cls._SOUND = dict()
-        from LostViking.src.generic_loader.sound_loader import load_sound
-        from LostViking.src.constants import MAIN_VOLUME
-        cls._SOUND.setdefault("Shield", load_sound("Shield.wav", MAIN_VOLUME - 0.3))
-        cls._SOUND.setdefault("Laser", load_sound("Laser.wav", MAIN_VOLUME - 0.2))
-        cls._SOUND.setdefault("Explode", [load_sound("Explo.wav", MAIN_VOLUME - 0.4),
-                                          load_sound("Explo2.wav", MAIN_VOLUME - 0.2)])
-        cls._INIT_FLAG_SOUND = True
 
     @classmethod
     def _init_attributes(cls):
