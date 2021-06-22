@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 import pygame
 import math
 
-from ..constants import SCREEN_HEIGHT
+from ..constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from ..groups import Bullet_G
 from .ImageEntity import SingleImageEntity
 
@@ -62,7 +62,7 @@ class BasicBullet(SingleImageEntity, ABC):
         if self.rect.top > SCREEN_HEIGHT \
                 or self.rect.bottom < 0 \
                 or self.rect.right < 0 \
-                or self.rect.left > SCREEN_HEIGHT:
+                or self.rect.left > SCREEN_WIDTH:
             return True
         return False
 
