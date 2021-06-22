@@ -73,6 +73,8 @@ class LoopImageEntity(Sprite):
         :param image_type: Name of the type of image to put into loop
         """
         self._main_image_type = self.IMAGE[image_type]
+        self._image_switch = 0
+        self._image_switch_interval = 0
 
     @classmethod
     @abstractmethod
