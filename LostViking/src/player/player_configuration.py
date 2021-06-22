@@ -9,8 +9,8 @@ def init_player():
     NucExplosion.init()
 
     # Init sound
-    from LostViking.src.generic_loader.sound_loader import load_sound
-    from LostViking.src.constants import MAIN_VOLUME
+    from ..generic_loader.sound_loader import load_sound
+    from ..constants import MAIN_VOLUME
     # Player
     load_sound("Player_Shoot.wav", MAIN_VOLUME - 0.2, "PLAYER_SHOOT")
     load_sound("Player_Explo.wav", MAIN_VOLUME, "PLAYER_EXPLODE")
