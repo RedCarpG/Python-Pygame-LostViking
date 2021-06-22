@@ -18,12 +18,14 @@ class EnemyI(BasicPlaneEntity, ABC):
 
         self._speed_y = self.MAX_SPEED_DOWN
 
+    # --------------- Main action status --------------- #
     def _action_phase(self):
         if self.rect.top < SCREEN_HEIGHT:
             self._move()
         else:
             self.kill()
 
+    # --------------- Init method --------------- #
     @classmethod
     def _init_attributes(cls):
         cls.MAX_HEALTH = 100

@@ -19,6 +19,7 @@ class BasicExplosion(LoopImageEntity, ABC):
             self.kill()
             del self
 
+    # --------------- Init Methods --------------- #
     @classmethod
     def init(cls):
         if not hasattr(cls, "INIT_FLAG") or not cls.INIT_FLAG:

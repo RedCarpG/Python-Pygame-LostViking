@@ -40,6 +40,12 @@ class BasicShield(DirtySprite):
         self.health = self.MAX_HEALTH
         self.owner = owner
 
+    def update(self, *args, **kwargs):
+        if self.visible:
+            self._reposition()
+            if self._switch_image():
+                self.visible = 0
+
     def hit(self, damage, **kwargs):
         #self._play_sound('Shield')
         if self.health <= 0:
@@ -49,15 +55,11 @@ class BasicShield(DirtySprite):
             self.health -= damage
             self.visible = 1
 
+    # --------------- Behavior --------------- #
     def _reposition(self):
         self.rect.center = self.owner.rect.center
 
-    def update(self, *args, **kwargs):
-        if self.visible:
-            self._reposition()
-            if self._switch_image():
-                self.visible = 0
-
+    # --------------- Init Methods --------------- #
     @classmethod
     @abstractmethod
     def _init_attrs(cls):

@@ -52,14 +52,10 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
 
         self.enter_action_entrance_phase()
 
-    '''
-    def rotate1(self,_angle):  -180<_angle<180
-        if self._angle > _angle:
-           self._angle -= 2
-        elif self._angle < _angle:
-            self._angle += 2 
-        angle_ = self._angle * math.pi / 180
-    '''
+    # --------------- Override Methods --------------- #
+    def update(self, *args, **kwargs) -> None:
+        super().update(self, *args, **kwargs)
+        self._rotate_image()
 
     def aim(self, point):
         angle = self.cal_angle(self.rect.center, point)
@@ -79,6 +75,7 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
             self.angle = -180
         #angle_ = self._angle * math.pi / 180
 
+    # --------------- Main action status --------------- #
     def _action_phase(self, *args, **kwargs):
         if self.action_status == EnemyIIIActionPhase.Entrance:
             self._action_entrance()
@@ -96,8 +93,8 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
             from ..groups import Player1_G
             player_point = Player1_G.sprites()[0].rect.center
             self.aim(player_point)
-        self._rotate_image()
 
+    # --------------- Sub action status --------------- #
     def enter_action_entrance_phase(self):
         if self.side == EnemyIIISide.Left:
             self._speed_x = self.MAX_SPEED_X
@@ -140,6 +137,7 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
         self._count_attack_interval = self._ATTACK_SPEED
         self.attack_status = EnemyIIIAttackPhase.Idle
 
+    # --------------- Attack status --------------- #
     def _action_attack_idle(self):
         if self._count_attack_interval <= 0:
             self.enter_attack_phase()
@@ -153,6 +151,7 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
     def _action_attack(self, *args, **kwargs):
         pass
 
+    # --------------- Init method --------------- #
     @classmethod
     def _init_attributes(cls):
         cls.MAX_SPEED_DOWN = cls.MAX_SPEED_UP = 1

@@ -41,7 +41,7 @@ class EnemyBoss(BasicPlaneEntity, ABC):
 
         self.set_pos([SCREEN_WIDTH // 2, -self.rect.height])
 
-    # -------------------- Behaviors --------------------
+    # -------------------- Main action states --------------------
     def _action_phase(self):
         if self.action_status == BossActionPhase.MoveDown:
             self._action_move_down()
@@ -55,13 +55,7 @@ class EnemyBoss(BasicPlaneEntity, ABC):
             else:
                 self._action_attack_idle()
 
-    def _move(self) -> None:
-        super()._move()
-        if self.rect.left < 0 or self.rect.right > SCREEN_WIDTH:
-            self._move_x_direction = -self._move_x_direction
-            self._speed_x = -self._speed_x
-
-    # -------------------- Action States --------------------
+    # -------------------- Sub action states --------------------
     def enter_action_move_down_phase(self):
         self.action_status = BossActionPhase.MoveDown
 
@@ -119,6 +113,13 @@ class EnemyBoss(BasicPlaneEntity, ABC):
             self.enter_attack_phase()
         else:
             self._count_attack_interval -= 1
+
+    # -------------------- Behaviors --------------------
+    def _move(self) -> None:
+        super()._move()
+        if self.rect.left < 0 or self.rect.right > SCREEN_WIDTH:
+            self._move_x_direction = -self._move_x_direction
+            self._speed_x = -self._speed_x
 
     # -------------------- Interface --------------------
     def get_health(self):

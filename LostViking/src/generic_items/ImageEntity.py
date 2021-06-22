@@ -20,6 +20,7 @@ class SingleImageEntity(Sprite):
         # Set Rect
         self.rect = self.image.get_rect()
 
+    # --------------- Init Methods --------------- #
     @classmethod
     @abstractmethod
     def _init_image(cls):
@@ -76,6 +77,7 @@ class LoopImageEntity(Sprite):
         self._image_switch = 0
         self._image_switch_interval = 0
 
+    # --------------- Init Methods --------------- #
     @classmethod
     @abstractmethod
     def _init_image(cls) -> None:

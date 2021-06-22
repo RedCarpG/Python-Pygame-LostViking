@@ -209,6 +209,7 @@ class BasicSpinPlaneEntity(BasicPlaneEntity, ABC):
         # Angle
         self.angle = 0
 
+    # --------------- Rotation Methods --------------- #
     def aim(self, point) -> None:
         """ Aim the plane at a target point
         :param point
@@ -217,12 +218,14 @@ class BasicSpinPlaneEntity(BasicPlaneEntity, ABC):
 
         self._rotate_image()
 
+    # --------------- Support Rotation Methods --------------- #
     def _rotate_image(self) -> None:
         # Rotate Image
         self.image = rotate(self._main_image_type[self._image_switch], self.angle)
         temp = self.rect.center
         self.rect = self.image.get_rect()
         self.rect.center = temp
+        #self.rect.center = self.image.get_rect().center
 
     @classmethod
     def cal_angle(cls, base_point, target_point) -> int:

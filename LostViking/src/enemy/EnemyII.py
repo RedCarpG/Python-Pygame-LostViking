@@ -34,6 +34,15 @@ class EnemyII(BasicSpinPlaneEntity, ABC):
         #self.enter_action_move_phase()
         self._count_action_idle = self._STAY_DURATION
 
+    # --------------- Override Methods --------------- #
+    def aim(self, point):
+        self.angle = self.cal_angle(self.rect.center, point)
+
+        angle = self.angle * math.pi / 180
+        self._speed_x = float(self.MAX_SPEED_X * math.sin(angle))
+        self._speed_y = float(self.MAX_SPEED_X * math.cos(angle))
+
+    # --------------- Main action status --------------- #
     def _action_phase(self, *args, **kwargs):
         if self.action_status == EnemyIIActionPhase.Move:
             self._action_move()
@@ -42,6 +51,7 @@ class EnemyII(BasicSpinPlaneEntity, ABC):
         else:
             self._action_idle()
 
+    # --------------- Sub action status --------------- #
     def enter_action_move_phase(self):
         self.aim(self.path[self.current_path])
         self.action_status = EnemyIIActionPhase.Move
@@ -76,16 +86,11 @@ class EnemyII(BasicSpinPlaneEntity, ABC):
         else:
             self._count_action_idle -= 1
 
+    # --------------- Attack status --------------- #
     def _action_attack(self, *args, **kwargs):
         pass
 
-    def aim(self, point):
-        self.angle = self.cal_angle(self.rect.center, point)
-
-        angle = self.angle * math.pi / 180
-        self._speed_x = float(self.MAX_SPEED_X * math.sin(angle))
-        self._speed_y = float(self.MAX_SPEED_X * math.cos(angle))
-
+    # --------------- Init method --------------- #
     @classmethod
     def _init_attributes(cls):
         cls.SCORE = 500

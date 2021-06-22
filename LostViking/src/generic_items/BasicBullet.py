@@ -41,18 +41,19 @@ class BasicBullet(SingleImageEntity, ABC):
         # Set Position
         self.rect.center = init_position
 
-    # General update method for bullets
     def update(self):
+        # General update method for bullets
         if self._hit_screen_edge():
             self.kill()
         else:
             self._move()
 
-    # General get hit method for bullets
     def hit(self):
+        # General get hit method for bullets
         self.kill()
         del self
 
+    # --------------- Behavior--------------- #
     # General movement method
     def _move(self):
         self.rect.move_ip(self._speed_x, self._speed_y)
@@ -66,6 +67,7 @@ class BasicBullet(SingleImageEntity, ABC):
             return True
         return False
 
+    # --------------- Init Methods --------------- #
     @classmethod
     @abstractmethod
     def _init_attrs(cls):
@@ -94,6 +96,7 @@ class BasicSpinBullet(BasicBullet, ABC):
         # Rotate Image
         self.image = pygame.transform.rotate(self.image, self.angle)
 
+    # --------------- Rotate Method --------------- #
     def _trans_image(self):
         image_ = pygame.transform.rotate(self.image, self.angle)
         temp = self.rect.center
