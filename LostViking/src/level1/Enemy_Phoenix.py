@@ -27,11 +27,22 @@ class EnemyPhoenix(EnemyIII):
         else:
             super().hit(damage)
 
-    def _action_attack(self, *args, **kwargs):
-        play_sound("LASER")
-        BulletPhoenix(self.rect.center, self.angle)
-        self.enter_attack_idle_phase()
+    # --------------- Attack Status --------------- #
+    def enter_attack_idle_phase(self):
+        super().enter_attack_idle_phase()
+        self._set_image_type("IDLE")
 
+    def enter_attack_phase(self):
+        super(EnemyPhoenix, self).enter_attack_phase()
+        self._set_image_type("ATTACK")
+        play_sound("LASER")
+
+    def _action_attack(self, *args, **kwargs):
+        if kwargs.pop("image_loop_finished", False):
+            BulletPhoenix(self.rect.center, self.angle)
+            self.enter_attack_idle_phase()
+
+    # --------------- Init Methods --------------- #
     @classmethod
     def _init_image(cls):
         cls.IMAGE = dict()
@@ -70,6 +81,7 @@ class BulletPhoenix(BasicSpinBullet):
         BasicSpinBullet.__init__(self, position, angle)
         self.add(Enemy_Bullet_G)
 
+    # --------------- Init Methods --------------- #
     @classmethod
     def _init_image(cls):
         from ..generic_loader.image_loader import load_image
@@ -87,6 +99,7 @@ class ShieldPhoenix(BasicShield):
     def __init__(self, owner):
         BasicShield.__init__(self, owner)
 
+    # --------------- Init Methods --------------- #
     @classmethod
     def _init_image(cls):
         cls.IMAGE = dict()
@@ -105,6 +118,7 @@ class ShieldPhoenix(BasicShield):
         cls._IS_SET_ATTRS = True
 
 
+# --------------- Create function --------------- #
 def add_enemy_phoenix():
     x1 = SCREEN_WIDTH
     x2 = 0

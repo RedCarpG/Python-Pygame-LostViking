@@ -133,11 +133,11 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
         else:
             self.kill()
 
+    # --------------- Attack status --------------- #
     def enter_attack_idle_phase(self):
         self._count_attack_interval = self._ATTACK_SPEED
         self.attack_status = EnemyIIIAttackPhase.Idle
 
-    # --------------- Attack status --------------- #
     def _action_attack_idle(self):
         if self._count_attack_interval <= 0:
             self.enter_attack_phase()

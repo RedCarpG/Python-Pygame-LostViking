@@ -41,9 +41,13 @@ class BasicPlaneEntity(LoopImageEntity, SoundHelper, ABC):
         """ Update method from Sprite, is called per frame """
         image_loop_finished = self._switch_image()
         if self.is_active:
-            self._action_phase(image_loop_finished, *args, **kwargs)
+            self._action_phase(image_loop_finished=image_loop_finished,
+                               *args,
+                               **kwargs)
         else:
-            self._destroy_phase(image_loop_finished, *args, **kwargs)
+            self._destroy_phase(image_loop_finished=image_loop_finished,
+                                *args,
+                                **kwargs)
 
     def hit(self, damage=100, **kwargs) -> None:
         """
