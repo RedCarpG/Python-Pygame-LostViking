@@ -8,6 +8,7 @@ from ..generic_loader.sound_loader import *
 from ..constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from ..generic_items.BasicPlaneEntity import BasicSpinPlaneEntity
 from enum import Enum
+from pygame.transform import rotate
 from ..groups import Enemy_G
 
 
@@ -76,7 +77,6 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
             self.angle = 180
         if self.angle > 180:
             self.angle = -180
-
         #angle_ = self._angle * math.pi / 180
 
     def _action(self, *args, **kwargs):
@@ -96,6 +96,7 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
             from ..groups import Player1_G
             player_point = Player1_G.sprites()[0].rect.center
             self.aim(player_point)
+        self._rotate_image()
 
     def enter_action_entrance_phase(self):
         if self.side == EnemyIIISide.Left:

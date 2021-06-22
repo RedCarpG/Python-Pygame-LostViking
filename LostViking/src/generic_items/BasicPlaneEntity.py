@@ -213,35 +213,20 @@ class BasicSpinPlaneEntity(BasicPlaneEntity, ABC):
         # Angle
         self.angle = 0
 
-    def _switch_image(self, switch_rate=0) -> bool:
-        """
-        This method rewrites the method from LoopImageEntity
-        :param switch_rate: switch rate between each change
-        :return: True if loop finished, False if loop not finished
-        """
-        if self._image_switch_interval >= switch_rate:
-            self._image_switch = (self._image_switch + 1) % len(self._main_image_type)
-            self.image = self._main_image_type[self._image_switch]
-            self._image_switch_interval = 0
-
-            # Rotate Image
-            self.image = rotate(self._main_image_type[self._image_switch], self.angle)
-            temp = self.rect.center
-            self.rect = self.image.get_rect()
-            self.rect.center = temp
-
-            if self._image_switch == 0:
-                return True
-        else:
-            self._image_switch_interval += 1
-
-        return False
-
     def aim(self, point) -> None:
         """ Aim the plane at a target point
         :param point
         """
         self.angle = self.cal_angle(self.rect.center, point)
+
+        self._rotate_image()
+
+    def _rotate_image(self) -> None:
+        # Rotate Image
+        self.image = rotate(self._main_image_type[self._image_switch], self.angle)
+        temp = self.rect.center
+        self.rect = self.image.get_rect()
+        self.rect.center = temp
 
     @classmethod
     def cal_angle(cls, base_point, target_point) -> int:
