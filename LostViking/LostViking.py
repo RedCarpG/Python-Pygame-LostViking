@@ -6,7 +6,8 @@ import sys
 from src.constants import *
 from src.generic_loader.sound_loader import load_music, load_sound, play_sound
 from src.generic_loader.image_loader import load_image
-from src.generic_loader.font_loader import load_font, PGFont
+from src.generic_loader.font_loader import load_font, FontEntity
+from src.collision_detection import collide_detection
 from src.player import *
 from src.groups import *
 
@@ -14,13 +15,6 @@ if not pygame.font:
     print("Warning, fonts disabled!")
 if not pygame.mixer:
     print("Warning, sounds disabled!")
-
-# TODO collide test separate file
-def collide_test(a, b):
-    if pygame.sprite.collide_rect(a, b):
-        if pygame.sprite.collide_rect_ratio(0.5)(a, b):
-            return True
-    return False
 
 # TODO enter UI
 """ 
@@ -36,8 +30,8 @@ def enter(Screen, clock):
     # enter font
     begin_font = load_font("arialbd.ttf", 50)
     title_font = load_font("arialbd.ttf", 120)
-    begin_text = PGFont(Screen, begin_font, "Press Space To Begin", (0, 0), color=WHITE)
-    title_text = PGFont(Screen, title_font, "LOST VIKING", (0, 0), color=WHITE)
+    begin_text = FontEntity(Screen, begin_font, "Press Space To Begin", (0, 0), color=WHITE)
+    title_text = FontEntity(Screen, title_font, "LOST VIKING", (0, 0), color=WHITE)
     title_text.move_center((Screen.get_width() // 2, Screen.get_height() // 2))
     begin_text.move_center((Screen.get_width() // 2, 3 * Screen.get_height() // 5))
     ui1 = load_sound("ui1.wav", MAIN_VOLUME - 0.2)
@@ -75,6 +69,7 @@ def enter(Screen, clock):
         clock.tick(10)
 """
 
+
 class LostViking(object):
 
     #  ---------------------- Init ---------------------- #
@@ -92,7 +87,7 @@ class LostViking(object):
 
         # Init Music
         music = ['bgm2.ogg', 'bgm.ogg']
-        load_music(music, MAIN_VOLUME)
+        load_music(music, MAIN_VOLUME, )
         pygame.mixer.music.play(1)
 
         # Load BG
@@ -104,11 +99,11 @@ class LostViking(object):
         fonts = {"score_font": load_font("arialbd.ttf", 30),
                  "life_font": load_font("arialbd.ttf", 30)}
         self.Text_G = {
-            'score_text': PGFont(self.screen, fonts["score_font"],
+            'score_text': FontEntity(self.screen, fonts["score_font"],
                                  ("Score: " + str(G.SCORE)), (0, 30), color=WHITE),
-            'life_text': PGFont(self.screen, fonts["score_font"],
+            'life_text': FontEntity(self.screen, fonts["score_font"],
                                 ("Life: " + str(G.LIFE)), (0, 60), color=WHITE),
-            'bomb_text': PGFont(self.screen, fonts["score_font"],
+            'bomb_text': FontEntity(self.screen, fonts["score_font"],
                                 ("Bomb: " + str(G.BOMB)), (0, 90), color=WHITE)
         }
         """
@@ -203,7 +198,7 @@ class LostViking(object):
             self.clock.tick(60)
 
             self._events_handler()
-            self._collide_detection()
+            collide_detection(self.player1)
             self._blit_all()
             self._update_all()
 
@@ -218,57 +213,6 @@ class LostViking(object):
             self.level.level_events_handler(event)
         detect_key_pressed(self.player1)
 
-    def _collide_detection(self):
-        """
-        supply_get = pygame.sprite.spritecollideany(self.player, self.group_supply)
-        if supply_get != None:
-            if pygame.sprite.collide_circle_ratio(0.65)(self.player, supply_get):
-                supply_get.catched(self.player)
-                G.SCORE += supply_get.score
-                if supply_get.type == SUPPLY_TYPE.Bomb:
-                    self.bomb_text.change_text("Bomb: " + str(G.BOMB))
-                elif supply_get.type == SUPPLY_TYPE.Life:
-                    self.life_text.change_text("Life: " + str(G.LIFE))
-        """
-        if self.player1.is_active and not self.player1.is_invincible:
-            bullet_hit = spritecollideany(self.player1, Enemy_Bullet_G)
-            if bullet_hit is not None:
-                if collide_rect_ratio(0.65)(self.player1, bullet_hit):
-                    if self.player1.hit(100):
-                        bullet_hit.hit()
-                        # G.LIFE -= 1
-            enemy_hit = spritecollideany(self.player1, Enemy_G)
-            if enemy_hit is not None:
-                if collide_rect_ratio(0.65)(self.player1, enemy_hit):
-                    if enemy_hit.is_active:
-                        if self.player1.hit(100):
-                            if enemy_hit not in BOSS_G:
-                                enemy_hit.hit(1000)
-                            # G.LIFE -= 1
-
-        enemy_hit = groupcollide(Enemy_G, Player_Bullet_G, False, True, collide_test)
-        if len(enemy_hit) > 0:
-            for enemy, bullets in enemy_hit.items():
-                for each_bullets in bullets:
-                    enemy.hit(each_bullets.damage)
-                    each_bullets.hit()
-        """
-        if len(self.bomb) > 0:
-            if self.bomb.sprite.is_active and self.bomb.sprite.explode_flag:
-                self.bomb.sprite.is_active = False
-                for each in self.enemies:
-                    if each.rect.bottom > 0 and each.is_active:
-                        each.hit(800)
-                        if not each.is_active:
-                            G.SCORE += each.score
-                            each.destroy()
-                            each.kill()
-                            self.enemies_die.add(each)
-                self.enemy_bullets.empty()
-
-        self.life_text.change_text("Life: " + str(G.LIFE))
-        self.score_text.change_text("Score: " + str(G.SCORE))
-        """
 
     @classmethod
     def _update_all(cls, *args, **kwargs):
