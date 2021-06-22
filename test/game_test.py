@@ -75,11 +75,13 @@ def test_game():
 
     # Init Player
     init_player()
-    player1 = create_player()
+    player1, _ = create_player()
 
     # Init Enemy
     init_level()
-    level_event_config()
+    #level_event_config()
+    from LostViking.src.level1.Enemy_Phoenix import add_enemy_phoenix
+    add_enemy_phoenix()
 
     running = True
     while running:
