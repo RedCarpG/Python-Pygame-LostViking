@@ -199,8 +199,8 @@ class LostViking(object):
 
             self._events_handler()
             collide_detection(self.player1)
-            self._blit_all()
             self._update_all()
+            self._blit_all()
 
     def _events_handler(self):
         for event in pygame.event.get():
@@ -212,7 +212,6 @@ class LostViking(object):
             detect_player_event(event, self.player1)
             self.level.level_events_handler(event)
         detect_key_pressed(self.player1)
-
 
     @classmethod
     def _update_all(cls, *args, **kwargs):
