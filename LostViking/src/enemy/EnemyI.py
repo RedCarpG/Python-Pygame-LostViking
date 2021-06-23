@@ -19,7 +19,7 @@ class EnemyI(BasicPlaneEntity, ABC):
         self._speed_y = self.MAX_SPEED_DOWN
 
     # --------------- Main action status --------------- #
-    def _action_phase(self):
+    def _action_phase(self, *args, **kwargs):
         if self.rect.top < SCREEN_HEIGHT:
             self._move()
         else:

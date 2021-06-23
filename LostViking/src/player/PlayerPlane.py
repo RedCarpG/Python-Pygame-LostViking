@@ -105,8 +105,8 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         This method is called from a user attack event
         """
         if self.is_active:
-            play_sound("PLAYER_SHOOT")
             if self._count_attack_interval == 0:
+                play_sound("PLAYER_SHOOT")
                 self._shoot()
                 self._count_attack_interval = self._attack_speed
 
