@@ -21,9 +21,9 @@ def collide_detection(player1):
         if pygame.sprite.collide_circle_ratio(0.65)(self.player, supply_get):
             supply_get.catched(self.player)
             G.SCORE += supply_get.score
-            if supply_get.type == SUPPLY_TYPE.Bomb:
+            if supply_get.type == SupplyType.Bomb:
                 self.bomb_text.change_text("Bomb: " + str(G.BOMB))
-            elif supply_get.type == SUPPLY_TYPE.Life:
+            elif supply_get.type == SupplyType.Life:
                 self.life_text.change_text("Life: " + str(G.LIFE))
     """
     if player1.is_active and not player1.is_invincible:

@@ -18,3 +18,6 @@ Plane_G = Group()
 Destroyed_Plane_G = Group()
 
 Shield_G = LayeredDirty()
+
+
+Supply_G = Group()
