@@ -15,5 +15,7 @@ class SupplyLife(BasicSupply):
 
     @classmethod
     def _init_image(cls):
-        cls.IMAGE = load_image("Supply/bullet.png")
+        cls.IMAGE = dict()
+        cls.IMAGE["BASE"] = [load_image("Supply/bullet.png")]
+        cls.IMAGE["IDLE"] = [load_image("Supply/bullet.png")]
         cls._IS_SET_IMAGE = True
