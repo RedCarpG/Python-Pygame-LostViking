@@ -2,13 +2,11 @@
 Enemy Basic abstract classes, which defines its general behaviors,
 Initialization should be made in the implementation of the class
 """
-from abc import ABC, abstractmethod
-
-from ..generic_loader.sound_loader import *
+from abc import abstractmethod, ABC
+from enum import Enum
 from ..constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from ..generic_items.BasicPlaneEntity import BasicSpinPlaneEntity
-from enum import Enum
-from pygame.transform import rotate
+from ..generic_items.inertial_behavior import decelerate
 from ..groups import Enemy_G
 
 
@@ -73,7 +71,6 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
             self.angle = 180
         if self.angle > 180:
             self.angle = -180
-        #angle_ = self._angle * math.pi / 180
 
     # --------------- Main action status --------------- #
     def _action_phase(self, *args, **kwargs):
@@ -108,7 +105,8 @@ class EnemyIII(BasicSpinPlaneEntity, ABC):
 
     def _action_entrance(self):
         self._move()
-        if self._deceleration_x():
+        self._speed_x = decelerate(self._speed_x, self.ACC_X)
+        if self._speed_x == 0:
             self.enter_action_stay_phase()
             self._set_image_type("STOP")
 

@@ -9,6 +9,7 @@ from ..generic_loader.sound_loader import play_sound
 from .PlayerWeapon import PlayerBullet1
 from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ..groups import Player1_G, Player2_G
+from ..generic_items.inertial_behavior import accelerate, decelerate
 
 
 class BasicPlayerPlane(BasicPlaneEntity, ABC):
@@ -55,9 +56,9 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
             # Speed down if there's no movement command on X or Y
             # (Note: Only values of _speed_x/_speed_y will be changed here)
             if not self._move_flag_x:
-                self._deceleration_x()
+                self._speed_x = decelerate(self._speed_x, self.ACC_X)
             if not self._move_flag_y:
-                self._deceleration_y()
+                self._speed_y = decelerate(self._speed_y, self.ACC_DOWN)
 
             # Restrict the plane inside the screen
             if self.rect.bottom > SCREEN_HEIGHT:
@@ -72,7 +73,8 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         if self._count_attack_interval > 0:
             self._count_attack_interval -= 1
 
-    def _destroy_phase(self, image_loop_finished, *args, **kwargs) -> None:
+    def _destroy_phase(self, *args, **kwargs) -> None:
+        image_loop_finished = kwargs.pop("image_loop_finished", True)
         if image_loop_finished:
             self.reset()
 
@@ -99,6 +101,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
                 if self.invincible_reset == 49:
                     self.is_invincible = False
     """
+
     # ------------------ Trigger-Action-Commands ------------------
     def attack(self) -> None:
         """
@@ -123,7 +126,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
             self._set_image_type("MOVE_UP")
         # If not outside the screen
         if self.rect.top > 0:
-            self._accelerate_up()
+            self._speed_y = accelerate(self._speed_y, self.MAX_SPEED_UP, -1, self.ACC_UP)
         else:
             self._speed_y = 0
             self.rect.top = 0
@@ -141,7 +144,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
             self._set_image_type("MOVE_DOWN")
         # If not outside the screen
         if self.rect.bottom < SCREEN_HEIGHT:
-            self._accelerate_down()
+            self._speed_y = accelerate(self._speed_y, self.MAX_SPEED_UP, 1, self.ACC_DOWN)
         else:
             self._speed_y = 0
             self.rect.bottom = SCREEN_HEIGHT
@@ -156,7 +159,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         # If not outside the screen
         if self.rect.left > 0:
             self._move_flag_x = True
-            self._accelerate_left()
+            self._speed_x = accelerate(self._speed_x, self.MAX_SPEED_X, -1, self.ACC_X)
         else:
             self._speed_x = 0
             self.rect.left = 0
@@ -170,7 +173,7 @@ class BasicPlayerPlane(BasicPlaneEntity, ABC):
         # If not outside the screen
         if self.rect.right < SCREEN_WIDTH:
             self._move_flag_x = True
-            self._accelerate_right()
+            self._speed_x = accelerate(self._speed_x, self.MAX_SPEED_X, 1, self.ACC_X)
         else:
             self._speed_x = 0
             self.rect.right = SCREEN_WIDTH
@@ -329,5 +332,5 @@ def create_player(player_num=1):
         return Player1(), None
     else:
         # TODO Point for P1, P2
-        #return PlayerPlane(point=None), PlayerPlane(point=None, p_id=2)
+        # return PlayerPlane(point=None), PlayerPlane(point=None, p_id=2)
         return None

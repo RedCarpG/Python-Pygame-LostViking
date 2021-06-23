@@ -70,7 +70,8 @@ class BasicPlaneEntity(LoopImageEntity, SoundHelper, ABC):
         """
         pass
 
-    def _destroy_phase(self, image_loop_finished, *args, **kwargs) -> None:
+    def _destroy_phase(self, *args, **kwargs) -> None:
+        image_loop_finished = kwargs.pop("image_loop_finished", True)
         if image_loop_finished:
             self.kill()
             del self
@@ -88,75 +89,75 @@ class BasicPlaneEntity(LoopImageEntity, SoundHelper, ABC):
         """ Move its rect by its _speed_x and _speed_y"""
         self.rect.move_ip(self._speed_x, self._speed_y)
 
-    # --------------- Acceleration --------------- #
-    def _accelerate_up(self) -> None:
-        """ In crease the _speed_y by _ACC_UP (negative)
-        (Note: This method only change the value of _speed_x / _speed_y)
-        """
-        self._move_flag_y = True
-        # If speed doesn't reach limit
-        if self._speed_y > -self.MAX_SPEED_UP:
-            self._speed_y -= self.ACC_UP
-
-    def _accelerate_down(self) -> None:
-        """ In crease the _speed_x by _ACC_DOWN (positive)
-        (Note: This method only change the value of _speed_x / _speed_y)
-        """
-        self._move_flag_y = True
-        # If speed doesn't reach limit
-        if self._speed_y < self.MAX_SPEED_DOWN:
-            self._speed_y += self.ACC_DOWN
-
-    def _accelerate_left(self) -> None:
-        """ In crease the _speed_x by _ACC_L (negative)
-        (Note: This method only change the value of _speed_x / _speed_y)
-        """
-        self._move_flag_x = True
-        # If speed doesn't reach limit
-        if self._speed_x > -self.MAX_SPEED_X:
-            self._speed_x -= self.ACC_X
-
-    def _accelerate_right(self) -> None:
-        """ In crease the _speed_x by _ACC_R (positive)
-        (Note: This method only change the value of _speed_x / _speed_y)
-        """
-        self._move_flag_x = True
-        # If speed doesn't reach limit
-        if self._speed_x < self.MAX_SPEED_X:
-            self._speed_x += self.ACC_X
-
-    # --------------- Deceleration --------------- #
-    def _deceleration_x(self) -> int:
-        """ Decrease the _speed_x or _speed_y to 0 automatically
-        (Note: This method only change the value of _speed_x / _speed_y)
-        """
-        if self._speed_x > 0:  # If it is moving right, decelerate by _ACC_L
-            self._speed_x -= self.ACC_X
-            if self._speed_x <= 0:
-                self._speed_x = 0
-                return 1
-        elif self._speed_x < 0:  # If it is moving left, decelerate by _ACC_R
-            self._speed_x += self.ACC_X
-            if self._speed_x >= 0:
-                self._speed_x = 0
-                return 1
-        return 0
-
-    def _deceleration_y(self) -> int:
-        """ Decrease the _speed_x or _speed_y to 0 automatically
-        (Note: This method only change the value of _speed_x / _speed_y)
-        """
-        if self._speed_y > 0:  # If it is moving down, decelerate by _ACC_UP
-            self._speed_y -= self.ACC_UP
-            if self._speed_y <= 0:
-                self._speed_y = 0
-            return 1
-        elif self._speed_y < 0:  # If it is moving up, decelerate by _ACC_DOWN
-            self._speed_y += self.ACC_DOWN
-            if self._speed_y >= 0:
-                self._speed_y = 0
-                return 1
-        return 0
+    # # --------------- Acceleration --------------- #
+    # def _accelerate_up(self) -> None:
+    #     """ In crease the _speed_y by _ACC_UP (negative)
+    #     (Note: This method only change the value of _speed_x / _speed_y)
+    #     """
+    #     #self._move_flag_y = True
+    #     # If speed doesn't reach limit
+    #     if self._speed_y > -self.MAX_SPEED_UP:
+    #         self._speed_y -= self.ACC_UP
+    #
+    # def _accelerate_down(self) -> None:
+    #     """ In crease the _speed_x by _ACC_DOWN (positive)
+    #     (Note: This method only change the value of _speed_x / _speed_y)
+    #     """
+    #     #self._move_flag_y = True
+    #     # If speed doesn't reach limit
+    #     if self._speed_y < self.MAX_SPEED_DOWN:
+    #         self._speed_y += self.ACC_DOWN
+    #
+    # def _accelerate_left(self) -> None:
+    #     """ In crease the _speed_x by _ACC_L (negative)
+    #     (Note: This method only change the value of _speed_x / _speed_y)
+    #     """
+    #     #self._move_flag_x = True
+    #     # If speed doesn't reach limit
+    #     if self._speed_x > -self.MAX_SPEED_X:
+    #         self._speed_x -= self.ACC_X
+    #
+    # def _accelerate_right(self) -> None:
+    #     """ In crease the _speed_x by _ACC_R (positive)
+    #     (Note: This method only change the value of _speed_x / _speed_y)
+    #     """
+    #     #self._move_flag_x = True
+    #     # If speed doesn't reach limit
+    #     if self._speed_x < self.MAX_SPEED_X:
+    #         self._speed_x += self.ACC_X
+    #
+    # # --------------- Deceleration --------------- #
+    # def _deceleration_x(self) -> int:
+    #     """ Decrease the _speed_x or _speed_y to 0 automatically
+    #     (Note: This method only change the value of _speed_x / _speed_y)
+    #     """
+    #     if self._speed_x > 0:  # If it is moving right, decelerate by _ACC_L
+    #         self._speed_x -= self.ACC_X
+    #         if self._speed_x <= 0:
+    #             self._speed_x = 0
+    #             return 1
+    #     elif self._speed_x < 0:  # If it is moving left, decelerate by _ACC_R
+    #         self._speed_x += self.ACC_X
+    #         if self._speed_x >= 0:
+    #             self._speed_x = 0
+    #             return 1
+    #     return 0
+    #
+    # def _deceleration_y(self) -> int:
+    #     """ Decrease the _speed_x or _speed_y to 0 automatically
+    #     (Note: This method only change the value of _speed_x / _speed_y)
+    #     """
+    #     if self._speed_y > 0:  # If it is moving down, decelerate by _ACC_UP
+    #         self._speed_y -= self.ACC_UP
+    #         if self._speed_y <= 0:
+    #             self._speed_y = 0
+    #         return 1
+    #     elif self._speed_y < 0:  # If it is moving up, decelerate by _ACC_DOWN
+    #         self._speed_y += self.ACC_DOWN
+    #         if self._speed_y >= 0:
+    #             self._speed_y = 0
+    #             return 1
+    #     return 0
 
     # --------------- Propertie Interface--------------- #
     def set_pos(self, point) -> None:

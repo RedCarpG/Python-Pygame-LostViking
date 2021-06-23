@@ -8,6 +8,7 @@ from enum import Enum
 
 from ..generic_items.BasicPlaneEntity import BasicSpinPlaneEntity
 from ..groups import Enemy_G
+from ..generic_items.inertial_behavior import decelerate
 
 
 class EnemyIIActionPhase(Enum):
@@ -66,8 +67,8 @@ class EnemyII(BasicSpinPlaneEntity, ABC):
 
     def _action_decelerate(self):
         self._move()
-        self._deceleration_y()
-        self._deceleration_x()
+        self._speed_x = decelerate(self._speed_x, self.ACC_X)
+        self._speed_y = decelerate(self._speed_y, self.ACC_UP)
         if self._speed_y == 0 and self._speed_y == 0:
             self.current_path += 1
             if self.current_path < len(self.path):

@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from ..generic_items.BasicPlaneEntity import BasicPlaneEntity
 from ..groups import BOSS_G
 from ..constants import SCREEN_WIDTH
+from ..generic_items.inertial_behavior import accelerate, decelerate
 
 
 class BossActionPhase(Enum):
@@ -62,7 +63,7 @@ class EnemyBoss(BasicPlaneEntity, ABC):
     def _action_move_down(self):
         self._move()
         if self.rect.top > 0:
-            self._deceleration_y()
+            self._speed_y = decelerate(self._speed_y, self.ACC_DOWN)
             if self._speed_y == 0:
                 self.enter_action_idle_phase()
 
@@ -85,15 +86,15 @@ class EnemyBoss(BasicPlaneEntity, ABC):
         self._move()
         if not self._count_action_move_x:
             # Decelerate in X direction and enter idle phase
-            self._deceleration_x()
+            self._speed_x = decelerate(self._speed_x, self.ACC_X)
             if self._speed_x == 0:
                 self.enter_action_idle_phase()
         else:
             # Accelerate (if not max) and count down
-            if self._move_x_direction == -1:
-                self._accelerate_left()
-            else:
-                self._accelerate_right()
+            self._speed_x = accelerate(self._speed_x,
+                                       self.MAX_SPEED_X,
+                                       self._move_x_direction,
+                                       self.ACC_X)
             self._count_action_move_x -= 1
 
     # -------------------- Attack States --------------------
@@ -135,4 +136,3 @@ class EnemyBoss(BasicPlaneEntity, ABC):
         cls.MAX_HEALTH = 30000
         cls.SCORE = 5000
         cls._IS_SET_ATTRS = True
-
