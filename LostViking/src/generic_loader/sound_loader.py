@@ -50,7 +50,7 @@ def load_sound(filename, volume, label):
 
     try:
         sound = pygame.mixer.Sound(full_path)
-        print("<SUCCESS> Sound {} loaded！".format(filename))
+        print("<SUCCESS> Sound [{}] loaded！".format(filename))
     except pygame.error:
         print('<ERROR> !!! Can not find audio file : {}'.format(full_path), file=sys.stderr)
         raise SystemExit(str(geterror()))
@@ -78,7 +78,7 @@ def load_music(filename, volume):
         try:
             _MUSIC.load(os.path.join(_sound_dir, filename[0]))
         except pygame.error:
-            print('<ERROR> !!! Can not find audio file in: {}'.format(filename[0]), file=sys.stderr)
+            print('<ERROR> !!! Can not find audio file in: [{}]'.format(filename[0]), file=sys.stderr)
             raise SystemExit(str(geterror()))
 
         for each_filename in filename[1:]:
@@ -86,16 +86,16 @@ def load_music(filename, volume):
             try:
                 _MUSIC.queue(os.path.join(_sound_dir, each_path))
             except pygame.error:
-                print('<ERROR> !!! Can not find audio file in: {}'.format(each_path), file=sys.stderr)
+                print('<ERROR> !!! Can not find audio file in: [{}]'.format(each_path), file=sys.stderr)
                 raise SystemExit(str(geterror()))
-            print("<SUCCESS> Music {} loaded！".format(each_path))
+            print("<SUCCESS> Music [{}] loaded !".format(each_path))
     else:
         full_path = os.path.join(_sound_dir, filename)
         try:
             _MUSIC.load(full_path)
-            print("<SUCCESS> Music {} loaded！".format(filename))
+            print("<SUCCESS> Music [{}] loaded !".format(filename))
         except pygame.error:
-            print('<ERROR> !!! Can not find audio file in: {}'.format(full_path), file=sys.stderr)
+            print('<ERROR> !!! Can not find audio file in: [{}]'.format(full_path), file=sys.stderr)
             raise SystemExit(str(geterror()))
     _MUSIC.set_volume(volume)
 

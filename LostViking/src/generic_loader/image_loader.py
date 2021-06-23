@@ -28,7 +28,7 @@ def load_image(filename: str,
     fullname = os.path.join(_image_dir, filename)
     try:
         image = pygame.image.load(fullname)
-        print("<SUCCESS> Image loaded !".format(filename))
+        print("<SUCCESS> Image [{}] loaded !".format(filename))
     except pygame.error:
         print("<ERROR> Image [{}] not found".format(filename), file=sys.stderr)
         raise SystemExit(str(geterror()))

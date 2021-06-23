@@ -25,7 +25,7 @@ def load_font(filename, size):
     fullname = os.path.join(_font_dir, filename)
     try:
         font = pygame.font.Font(fullname, size)
-        print("<SUCCESS> Font loaded !".format(filename))
+        print("<SUCCESS> Font [{}] loaded !".format(filename))
     except pygame.error:
         print("<ERROR> Font [{}] not found".format(filename), file=sys.stderr)
         raise SystemExit(str(geterror()))
