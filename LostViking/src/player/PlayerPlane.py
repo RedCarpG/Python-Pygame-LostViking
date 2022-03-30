@@ -282,13 +282,24 @@ class Player1(BasicPlayerPlane):
     def _init_image(cls) -> None:
         cls.IMAGE = dict()
         from ..generic_loader.image_loader import load_image
-        cls.IMAGE["BASE"] = [load_image("PlayerPlane/Viking_body.png")]
-        cls.IMAGE["IDLE"] = [load_image("PlayerPlane/PlayerPlane_moveNormal1.png"),
-                             load_image("PlayerPlane/PlayerPlane_moveNormal2.png")]
-        cls.IMAGE["MOVE_UP"] = [load_image("PlayerPlane/PlayerPlane_moveUp1.png"),
-                                load_image("PlayerPlane/PlayerPlane_moveUp2.png")]
-        cls.IMAGE["MOVE_DOWN"] = [load_image("PlayerPlane/PlayerPlane_moveDown1.png"),
-                                  load_image("PlayerPlane/PlayerPlane_moveDown2.png")]
+        cls.IMAGE["BASE"] = [load_image("PlayerPlane/VikingBody.png")]
+        cls.IMAGE["IDLE"] = [load_image("PlayerPlane/VikingMoveDown1.png"),
+                             load_image("PlayerPlane/VikingMoveDown2.png"),
+                             load_image("PlayerPlane/VikingMoveDown3.png"),
+                             load_image("PlayerPlane/VikingMoveDown4.png"),
+                             load_image("PlayerPlane/VikingMoveDown5.png"),
+                             load_image("PlayerPlane/VikingMoveDown6.png"),
+                             load_image("PlayerPlane/VikingMoveDown7.png"),
+                             load_image("PlayerPlane/VikingMoveDown8.png")]
+        cls.IMAGE["MOVE_UP"] = [load_image("PlayerPlane/VikingMoveUp1.png"),
+                                load_image("PlayerPlane/VikingMoveUp2.png"),
+                                load_image("PlayerPlane/VikingMoveUp3.png"),
+                                load_image("PlayerPlane/VikingMoveUp4.png"),
+                                load_image("PlayerPlane/VikingMoveUp5.png"),
+                                load_image("PlayerPlane/VikingMoveUp6.png"),
+                                load_image("PlayerPlane/VikingMoveUp7.png"),
+                                load_image("PlayerPlane/VikingMoveUp8.png")]
+        cls.IMAGE["MOVE_DOWN"] = cls.IMAGE["IDLE"]
         cls.IMAGE["EXPLODE"] = [load_image("PlayerPlane/PlayerPlane_explode1.png"),
                                 load_image("PlayerPlane/PlayerPlane_explode2.png"),
                                 load_image("PlayerPlane/PlayerPlane_explode3.png"),

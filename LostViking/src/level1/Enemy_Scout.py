@@ -16,9 +16,8 @@ class EnemyScout(EnemyI):
     @classmethod
     def _init_image(cls):
         cls.IMAGE = dict()
-        cls.IMAGE["BASE"] = [load_image("Enemy/Enemy_Phoenix1.png")]
-        cls.IMAGE["IDLE"] = [load_image("Enemy/Enemy_Phoenix1.png"),
-                             load_image("Enemy/Enemy_Phoenix2.png")]
+        cls.IMAGE["BASE"] = [load_image("Enemy/Scout.png")]
+        cls.IMAGE["IDLE"] = [load_image("Enemy/Scout.png")]
         cls.IMAGE["EXPLODE"] = [load_image("Enemy/Destroy_Phoenix1.png"),
                                 load_image("Enemy/Destroy_Phoenix2.png"),
                                 load_image("Enemy/Destroy_Phoenix3.png"),
