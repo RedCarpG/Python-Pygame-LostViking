@@ -29,10 +29,10 @@ class Testboard:
                                 f"Level: {self.player.level}", (0, 90), color=COLOR.WHITE),
             'bomb': FontEntity(self.surface, get_font("Testboard"),
                                f"Bomb: {self.player.bomb_count}", (0, 120), color=COLOR.WHITE),
-            'bullets': FontEntity(self.surface, get_font("Testboard"),
-                                  f"Bullets: {len(G_Player_Bullets)}", (0, 150), color=COLOR.WHITE),
             'health': FontEntity(self.surface, get_font("Testboard"),
                                  f"HP: {self.player.health}", (0, 180), color=COLOR.RED),
+            'supplies': FontEntity(self.surface, get_font("Testboard"),
+                                   f"Supplies: {len(G_Supplies)}", (0, 150), color=COLOR.WHITE),
         }
 
     def update(self):
@@ -41,7 +41,7 @@ class Testboard:
         self.Text_G["health"].change_text(f"health: {self.player.health}")
         self.Text_G["level"].change_text(f"Level: {self.player.level}")
         self.Text_G["bomb"].change_text(f"Bomb: {self.player.bomb_count}")
-        self.Text_G["bullets"].change_text(f"Bullets: {len(G_Player_Bullets)}")
+        self.Text_G["supplies"].change_text(f"Supplies: {len(G_Supplies)}")
 
     def blit(self):
         for _, text in self.Text_G.items():
@@ -52,6 +52,7 @@ class TestGame:
     def __init__(self, screen) -> None:
         load_asset_player()
         load_asset_supply()
+        supply_event_config()
         self.screen = screen
         self.player = PlayerViking(pos=None)
 
@@ -65,24 +66,31 @@ class TestGame:
 
     def event(self):
 
-        def test_key_event(event):
-            if event.key == K_o:
+        def test_key_event():
+            if event.key == K_k:
                 self.player.hit(100)
-            elif event.key == K_z:
-                self.player.level_up()
-            elif event.key == K_x:
-                self.player.level_down()
+            elif event.key == K_i:
+                s = SupplyLife()
+                s.enter_action_enter_phase()
+            elif event.key == K_o:
+                s = SupplyBomb()
+                s.enter_action_enter_phase()
+            elif event.key == K_p:
+                s = SupplyLevel()
+                s.enter_action_enter_phase()
 
         for event in pygame.event.get():
             if detect_player_event(event, player1=self.player):
                 pass
             elif event.type == QUIT:
                 self.running = False
+            # --------------- Key Down Events ---------------
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     self.running = False
-                else:
-                    test_key_event(event)
+                test_key_event()
+            else:
+                supply_events_handler(event)
 
         detect_key_pressed(self.player)
 

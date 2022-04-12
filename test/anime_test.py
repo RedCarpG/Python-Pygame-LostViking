@@ -7,7 +7,7 @@ from pygame.sprite import Group
 from src.helper.image import load_image
 from src.setting import *
 from src.util import *
-from src.game.animation.AnimSprite import AnimSprite
+from src.game.animation.AnimeSprite import AnimeSprite
 
 
 def test_anime():
@@ -23,7 +23,7 @@ def test_anime():
     }
 
     anime_sprites = Group()
-    sprite = AnimSprite(images)
+    sprite = AnimeSprite(images)
     anime_sprites.add(sprite)
     sprite.rect.move_ip(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 

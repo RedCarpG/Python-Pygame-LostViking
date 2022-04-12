@@ -3,6 +3,7 @@ from src.setting import *
 
 import pygame
 
+
 class _SoundBuffer(object):
 
     BUFFER = {}
@@ -16,7 +17,7 @@ class _SoundBuffer(object):
         self.BUFFER[key] = item
 
     def __delitem__(self, key):
-        del self.BUFFER[key]
+        .BUFFER[key]
 
 
 def test_func():
