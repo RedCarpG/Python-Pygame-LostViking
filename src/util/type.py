@@ -19,13 +19,14 @@ class Size:
     def height(self):
         return self._height
 
+    def to_list(self):
+        return [self._width, self._height]
 
-class Pos:
-    def __init__(self, x: int, y: int) -> None:
-        self._x = x
-        self._y = y
+
+class Pos(object):
 
     def __init__(self, pos: list[int, int]) -> None:
+        super().__init__()
         self._x = pos[0]
         self._y = pos[1]
 
@@ -50,4 +51,4 @@ class Pos:
         return Pos([self._x + pos[0], self._y + pos[1]])
 
     def to_list(self):
-        return self._x, self._y
+        return [self._x, self._y]
