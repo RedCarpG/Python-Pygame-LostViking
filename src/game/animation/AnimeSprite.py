@@ -1,12 +1,13 @@
 from pygame import Rect
-from pygame.sprite import Sprite
+from pygame.sprite import Sprite, AbstractGroup
 from src.util.type import Size
+from pygame.transform import rotate
 
 
-class AnimSprite(Sprite):
-    def __init__(self, frames: dict, frame_size: Size = None):
+class AnimeSprite(Sprite):
+    def __init__(self, frames: dict, frame_size: Size = None, enable_rotate=False, angle=0, *groups: AbstractGroup):
         # Init Sprite
-        Sprite.__init__(self)
+        super().__init__(*groups)
 
         # Set Image properties
         self.frames = frames
@@ -17,20 +18,24 @@ class AnimSprite(Sprite):
         self._max_frame_width = None
         self._current_frame_index = 0
         self._anime_interval = 0
+        self.enable_rotate = enable_rotate
+        self.angle = angle
 
-        if frame_size:
+        if frame_size is not None:
             self._img_w = frame_size.width
             self._img_h = frame_size.height
             self._chop_rect = Rect(0, 0, self._img_w, self._img_h)
         else:
-            rect = self.frames["BASE"].get_rect()
-            self._img_w = rect.width
+            rect = self.frames["IDLE"].get_rect()
+            self._img_w = rect.width / 6
             self._img_h = rect.height
             self._chop_rect = Rect(0, 0, self._img_w, self._img_h)
 
-        self.set_anime_state("IDLE")
-        self.image = self.image.subsurface(self._chop_rect)
         self.rect = Rect(0, 0, self._img_w, self._img_h)
+        self.set_anime_state("IDLE")
+
+    def update(self):
+        self.anime()
 
     def anime_end_loop_hook(self):
         pass
@@ -52,6 +57,10 @@ class AnimSprite(Sprite):
             self._current_frame_index + 1) % self._max_frame_index
         self.image = self.frames[self.current_state].subsurface(
             self._chop_rect.move(self._current_frame_index * self._img_w, 0))
+        if self.enable_rotate:
+            self.image = rotate(self.image, self.angle)
+            _temp = self.rect.center
+            self.rect = self.image.get_rect(center=_temp)
         if self._current_frame_index == 0:
             self.anime_end_loop_hook()
 
@@ -72,3 +81,7 @@ class AnimSprite(Sprite):
         self._max_frame_index = int(self._max_frame_width / self._img_w)
 
         self.image = self.current_frame.subsurface(self._chop_rect)
+        if self.enable_rotate:
+            self.image = rotate(self.image, self.angle)
+            _temp = self.rect.center
+            self.rect = self.image.get_rect(center=_temp)
