@@ -2,19 +2,28 @@
 Includes:
     -> PlayerPlane
 """
+from enum import Flag
 import pygame
-from src.game.animation import AnimSprite
+from pygame.sprite import spritecollideany
+
 from src.setting import SCREEN_WIDTH, SCREEN_HEIGHT
 
-from src.helper.sound import play_sound
-from src.util.inertial import accelerate, decelerate
-from src.helper.image import get_image
+from src.util.collide_detect import collide_detect
 from src.util.type import Pos
-from src.game.generic_items.Effect import AttachEffect
-from .PlayerWeapon import PlayerWeapon, PlayerWeaponViking
+from src.util.inertial import accelerate, decelerate
+
+from src.helper.sound import play_sound
+
+from src.game.groups import G_Enemys, G_Enemy_Bullets
+from src.game.animation import AnimeSprite
+from src.game.animation.Effect import AttachEffect
+from .PlayerWeapon import PlayerWeapon
+import logging
+import sys
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
-class PlayerPlane(AnimSprite):
+class PlayerPlane(AnimeSprite):
     """ Basic Player Abstract class
     """
     BOMB_COUNT_MAX = 3
@@ -35,7 +44,7 @@ class PlayerPlane(AnimSprite):
 
     def __init__(self, weapon: PlayerWeapon, pos, frames, frame_size):
         # Init
-        AnimSprite.__init__(self, frames=frames, frame_size=frame_size)
+        super().__init__(frames=frames, frame_size=frame_size)
 
         if pos:
             self.start_position = pos
@@ -47,7 +56,7 @@ class PlayerPlane(AnimSprite):
         ''' Init Weapon '''
         self._weapon = weapon
 
-        self.score = 0
+        self._score = 0
         self._life = self.LIFE_DEFAULT
         self._bomb_count = self.BOMB_COUNT_DEFAULT
         self._level = 1
@@ -68,17 +77,21 @@ class PlayerPlane(AnimSprite):
         # Set init position
         self.set_pos(pos)
 
+    # --------------- Super Methods Override --------------- #
+    def update(self) -> None:
+        """ Update method from Sprite, is called per frame """
+        super().update()
+        self._reload()
+        if self.is_active:
+            self._move()
+            self.collide_enemy(G_Enemys)
+            self.collide_enemy_bullet(G_Enemy_Bullets)
+
     def anime_end_loop_hook(self):
         if not self.is_active:
             self.reset()
 
-    # --------------------- Player Plane Behavior ---------------------
-
-    def update(self) -> None:
-        """ Update method from Sprite, is called per frame """
-        self.anime()
-        self._move()
-        self._reload()
+    # --------------------- Behaviors ---------------------
 
     def _move(self) -> None:
         if self._speed.y != 0 or self._speed.x != 0:
@@ -107,14 +120,16 @@ class PlayerPlane(AnimSprite):
         if self._count_attack_interval > 0:
             self._count_attack_interval -= 1
 
-    def _destroy(self) -> None:
+    def destroy(self) -> None:
+        self._health = 0
+        self.dec_life()
         self.is_active = False
         self._is_moving_y = False
         self._is_moving_x = False
-        self.set_anime_state("EXPLODE")
-        play_sound("PLAYER_EXPLODE")
+        self.set_anime_state("DESTROY")
+        play_sound("PLAYER_DESTROY")
 
-    # ------------------ Battle ------------------
+    # ------------------ Battle
     def hit(self, damage=100, **kwargs) -> bool:
         """
         This function is called in collision detection
@@ -124,13 +139,16 @@ class PlayerPlane(AnimSprite):
             self._health -= damage
             if self._health > 0:
                 # Get Hit effect
-                AttachEffect(self.rect, frames={
-                    "IDLE": self.frames["HIT"]
-                }, frame_size=self.frame_size)
+                AttachEffect(
+                    self,
+                    frames={
+                        "IDLE": self.frames["HIT"]
+                    },
+                    frame_size=self.frame_size
+                )
             else:
                 # HP below 0
-                self._health = 0
-                self._destroy()
+                self.destroy()
             return True
         else:
             return False
@@ -154,9 +172,23 @@ class PlayerPlane(AnimSprite):
                 self._weapon.shoot(pos=Pos(self.rect.center))
                 self._count_attack_interval = self._attack_speed
 
+    def collide_enemy(self, enemy_group):
+        enemy = spritecollideany(self, enemy_group, collide_detect)
+        if enemy and enemy.is_active:
+            self._score += enemy.score
+            self.destroy()
+            enemy.destroy()
+
+    def collide_enemy_bullet(self, enemy_bullet_group):
+        bullet = spritecollideany(self, enemy_bullet_group, collide_detect)
+        if bullet:
+            self.hit(bullet.damage)
+            bullet.hit()
+
     # ------------------ Trigger-Movement-Commands ------------------
     # ------------------ (Instant trigger method called by events) --
     # Trigger Move Up
+
     def trigger_move_up(self) -> None:
         """ Trigger this object to move Up (with acceleration)
         Called by event (e.g. Button press)
@@ -249,22 +281,28 @@ class PlayerPlane(AnimSprite):
         """
         self._is_moving_x = False
 
-    # ------------------ Interface-----------------
+    # ------------------ Attributes -----------------
 
     # ----- Life
     @property
     def life(self) -> int:
         return self._life
 
-    def add_life(self) -> None:
+    def add_life(self) -> bool:
         if self._life >= self.LIFE_MAX:
-            raise("Error: Max life attend.")
+            logging.info("Add Life: Max lives reached")
+            return False
         self._life += 1
+        logging.info("Add Life")
+        return True
 
-    def dec_life(self) -> None:
+    def dec_life(self) -> bool:
         if self._life <= 0:
-            raise("Error: Can't decrease life under 0.")
+            logging.warning("Error: Can't decrease life under 0.")
+            return False
         self._life -= 1
+        logging.info("Decrease Life")
+        return True
 
     # ----- Weapon & Level
 
@@ -288,6 +326,14 @@ class PlayerPlane(AnimSprite):
 
     def reset_level(self) -> None:
         self.weapon.reset_level()
+
+    # ----- Score
+    @property
+    def score(self) -> int:
+        return self._score
+
+    def add_score(self, score) -> int:
+        self._score += score
 
     # ----- Attack Speed
     @property
@@ -319,23 +365,34 @@ class PlayerPlane(AnimSprite):
     def health(self) -> int:
         return self._health
 
-    def set_health(self, health) -> None:
-        self._health = health
+    def add_health(self) -> bool:
+        if self.health < self.MAX_HEALTH:
+            self._health = self.MAX_HEALTH
+            logging.info("Add Health")
+            return True
+        logging.info("Add Health: Full health reached")
+        return False
 
     # ----- Bomb
     @property
     def bomb_count(self) -> int:
         return self._bomb_count
 
-    def add_nuc_bomb(self) -> None:
+    def add_bomb(self) -> bool:
         if self._bomb_count >= self.BOMB_COUNT_MAX:
-            return
+            logging.info("Add Bomb: Max Bomb number reached")
+            return False
         self._bomb_count += 1
+        logging.info("Add Bomb")
+        return True
 
-    def dec_nuc_bomb(self) -> None:
+    def dec_bomb(self) -> bool:
         if self._bomb_count <= 0:
-            return
+            logging.warning("Error: Can't decrease bomb under 0.")
+            return False
         self._bomb_count -= 1
+        logging.info("Decrese Bomb")
+        return True
 
     # ----------------- Reset method -----------------
     # Reset
@@ -346,21 +403,3 @@ class PlayerPlane(AnimSprite):
         # self.is_invincible = True
         self._weapon.reset_level()
         self._health = self.MAX_HEALTH
-
-
-class PlayerViking(PlayerPlane):
-    def __init__(self, pos):
-        super().__init__(
-            weapon=PlayerWeaponViking(),
-            pos=pos,
-            frames={
-                "BASE": get_image("PlayerPlane/VikingBase.png"),
-                "IDLE": get_image("PlayerPlane/VikingIdle.png"),
-
-                "MOVE_UP": get_image("PlayerPlane/VikingMoveUp.png"),
-                "MOVE_DOWN": get_image("PlayerPlane/VikingMoveDown.png"),
-                "EXPLODE": get_image("PlayerPlane/VikingExplode.png"),
-
-                "HIT": get_image("PlayerPlane/VikingHit.png")
-            },
-            frame_size=None)

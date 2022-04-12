@@ -1,23 +1,25 @@
 """
 Player controllable object
 """
-from collections.abc import Sequence
 import pygame
+from pygame.sprite import spritecollideany
 from abc import ABC, abstractmethod
-from src.helper.image import get_image
-from src.game.generic_items.Bullet import Bullet
-from src.game.groups import G_Player_Bullet
 from src.util.type import Pos
+from src.util import if_in_screen, collide_detect
+from src.game.groups import G_Enemys, G_Player_Bullets
+from src.game.player import PlayerPlane
 
 
 class PlayerWeapon(ABC):
-    LEVEL_MAX = 3
+    LEVEL_MAX = 10
 
-    BASIC_DMG = 150
+    BASIC_DMG = 80
+    INC_DMG = 10
 
-    def __init__(self):
+    def __init__(self, player: PlayerPlane):
+        self.player = player
         self._damage = self.BASIC_DMG
-        self._inc_dmg = 25
+        self._inc_dmg = self.INC_DMG
         self._level = 1
         self._bullet_type = None
 
@@ -32,13 +34,13 @@ class PlayerWeapon(ABC):
         self._damage += self._inc_dmg
 
     def level_down(self) -> None:
-        if self._level <= 0:
+        if self._level <= 1:
             return
         self._level -= 1
         self._damage -= self._inc_dmg
 
     def reset_level(self) -> None:
-        self._level = 0
+        self._level = 1
         self._damage = self.BASIC_DMG
 
     @property
@@ -53,50 +55,41 @@ class PlayerWeapon(ABC):
         return None
 
 
-class PlayerWeaponViking(PlayerWeapon):
+class PlayerBullet(pygame.sprite.Sprite, ABC):
+    """ Basic Bullet Class
+    """
 
-    BASIC_DMG = 150
+    def __init__(self,
+                 pos: Pos,
+                 speed: pygame.Vector2,
+                 image: pygame.Surface,
+                 player: PlayerPlane):
+        super().__init__(G_Player_Bullets)
+        self.player = player
+        self.image = image
+        self.rect = self.image.get_rect(center=pos.to_list())
+        self.speed = speed
+        self.damage = 0
 
-    def __init__(self):
-        PlayerWeapon.__init__(self)
-        self._bullet_type = PlayerBulletViking
-        self._inc_dmg = 150
+    def update(self):
+        # General update method for bullets
+        if if_in_screen(self.rect):
+            self._move()
+            self.collide_enemy(enemy_group=G_Enemys)
+        else:
+            self.kill()
 
-    def shoot(self, pos: Pos):
-        position1 = pos.move_x(-10)
-        position2 = pos.move_x(10)
-        self._bullet_type(position1, pygame.Vector2(0, -17), self._damage)
-        self._bullet_type(position2, pygame.Vector2(0, -17), self._damage)
+    def hit(self):
+        # General get hit method for bullets
+        self.kill()
 
-        if self._level >= 2:
-            position1 = pos.move_x(-10)
-            position2 = pos.move_x(10)
-            self._bullet_type(
-                position1, pygame.Vector2(-5, -17), self._damage, angle=20)
-            self._bullet_type(position2, pygame.Vector2(
-                5, -17), self._damage, angle=-20)
+    def _move(self):
+        self.rect.move_ip(self.speed.x, self.speed.y)
 
-        if self._level >= 3:
-            self._bullet_type(
-                position1, pygame.Vector2(-10, -17), self._damage, angle=30)
-            self._bullet_type(position2, pygame.Vector2(
-                10, -17), self._damage, angle=-30)
-
-
-class PlayerBulletViking(Bullet):
-
-    def __init__(self, pos: Pos,
-                 speed: Sequence[int, int],
-                 damage,
-                 angle=None):
-        Bullet.__init__(self, pos=pos, speed=speed,
-                        image=get_image("PlayerPlane/bullet.png"))
-        self.damage = damage
-        if angle:
-            self._rotate(angle)
-        G_Player_Bullet.add(self)
-
-    def _rotate(self, angle: int) -> None:
-        temp = self.rect.center
-        self.image = pygame.transform.rotate(self.image, angle)
-        self.rect = self.image.get_rect(center=temp)
+    def collide_enemy(self, enemy_group):
+        enemy = spritecollideany(self, enemy_group, collide_detect)
+        if enemy and enemy.is_active:
+            enemy.hit(self.damage)
+            if not enemy.is_active:
+                self.player.add_score(enemy.score)
+            self.hit()

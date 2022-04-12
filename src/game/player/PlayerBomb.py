@@ -2,21 +2,25 @@
     -> PlayerNucBomb class which creates a bomb entity
     -> NucExplosion class which handles with the drawing of explosion image"""
 from pygame.sprite import Sprite
+import pygame
+
+from src.game.player.PlayerPlane import PlayerPlane
 from src.setting import SCREEN_HEIGHT
 from src.helper.image import get_image
 from src.helper.sound import play_sound
 from src.util.type import Pos, Size
 from src.game.groups import G_Bomb
-from src.game.generic_items.Effect import Effect
+from src.game.animation.Effect import Effect
+from .PLAYER_EVENT_TYPE import EVENT_BOMB_EXPLODE
 
 
 class PlayerNucBomb(Sprite):
     _IS_LAUNCHED = False
 
-    def __init__(self, pos: Pos):
-        Sprite.__init__(self, G_Bomb)
-        play_sound("NUC_LAUNCH")
-
+    def __init__(self, pos: Pos, player: PlayerPlane):
+        super().__init__(G_Bomb)
+        play_sound("BOMB_LAUNCH")
+        self.player = player
         # Set Image properties
         self.image = get_image("PlayerPlane/bullet.png")
         # Set Rect & Position
@@ -32,32 +36,37 @@ class PlayerNucBomb(Sprite):
         else:
             NucExplosion(Pos(self.rect.center))
             PlayerNucBomb._IS_LAUNCHED = False
-            play_sound("NUC_EXPLODE")
+            play_sound("BOMB_EXPLODE")
+            trigger_bomb_explode_event(self)
             self.kill()
-            del self
 
     # --------------- Behaviors --------------- #
+
     def _move(self) -> None:
         self.rect.top -= self.speed
         self.speed += self.accelerate
 
     @classmethod
-    def launch(cls, pos: Pos) -> None:
+    def launch(cls, pos: Pos, player) -> None:
         if cls._IS_LAUNCHED:
             return
 
         cls._IS_LAUNCHED = True
-        PlayerNucBomb(pos)
+        PlayerNucBomb(pos, player)
 
 
 class NucExplosion(Effect):
 
     def __init__(self, pos: Pos):
-        Effect.__init__(
-            self,
+        super().__init__(
             pos=pos,
             frames={
                 "IDLE": get_image("Bomb/NucExplosion.png")
             },
             frame_size=Size([96, 128])
         )
+
+
+def trigger_bomb_explode_event(bomb):
+    pygame.event.post(pygame.event.Event(
+        EVENT_BOMB_EXPLODE, {"bomb": bomb, "player": bomb.player}))

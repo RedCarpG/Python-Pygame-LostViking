@@ -1,5 +1,6 @@
 import pygame.event
 from pygame.locals import *
+from src.game.groups import G_Enemys
 
 from src.helper.sound.sound_loader import play_sound
 from .PLAYER_EVENT_TYPE import *
@@ -7,39 +8,56 @@ from .PlayerPlane import PlayerPlane
 from .PlayerBomb import PlayerNucBomb
 
 
-def _start_player_shoot_event(player: PlayerPlane, player_id: int) -> None:
-    if player_id == 1:
-        pygame.event.post(pygame.event.Event(EVENT_PLAYER1_SHOOT, {}))
-        pygame.time.set_timer(EVENT_PLAYER1_SHOOT, player.attack_speed)
+def trigger_player_shoot_event(player: PlayerPlane, id: int) -> None:
+    if id == 1:
+        pygame.event.post(pygame.event.Event(
+            EVENT_PLAYER1_SHOOT, {"player": player}))
+        pygame.time.set_timer(pygame.event.Event(
+            EVENT_PLAYER1_SHOOT, {"player": player}), player.attack_speed)
     else:
-        pygame.event.post(pygame.event.Event(EVENT_PLAYER2_SHOOT, {}))
-        pygame.time.set_timer(EVENT_PLAYER2_SHOOT, player.attack_speed)
+        pygame.event.post(pygame.event.Event(
+            EVENT_PLAYER2_SHOOT, {"player": player}))
+        pygame.time.set_timer(pygame.event.Event(
+            EVENT_PLAYER2_SHOOT, {"player": player}), player.attack_speed)
 
 
-def _stop_player_shoot_event(player_id: int) -> None:
-    if player_id == 1:
-        pygame.time.set_timer(EVENT_PLAYER1_SHOOT, 0)
+def _stop_player_shoot_event(player: PlayerPlane, id: int) -> None:
+    if id == 1:
+        pygame.time.set_timer(pygame.event.Event(
+            EVENT_PLAYER1_SHOOT, {"player": player}), 0)
     else:
-        pygame.time.set_timer(EVENT_PLAYER2_SHOOT, 0)
+        pygame.time.set_timer(pygame.event.Event(
+            EVENT_PLAYER2_SHOOT, {"player": player}), 0)
 
 
 def _handle_player_shoot_event(player: PlayerPlane):
     player.attack()
 
 
-def _start_player_bomb_launch_event(player_id: int):
-    if player_id == 1:
-        pygame.event.post(pygame.event.Event(EVENT_PLAYER1_BOMB, {}))
-    else:
-        pygame.event.post(pygame.event.Event(EVENT_PLAYER2_BOMB, {}))
+def trigger_player_bomb_launch_event(player: PlayerPlane):
+    pygame.event.post(pygame.event.Event(
+        EVENT_PLAYER_BOMB, {"player": player}))
 
 
 def _handle_player_bomb_launch_event(player: PlayerPlane):
     if player.bomb_count > 0:
-        player.dec_nuc_bomb()
-        PlayerNucBomb.launch(player.pos)
+        player.dec_bomb()
+        PlayerNucBomb.launch(player.pos, player)
+        pygame.event.set_blocked(EVENT_PLAYER_BOMB)
     else:
-        play_sound("NUC_ERROR")
+        play_sound("BOMB_ERROR")
+
+
+def _handle_player_bomb_explode_event(player: PlayerPlane):
+    from src.game.groups import G_Enemys, G_Enemy_Bullets
+    for each in G_Enemys:
+        if each.is_active:
+            each.hit(1000)
+            if not each.is_active:
+                player.add_score(each.score)
+    G_Enemy_Bullets.empty()
+
+    pygame.event.set_allowed(EVENT_PLAYER_BOMB)
 
 
 def detect_key_pressed(player1: PlayerPlane, player2=None):
@@ -59,50 +77,57 @@ def detect_player_event(e: pygame.event.Event, player1: PlayerPlane, player2=Non
     if e.type == KEYDOWN:
         # Space Button
         if e.key == K_SPACE:
-            _start_player_shoot_event(player1, 1)
+            trigger_player_shoot_event(player1, 1)
         # Q Button
-        if e.key == K_q:
-            _start_player_bomb_launch_event(1)
+        elif e.key == K_q:
+            trigger_player_bomb_launch_event(player1)
+        else:
+            return False
     # --------------- Key Up Events ---------------
     elif e.type == KEYUP:
         if e.key == K_SPACE:
-            _stop_player_shoot_event(1)
-        if e.key == K_w:
+            _stop_player_shoot_event(player1, 1)
+        elif e.key == K_w:
             player1.trigger_stop_y()
-        if e.key == K_s:
+        elif e.key == K_s:
             player1.trigger_stop_y()
-        if e.key == K_a:
+        elif e.key == K_a:
             player1.trigger_stop_x()
-        if e.key == K_d:
+        elif e.key == K_d:
             player1.trigger_stop_x()
-        if e.key == K_UP:
+        elif e.key == K_UP:
             player1.trigger_stop_y()
-        if e.key == K_DOWN:
+        elif e.key == K_DOWN:
             player1.trigger_stop_y()
-        if e.key == K_LEFT:
+        elif e.key == K_LEFT:
             player1.trigger_stop_x()
-        if e.key == K_RIGHT:
+        elif e.key == K_RIGHT:
             player1.trigger_stop_x()
-        # Space Button
-        if e.key == K_SPACE:
-            _stop_player_shoot_event(1)
+        else:
+            return False
 
     # ---------------Mouse Events ---------------
     elif e.type == MOUSEBUTTONDOWN:
         # Trigger PlayerShoot Event
         if e.button == 1:
-            _start_player_shoot_event(player1, 1)
+            trigger_player_shoot_event(player1, 1)
+        else:
+            return False
     elif e.type == MOUSEBUTTONUP:
         # Stop Player Shoot Event
         if e.button == 1:
-            _stop_player_shoot_event(1)
+            _stop_player_shoot_event(player1, 1)
+        else:
+            return False
 
     # --------------- Customized Events ---------------
-    elif e.type == EVENT_PLAYER1_SHOOT:
-        _handle_player_shoot_event(player1)
+    elif e.type == EVENT_PLAYER1_SHOOT or e.type == EVENT_PLAYER2_SHOOT:
+        _handle_player_shoot_event(e.player)
 
-    elif e.type == EVENT_PLAYER1_BOMB:
-        _handle_player_bomb_launch_event(player1)
-
+    elif e.type == EVENT_PLAYER_BOMB:
+        _handle_player_bomb_launch_event(e.player)
     elif e.type == EVENT_BOMB_EXPLODE:
-        print(e.__dict__)
+        _handle_player_bomb_explode_event(e.player)
+    else:
+        return False
+    return True
