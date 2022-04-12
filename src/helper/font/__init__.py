@@ -1,2 +1,4 @@
-from .font_loader import load_font, get_font
+
 from .FontEntity import FontEntity
+
+from .font_loader import get_font, load_font

@@ -9,6 +9,9 @@ import sys
 import pygame
 from pygame.display import get_init
 from dataclasses import dataclass
+import logging
+import sys
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 _image_dir = os.path.join(os.path.split(os.path.abspath(__file__))[
                           0], '../../asset/image')
@@ -60,9 +63,10 @@ def load_image(filename: str, **kwargs: ImageType) -> pygame.surface.Surface:
 
     try:
         image = pygame.image.load(fullname)
-        print("<SUCCESS> Image [{}] loaded !".format(filename))
+        logging.info("<SUCCESS> Image [{}] loaded !".format(filename))
     except pygame.error:
-        print("<ERROR> Image [{}] not found".format(filename), file=sys.stderr)
+        logging.error("<ERROR> Image [{}] not found".format(
+            filename), file=sys.stderr)
         raise SystemExit(str(pygame.get_error()))
 
     # Convert the Surface for better performance(convert_alpha() if with transparent pixels)
@@ -79,10 +83,11 @@ def load_image(filename: str, **kwargs: ImageType) -> pygame.surface.Surface:
 
     if _scale:
         # Scale image
-        image = pygame.transform.smoothscale(image,
-                                             (int(image.get_height() * _scale[0]),
-                                              int(image.get_width() * _scale[1])))
+        image = pygame.transform.scale(image,
+                                       [int(image.get_height() * _scale[0]),
+                                        int(image.get_width() * _scale[1])])
 
+    _IMAGE[filename] = image
     return image
 
 

@@ -2,6 +2,9 @@ import os
 import sys
 
 import pygame
+import logging
+import sys
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 _sound_dir = os.path.join(os.path.split(
     os.path.abspath(__file__))[0], '../../asset/sound')
@@ -12,7 +15,10 @@ class NoneSound:
         self.label = sound_label
 
     def play(self):
-        print("-- No sound played for {}".format(self.label))
+        logging.warning("-- No sound played for {}".format(self.label))
+
+    def stop(self):
+        pass
 
 
 class _SoundBuffer(object):
@@ -21,7 +27,8 @@ class _SoundBuffer(object):
 
     def __getitem__(self, key):
         if key not in self.BUFFER:
-            print("<WARNING> Sound [{key}] not loaded", file=sys.stderr)
+            logging.warning(
+                "<WARNING> Sound [{key}] not loaded")
             return NoneSound(key)
         return self.BUFFER[key]
 
@@ -59,18 +66,18 @@ def load_sound(filename, volume, label):
     """
     if not pygame.mixer or not pygame.mixer.get_init():
 
-        print("<WARNING> Mixer hasn't initialized, failed loading sound ！",
-              file=sys.stderr)
+        logging.warning(
+            "<WARNING> Mixer hasn't initialized, failed loading sound ！")
         _SOUND[label] = NoneSound(label)
 
     full_path = os.path.join(_sound_dir, filename)
 
     try:
         sound = pygame.mixer.Sound(full_path)
-        print(f"<SUCCESS> Sound [{filename}] loaded ！")
+        logging.info(f"<SUCCESS> Sound [{filename}] loaded ！")
     except pygame.error:
-        print(
-            f'<ERROR> !!! Can not find audio file : {full_path}', file=sys.stderr)
+        logging.error(
+            f'<ERROR> !!! Can not find audio file : {full_path}')
         raise SystemExit(str(pygame.get_error()))
 
     sound.set_volume(volume)
@@ -87,18 +94,18 @@ def load_music(filename, volume):
         class NoneMusic:
             @classmethod
             def play(cls):
-                print("-- No music played to play")
+                logging.warning("-- No music played to play")
 
-        print("<WARNING> Mixer hasn't initialized, failed loading music！",
-              file=sys.stderr)
+        logging.warning(
+            "<WARNING> Mixer hasn't initialized, failed loading music！")
         return NoneMusic()
 
     if isinstance(filename, (list, tuple)):
         try:
             _MUSIC.load(os.path.join(_sound_dir, filename[0]))
         except pygame.error:
-            print('<ERROR> !!! Can not find audio file in: [{}]'.format(
-                filename[0]), file=sys.stderr)
+            logging.error('<ERROR> !!! Can not find audio file in: [{}]'.format(
+                filename[0]))
             raise SystemExit(str(pygame.get_error()))
 
         for each_filename in filename[1:]:
@@ -106,17 +113,21 @@ def load_music(filename, volume):
             try:
                 _MUSIC.queue(os.path.join(_sound_dir, each_path))
             except pygame.error:
-                print('<ERROR> !!! Can not find audio file in: [{}]'.format(
-                    each_path), file=sys.stderr)
+                logging.error('<ERROR> !!! Can not find audio file in: [{}]'.format(
+                    each_path))
                 raise SystemExit(str(pygame.get_error()))
-            print("<SUCCESS> Music [{}] loaded !".format(each_path))
+            logging.info("<SUCCESS> Music [{}] loaded !".format(each_path))
     else:
         full_path = os.path.join(_sound_dir, filename)
         try:
             _MUSIC.load(full_path)
-            print("<SUCCESS> Music [{}] loaded !".format(filename))
+            logging.info("<SUCCESS> Music [{}] loaded !".format(filename))
         except pygame.error:
-            print('<ERROR> !!! Can not find audio file in: [{}]'.format(
-                full_path), file=sys.stderr)
+            logging.error('<ERROR> !!! Can not find audio file in: [{}]'.format(
+                full_path))
             raise SystemExit(str(pygame.get_error()))
     _MUSIC.set_volume(volume)
+
+
+def play_music():
+    _MUSIC.play(loops=-1)
