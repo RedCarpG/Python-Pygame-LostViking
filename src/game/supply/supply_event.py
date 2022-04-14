@@ -1,35 +1,35 @@
 import pygame
 import random
-
 from src.util.type import Pos
 from .SUPPLY_TYPE import SUPPLY_TYPE
 from .SupplyBomb import SupplyBomb
 from .SupplyLevel import SupplyLevel
 from .SupplyLife import SupplyLife
 from src.setting import SCREEN_WIDTH
+from .Supply import Supply
 
 
 EVENT_ADD_SUPPLY = pygame.event.custom_type()
 
 
 def supply_event_config():
-    pygame.time.set_timer(EVENT_ADD_SUPPLY, 15000)
+    pygame.time.set_timer(EVENT_ADD_SUPPLY, 25000)
 
 
 def supply_events_handler(event):
     if event.type == EVENT_ADD_SUPPLY:
-        add_supply(random.choice(
-            [SUPPLY_TYPE.Bomb, SUPPLY_TYPE.Level, SUPPLY_TYPE.Life]))
+        pos = Pos(
+            [random.randint(int(SCREEN_WIDTH/3), int(2 * SCREEN_WIDTH/3)), -50])
+        sup = get_supply()
+        sup(pos)
 
 
-def add_supply(supply_type: SUPPLY_TYPE):
-    pos = Pos([random.randint(int(SCREEN_WIDTH/3), int(2 * SCREEN_WIDTH/3)), -50])
-    if supply_type == SUPPLY_TYPE.Life:
-        supply = SupplyLife(pos)
-        supply.enter_action_enter_phase()
-    elif supply_type == SUPPLY_TYPE.Bomb:
-        supply = SupplyBomb(pos)
-        supply.enter_action_enter_phase()
+def get_supply(supply_type: SUPPLY_TYPE = None) -> Supply:
+    if supply_type is None:
+        supply_type = random.choice(SUPPLY_TYPE.get_types())
+    if supply_type == SUPPLY_TYPE.Bomb:
+        return SupplyBomb
     elif supply_type == SUPPLY_TYPE.Level:
-        supply = SupplyLevel(pos)
-        supply.enter_action_enter_phase()
+        return SupplyLevel
+    elif supply_type == SUPPLY_TYPE.Life:
+        return SupplyLife

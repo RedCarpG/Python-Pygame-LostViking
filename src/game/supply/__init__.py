@@ -3,7 +3,7 @@ from .Supply import Supply
 from .SupplyLife import SupplyLife
 from .SupplyBomb import SupplyBomb
 from .SupplyLevel import SupplyLevel
-from .supply_event import supply_event_config, supply_events_handler, add_supply
+from .supply_event import supply_event_config, supply_events_handler, get_supply
 from .SUPPLY_TYPE import SUPPLY_TYPE
 
 
@@ -19,13 +19,3 @@ def load_asset_supply():
     load_image("Supply/SupplyLife.png")
     load_image("Supply/SupplyBomb.png")
     load_image("Supply/SupplyLevel.png")
-
-
-def get_random_supply() -> Supply:
-    supply_type = random.choice(SUPPLY_TYPE.get_types())
-    if supply_type == SUPPLY_TYPE.Bomb:
-        return SupplyBomb
-    elif supply_type == SUPPLY_TYPE.Level:
-        return SupplyLevel
-    elif supply_type == SUPPLY_TYPE.Life:
-        return SupplyLife
