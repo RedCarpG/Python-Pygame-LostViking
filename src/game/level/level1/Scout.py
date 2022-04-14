@@ -28,7 +28,6 @@ class EnemyScout(EnemyI):
                 "ATTACK": get_image("Enemy/Scout/ScoutAttack.png")
             },
             frame_size=None)
-        self._speed.y = 2
 
     # --------------- Create function --------------- #
 
@@ -49,7 +48,7 @@ class EnemyScout(EnemyI):
 
 class BulletScout(EnemyBullet):
 
-    DAMAGE = 100
+    DAMAGE = 30
     SPEED = 5
 
     def __init__(self, pos: Pos):

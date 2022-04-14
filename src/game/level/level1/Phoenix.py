@@ -97,7 +97,7 @@ class EnemyPhoenix(EnemyII):
 
 class BulletPhoenix(EnemyBullet):
 
-    DAMAGE = 100
+    DAMAGE = 50
     SPEED = 10
 
     def __init__(self, pos: Pos, angle):
