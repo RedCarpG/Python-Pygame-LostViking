@@ -32,6 +32,11 @@ class Level1:
         load_image("Enemy/Phoenix/PhoenixHit.png")
         load_image("Enemy/Phoenix/PhoenixAttack.png")
         load_image("Enemy/Phoenix/PhoenixShield.png")
+        load_image("Enemy/Carrier/CarrierBase.png"),
+        load_image("Enemy/Carrier/CarrierNormal.png"),
+        load_image("Enemy/Carrier/CarrierDestroy.png"),
+        load_image("Enemy/Carrier/CarrierHit.png"),
+        load_image("Enemy/Carrier/CarrierAttack.png")
         load_sound("Laser.wav", MAIN_VOLUME - 0.2, "LASER")
         load_sound("Shield.wav", MAIN_VOLUME - 0.4, "SHIELD")
         load_sound("Explo.wav", MAIN_VOLUME - 0.4, "EXPLODE")
