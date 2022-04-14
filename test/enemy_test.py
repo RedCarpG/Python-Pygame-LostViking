@@ -70,8 +70,10 @@ class TestGame:
         def test_key_event(event):
             if event.key == K_o:
                 EnemyPhoenix(Pos([0, 200]), is_left=True)
-            if event.key == K_p:
+            elif event.key == K_p:
                 EnemyScout.add_enemy_scout(1)
+            elif event.key == K_i:
+                EnemyCarrier.add_enemy_carrier()
 
         for event in pygame.event.get():
             if detect_player_event(event, player1=self.player):
