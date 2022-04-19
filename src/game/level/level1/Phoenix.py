@@ -1,11 +1,8 @@
-
-from webbrowser import get
 from pygame import Vector2
-from src.game.generic_items.Enemy import EnemyII
+from src.game.enemy import EnemyII, EnemyBullet
 from src.helper.image import get_image
 from src.setting import SCREEN_WIDTH
 from src.util.type import Pos
-from src.game.generic_items.Bullet import EnemyBullet
 from pygame.transform import rotate
 from src.game.animation import AttachEffect
 from src.helper.sound import play_sound
@@ -35,7 +32,7 @@ class EnemyPhoenix(EnemyII):
             is_left=is_left
         )
         self.shield = self.MAX_SHIELD
-
+        play_sound("PHOENIX_ARRIVE")
     # ---------- Override Methods
 
     def shoot(self, target):
@@ -43,7 +40,7 @@ class EnemyPhoenix(EnemyII):
         correction = Vector2(0, 100)
         correction = correction.rotate(-self.angle)
         BulletPhoenix(Pos(correction + self.rect.center), self.angle)
-        play_sound("LASER")
+        play_sound("PHOENIX_LASER")
 
     # Rewrite hit to add Shield
     def hit(self, damage=100, **kwargs):
@@ -85,13 +82,23 @@ class EnemyPhoenix(EnemyII):
         else:
             self.shield = self.MAX_SHIELD
 
+    def destroy(self, drop_supply=True) -> None:
+        play_sound("PHOENIX_DESTROY")
+        return super().destroy(drop_supply)
+
     @classmethod
-    def add_enemy_phoenix(cls) -> bool:
+    def add_enemy_phoenix(cls, side=None) -> bool:
         x1 = SCREEN_WIDTH + 100
         x2 = - 100
         y = 200
-        EnemyPhoenix(Pos([x1, y]), is_left=False)
-        EnemyPhoenix(Pos([x2, y]), is_left=True)
+        if side == "left":
+            EnemyPhoenix(Pos([x2, y]), is_left=True)
+        elif side == "right":
+            EnemyPhoenix(Pos([x1, y]), is_left=False)
+        else:
+            EnemyPhoenix(Pos([x1, y]), is_left=False)
+            EnemyPhoenix(Pos([x2, y]), is_left=True)
+
         return True
 
 
