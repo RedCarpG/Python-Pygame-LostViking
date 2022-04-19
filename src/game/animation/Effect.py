@@ -21,10 +21,15 @@ class Effect(AnimeSprite):
 
 class AttachEffect(AnimeSprite):
 
-    def __init__(self, ref, frames, frame_size: Size, enable_rotate=True, angle=0, cb_func=None) -> None:
+    def __init__(self, ref, frames, frame_size: Size, enable_rotate=True, angle=0, cb_func=None, offset=None) -> None:
         super().__init__(frames, frame_size, enable_rotate=enable_rotate, angle=angle)
 
+        if offset is not None:
+            self.offset = offset
+        else:
+            self.offset = [0, 0]
         self.rect.center = ref.rect.center
+        self.rect = self.rect.move(self.offset)
         self.ref = ref
         G_Effects.add(self)
         self.angle = ref.angle
@@ -38,4 +43,5 @@ class AttachEffect(AnimeSprite):
     def update(self):
         self.anime()
         self.rect.center = self.ref.rect.center
+        self.rect = self.rect.move(self.offset)
         self.angle = self.ref.angle

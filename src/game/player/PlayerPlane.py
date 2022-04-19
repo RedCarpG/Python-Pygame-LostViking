@@ -27,7 +27,7 @@ class PlayerPlane(AnimeSprite):
     """ Basic Player Abstract class
     """
     BOMB_COUNT_MAX = 3
-    BOMB_COUNT_DEFAULT = 3
+    BOMB_COUNT_DEFAULT = 1
 
     LIFE_MAX = 5
     LIFE_DEFAULT = 3
@@ -40,7 +40,7 @@ class PlayerPlane(AnimeSprite):
     ACC_X = 0.8
     ACC_UP = 1
     ACC_DOWN = 0.6
-    MAX_HEALTH = 300
+    MAX_HEALTH = 100
 
     def __init__(self, weapon: PlayerWeapon, pos, frames, frame_size):
         # Init

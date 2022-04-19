@@ -1,6 +1,7 @@
 from pygame.locals import *
 import pygame
 import pytest
+from src.game.ui.BossUI import BossUI
 from src.game.groups import *
 from src.game.player import *
 
@@ -11,43 +12,44 @@ from src.game.supply import *
 from src.game.level.level1 import *
 from src.util.type import Pos
 from src.setting import *
+from src.game.level.level1 import Level1
 
 
 class Testboard:
 
     def load_testboard(self):
-        load_font("arialbd.ttf", 25, "Testboard")
+        load_font("arialbd.ttf", 20, "Testboard")
 
     def __init__(self, surface, player) -> None:
         self.load_testboard()
         self.surface = surface
         self.player = player
         self.Text_G = {
-            'score': FontEntity(self.surface, get_font("Testboard"),
-                                f"Score: {self.player.score}", (0, 30), color=COLOR.WHITE),
-            'life': FontEntity(self.surface, get_font("Testboard"),
-                               f"Life: {self.player.life}", (0, 60), color=COLOR.RED),
-            'level': FontEntity(self.surface, get_font("Testboard"),
-                                f"Level: {self.player.level}", (0, 90), color=COLOR.WHITE),
-            'bomb': FontEntity(self.surface, get_font("Testboard"),
-                               f"Bomb: {self.player.bomb_count}", (0, 120), color=COLOR.WHITE),
-            'health': FontEntity(self.surface, get_font("Testboard"),
-                                 f"HP: {self.player.health}", (0, 150), color=COLOR.RED),
             'enemy': FontEntity(self.surface, get_font("Testboard"),
-                                f"Enemy: {len(G_Enemys)}", (0, 180), color=COLOR.RED),
+                                f"Enemy: {len(G_Enemys)}", (SCREEN_WIDTH / 4*3, 180), color=COLOR.RED),
         }
 
     def update(self):
-        self.Text_G["score"].change_text(f"Score: {self.player.score}")
-        self.Text_G["life"].change_text(f"Life: {self.player.life}")
-        self.Text_G["health"].change_text(f"health: {self.player.health}")
-        self.Text_G["level"].change_text(f"Level: {self.player.level}")
-        self.Text_G["bomb"].change_text(f"Bomb: {self.player.bomb_count}")
         self.Text_G["enemy"].change_text(f"Enemy: {len(G_Enemys)}")
 
     def blit(self):
         for _, text in self.Text_G.items():
             text.blit()
+
+
+def draw_path(sprite, screen):
+    if hasattr(sprite, "path"):
+        pygame.draw.circle(screen, COLOR.RED, sprite.path[0], 10)
+        pygame.draw.line(screen, COLOR.GREEN,
+                         sprite.rect.center, sprite.path[0])
+
+
+def draw_speed(sprite, screen):
+    if hasattr(sprite, "speed"):
+        start_point = sprite.rect.center,
+        end_point = [sprite.rect.center[0] + sprite.speed.x *
+                     10, sprite.rect.center[1] + sprite.speed.y * 10]
+        pygame.draw.line(screen, COLOR.WHITE, start_point, end_point, 5)
 
 
 class TestGame:
@@ -63,15 +65,22 @@ class TestGame:
         self.clock = pygame.time.Clock()
 
         self.running = True
+        self.scoreboard = Scoreboard(screen, self.player)
         self.testboard = Testboard(screen, self.player)
+        self.bossUI = BossUI(self.screen)
+        Level1(enable_event=False)
 
     def event(self):
 
         def test_key_event(event):
             if event.key == K_o:
                 EnemyPhoenix(Pos([0, 200]), is_left=True)
-            if event.key == K_p:
+            elif event.key == K_p:
                 EnemyScout.add_enemy_scout(1)
+            elif event.key == K_i:
+                EnemyCarrier.add_enemy_carrier()
+            elif event.key == K_u:
+                EnemyInterceptor(Pos([200, 200]), [[100, 100], [200, 300]])
 
         for event in pygame.event.get():
             if detect_player_event(event, player1=self.player):
@@ -100,9 +109,16 @@ class TestGame:
             G_Effects.update()
             G_Supplies.update()
             self.testboard.update()
+            self.scoreboard.update()
+            self.bossUI.update()
 
+            self.testboard.blit()
+            self.scoreboard.blit()
+            self.bossUI.blit()
             for each in G_Enemys.sprites():
                 pygame.draw.rect(self.screen, COLOR.RED, each.rect, 3)
+                draw_path(each, self.screen)
+                draw_speed(each, self.screen)
             for each in G_Enemy_Bullets.sprites():
                 pygame.draw.rect(self.screen, COLOR.RED, each.rect, 3)
             G_Enemy_Bullets.draw(self.screen)
@@ -112,14 +128,13 @@ class TestGame:
             G_Bomb.draw(self.screen)
             G_Players.draw(self.screen)
             G_Effects.draw(self.screen)
-            self.testboard.blit()
             # Display
             pygame.display.flip()
 
             self.clock.tick(60)
 
 
-def test_player():
+def test_enemy():
     # Init Environment
     pygame.init()
     pygame.mixer.init()
@@ -137,7 +152,7 @@ def test_player():
 
 
 if __name__ == "__main__":
-    test_player()
+    test_enemy()
 
     import sys
 

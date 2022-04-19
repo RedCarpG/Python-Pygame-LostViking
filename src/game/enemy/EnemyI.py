@@ -1,65 +1,33 @@
 
 from abc import ABC, abstractmethod
+import logging
+import sys
 import random
-from pygame import Vector2
-from enum import Enum
 from src.game.animation import AttachEffect
 
 from src.game.animation import AnimeSprite, AnimeSprite
-from src.game.groups import G_Enemys, G_Player1
+from src.game.groups import G_Enemys
 from src.util.type import Pos, Size
 from src.helper.sound import play_sound
 from src.setting import SCREEN_HEIGHT
-from src.util.angle import follow_angle
-from src.util.inertial import decelerate
-import logging
-import sys
+from .BasicEnemy import BasicEnemy
+
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
-class BaseEnemy(ABC):
-
-    MAX_HEALTH = 100
-    SCORE = 100
-
-    def __init__(self) -> None:
-
-        self.is_active = True
-        self.state = None
-        self._speed = Vector2(0, 0)
-
-        self._score = self.SCORE
-
-        self._health = self.MAX_HEALTH
-
-    # --------------- Attributes --------------- #
-    # ----- Speed
-    @property
-    def speed(self) -> tuple:
-        return self._speed.x, self._speed.y
-
-    # ----- Health
-    @property
-    def health(self) -> int:
-        return self._health
-
-    @property
-    def score(self) -> int:
-        return self._score
-
-
-class EnemyI(AnimeSprite, BaseEnemy):
+class EnemyI(AnimeSprite, BasicEnemy):
 
     MAX_HEALTH = 100
     SCORE = 100
 
     ATTACK_SPEED = 100
-    SPEED_X = 0
-    SPEED_Y = 1
-    ACC_X = 0.2
+    MAX_SPEED_X = 0
+    MAX_SPEED_Y = 3
+
+    DROP_SUPPLY_CHANCE = 0.1
 
     def __init__(self, pos: Pos, frames, frame_size: Size = None, *groups, **kwargs):
-        BaseEnemy.__init__(self)
+        BasicEnemy.__init__(self)
         AnimeSprite.__init__(self, frames, frame_size,
                              enable_rotate=kwargs.setdefault(
                                  "enable_rotate", False),
@@ -70,6 +38,8 @@ class EnemyI(AnimeSprite, BaseEnemy):
 
         self.attack_speed = self.ATTACK_SPEED
         self._count_attack_interval = self.ATTACK_SPEED
+        self._speed.y = self.MAX_SPEED_Y
+        self.drop_supply_chance = self.DROP_SUPPLY_CHANCE
 
     # --------------- Super Methods Override --------------- #
 
@@ -119,15 +89,18 @@ class EnemyI(AnimeSprite, BaseEnemy):
         else:
             return False
 
-    def destroy(self) -> None:
+    def destroy(self, drop_supply=True) -> None:
         """ This method is called when the sprite's health decrease to 0
         The animation state will be set to `DESTROY` and the `self.anime_end_loop_hook()` can be called
         to kill the sprite after destroy animation
         """
         self._health = 0
         self.is_active = False
+        self._speed.y = int(self._speed.y / 2)
         self.set_anime_state("DESTROY")
-        play_sound("EXPLODE")
+        from src.game.supply import drop_supply_event
+        if drop_supply and random.random() < self.drop_supply_chance:
+            drop_supply_event(Pos(self.pos))
 
     def attack(self, target):
         """ The method is called continuously to perfom a attack in the `self.update()` method 
@@ -167,104 +140,3 @@ class EnemyI(AnimeSprite, BaseEnemy):
 
     def set_pos(self, point: Pos) -> None:
         self.rect.center = point.to_list()
-
-
-class EnemyIIActionPhase(Enum):
-    Entrance = 0
-    Stay = 1
-    Leave = 2
-
-
-class EnemyII(EnemyI):
-    """ Enemy II has several different states and will target the player when shooting """
-
-    STAY_DURATION = 1000
-
-    SPEED_X = 10
-
-    def __init__(
-            self,
-            pos: Pos,
-            frames,
-            frame_size: Size = None,
-            is_left=True):
-
-        self.is_left = is_left
-        if is_left:
-            self.angle = 90
-        else:
-            self.angle = -90
-
-        super().__init__(pos, frames, frame_size,
-                         **{"enable_rotate": True, "angle": self.angle})
-
-        self._count_action_stay = self.STAY_DURATION
-
-        self.state = EnemyIIActionPhase.Entrance
-
-        self.enter_action_entrance_phase()
-
-    # ---------- Override Method
-    def destroy(self) -> None:
-        from src.game.supply import get_random_supply
-        if random.random() > 0.7:
-            sup = get_random_supply()
-            sup(Pos(self.pos))
-        return super().destroy()
-
-    # --------------- Main action status --------------- #
-
-    def action(self, *args, **kwargs):
-        if self.state == EnemyIIActionPhase.Entrance:
-            self._action_entrance()
-        else:
-            if self.state == EnemyIIActionPhase.Stay:
-                self._action_stay()
-            else:
-                self._action_leave()
-            player = G_Player1.sprites()[0]
-            self.aim(Pos(player.rect.center))
-            self.attack(player)
-
-    # --------------- Sub action status --------------- #
-
-    def enter_action_entrance_phase(self):
-        if self.is_left:
-            self._speed.x = self.SPEED_X
-        else:
-            self._speed.x = -self.SPEED_X
-
-        self._speed.y = 0
-        self.state = EnemyIIActionPhase.Entrance
-        self.set_anime_state("MOVE")
-
-    def _action_entrance(self):
-        self._speed.x = decelerate(self._speed.x, self.ACC_X)
-        if self._speed.x == 0:
-            self.enter_action_stay_phase()
-
-    def enter_action_stay_phase(self):
-        self.state = EnemyIIActionPhase.Stay
-        self._speed.x = self._speed.y = 0
-        self._count_action_stay = self.STAY_DURATION
-        self.set_anime_state("IDLE")
-
-    def _action_stay(self):
-        self._count_action_stay -= 1
-        if not self._count_action_stay:
-            self.enter_action_leave_phase()
-
-    def enter_action_leave_phase(self):
-        self.state = EnemyIIActionPhase.Leave
-        self._speed.x = 0
-        self._speed.y = self.SPEED_Y
-
-    def _action_leave(self):
-        if self.rect.top > SCREEN_HEIGHT:
-            self.kill()
-
-    # --------------- Aim --------------- #
-
-    def aim(self, point: Pos):
-        self.angle = follow_angle(
-            Pos(self.rect.center), point, self.angle, rotation_speed=2)

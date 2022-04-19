@@ -1,35 +1,55 @@
 import pygame
 import random
-
 from src.util.type import Pos
-from .SUPPLY_TYPE import SUPPLY_TYPE
-from .SupplyBomb import SupplyBomb
-from .SupplyLevel import SupplyLevel
-from .SupplyLife import SupplyLife
+from .util import get_supply_type
 from src.setting import SCREEN_WIDTH
+from src.util.type import Pos
+from src.game.groups import G_Supplies
+from .SUPPLY_TYPE import SUPPLY_TYPE
 
 
 EVENT_ADD_SUPPLY = pygame.event.custom_type()
+EVENT_DROP_SUPPLY = pygame.event.custom_type()
+
+
+supply_cooldown_timer = pygame.time.Clock()
+
+supply_cooldown_count = supply_cooldown_timer.tick()
+
+SUPPLY_COOLDOWN = 10000
+
+
+class SupplyEvent:
+
+    def __init__(self) -> None:
+        pass
 
 
 def supply_event_config():
-    pygame.time.set_timer(EVENT_ADD_SUPPLY, 15000)
+    pygame.time.set_timer(EVENT_ADD_SUPPLY, 35000)
 
 
 def supply_events_handler(event):
     if event.type == EVENT_ADD_SUPPLY:
-        add_supply(random.choice(
-            [SUPPLY_TYPE.Bomb, SUPPLY_TYPE.Level, SUPPLY_TYPE.Life]))
+        pos = Pos(
+            [random.randint(int(SCREEN_WIDTH/3), int(2 * SCREEN_WIDTH/3)), -50])
+        sup = get_supply_type()
+        sup(pos)
+
+    elif event.type == EVENT_DROP_SUPPLY:
+
+        global supply_cooldown_count
+        supply_cooldown_count += supply_cooldown_timer.tick()
+        print(f"Timer: {supply_cooldown_count}")
+        if supply_cooldown_count < SUPPLY_COOLDOWN:
+            return
+        elif len(G_Supplies.sprites()) < 2:
+            supply_cooldown_count = 0
+            sup = get_supply_type(event.supply_type)
+            sup(event.pos)
 
 
-def add_supply(supply_type: SUPPLY_TYPE):
-    pos = Pos([random.randint(int(SCREEN_WIDTH/3), int(2 * SCREEN_WIDTH/3)), -50])
-    if supply_type == SUPPLY_TYPE.Life:
-        supply = SupplyLife(pos)
-        supply.enter_action_enter_phase()
-    elif supply_type == SUPPLY_TYPE.Bomb:
-        supply = SupplyBomb(pos)
-        supply.enter_action_enter_phase()
-    elif supply_type == SUPPLY_TYPE.Level:
-        supply = SupplyLevel(pos)
-        supply.enter_action_enter_phase()
+def drop_supply_event(pos: Pos, supply_type: SUPPLY_TYPE = None):
+
+    pygame.event.post(pygame.event.Event(
+        EVENT_DROP_SUPPLY, {"pos": pos, "supply_type": supply_type}))

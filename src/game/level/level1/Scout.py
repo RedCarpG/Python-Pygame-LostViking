@@ -3,9 +3,9 @@ import random
 
 from pygame.math import Vector2
 from pygame.sprite import Group
-from src.setting import SCREEN_HEIGHT, SCREEN_WIDTH
-from src.game.generic_items.Enemy import EnemyI
-from src.game.generic_items.Bullet import EnemyBullet
+from src.helper.sound.sound_loader import play_sound
+from src.setting import SCREEN_WIDTH
+from src.game.enemy import EnemyI, EnemyBullet
 from src.helper.image import get_image
 from src.util.type import Pos
 
@@ -28,7 +28,6 @@ class EnemyScout(EnemyI):
                 "ATTACK": get_image("Enemy/Scout/ScoutAttack.png")
             },
             frame_size=None)
-        self._speed.y = 2
 
     # --------------- Create function --------------- #
 
@@ -46,10 +45,14 @@ class EnemyScout(EnemyI):
     def shoot(self, target):
         BulletScout(Pos(self.rect.center))
 
+    def destroy(self, drop_supply=True) -> None:
+        play_sound("SCOUT_DESTROY")
+        return super().destroy(drop_supply)
+
 
 class BulletScout(EnemyBullet):
 
-    DAMAGE = 100
+    DAMAGE = 30
     SPEED = 5
 
     def __init__(self, pos: Pos):
