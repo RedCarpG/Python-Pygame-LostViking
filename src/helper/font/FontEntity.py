@@ -38,3 +38,4 @@ class FontEntity:
     def rendering(self):
         self.render = self.font.render(
             self.text, self.antialias, self.color, self.background)
+        self.rect = self.render.get_rect(center=self.rect.center)

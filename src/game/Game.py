@@ -4,14 +4,15 @@ import pytest
 
 
 from src.helper.font import *
-from src.helper.sound import load_music, play_music
+from src.helper.sound import *
 from src.setting import *
 
 from src.game.groups import *
 from src.game.player import *
-from src.game.ui import Scoreboard
-from src.game.supply import load_asset_supply, supply_event_config, supply_events_handler
+from src.game.ui import *
+from src.game.supply import *
 from src.game.level import *
+from src.util.type import Pos
 
 
 class Game:
@@ -21,7 +22,7 @@ class Game:
 
         self.running = True
 
-        load_music("music/bgm.ogg", MAIN_VOLUME - 0.4)
+        load_music("music/bgm1.ogg", MAIN_VOLUME - 0.4)
         play_music()
         # Player
         load_asset_player()
@@ -32,6 +33,9 @@ class Game:
         load_asset_supply()
         # UI
         self.scoreboard = Scoreboard(self.screen, self.player)
+        self.fps_counter = FPSCounter(
+            self.screen, self.clock, [SCREEN_WIDTH-100, 100])
+        self.boss_ui = BossUI(self.screen)
         # Level
         self.level = Level1()
 
@@ -54,7 +58,6 @@ class Game:
         detect_key_pressed(self.player)
 
     def run(self):
-
         while self.running:
             self.event()
 
@@ -67,7 +70,12 @@ class Game:
             G_Bomb.update()
             G_Effects.update()
             self.scoreboard.update()
+            self.fps_counter.update()
+            self.boss_ui.update()
 
+            self.boss_ui.blit()
+            self.scoreboard.blit()
+            self.fps_counter.blit()
             G_Bomb.draw(self.screen)
             G_Enemy_Bullets.draw(self.screen)
             G_Player_Bullets.draw(self.screen)
@@ -75,7 +83,6 @@ class Game:
             G_Players.draw(self.screen)
             G_Supplies.draw(self.screen)
             G_Effects.draw(self.screen)
-            self.scoreboard.blit()
             # Display
             pygame.display.flip()
 
