@@ -2,6 +2,7 @@ from enum import Enum
 import abc
 import random
 
+import pygame
 from pygame import Vector2
 from pygame.sprite import spritecollideany
 
@@ -11,7 +12,6 @@ from src.game.groups import G_Supplies, G_Players
 from src.util.type import Pos, Size
 from src.util.inertial import accelerate, decelerate
 from src.game.player import PlayerPlane
-
 
 class SupplyStatus(Enum):
     Enter = 0

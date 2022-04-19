@@ -3,8 +3,9 @@ from .Supply import Supply
 from .SupplyLife import SupplyLife
 from .SupplyBomb import SupplyBomb
 from .SupplyLevel import SupplyLevel
-from .supply_event import supply_event_config, supply_events_handler, get_supply
+from .supply_event import supply_event_config, supply_events_handler, drop_supply_event
 from .SUPPLY_TYPE import SUPPLY_TYPE
+from .util import get_supply_type
 
 
 def load_asset_supply():
