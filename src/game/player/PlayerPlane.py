@@ -27,7 +27,7 @@ class PlayerPlane(AnimeSprite):
     """ Basic Player Abstract class
     """
     BOMB_COUNT_MAX = 3
-    BOMB_COUNT_DEFAULT = 3
+    BOMB_COUNT_DEFAULT = 1
 
     LIFE_MAX = 5
     LIFE_DEFAULT = 3

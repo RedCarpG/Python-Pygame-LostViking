@@ -16,8 +16,8 @@ def load_asset_player():
     from src.setting import MAIN_VOLUME
     # Player
     load_sound("Player/Shoot.wav", MAIN_VOLUME - 0.3, "PLAYER_SHOOT")
-    load_sound("Player/Explode.wav", MAIN_VOLUME, "PLAYER_DESTROY")
+    load_sound("Player/Explode.wav", MAIN_VOLUME - 0.3, "PLAYER_DESTROY")
     # Nuc bomb
     load_sound("Bomb/Bomb.wav", MAIN_VOLUME - 0.2, "BOMB_LAUNCH")
-    load_sound("Error.wav", MAIN_VOLUME, "BOMB_ERROR")
-    load_sound("Player/Explode.wav", MAIN_VOLUME, "BOMB_EXPLODE")
+    load_sound("Bomb/BombExplode.wav", MAIN_VOLUME, "BOMB_EXPLODE")
+    load_sound("Error.wav", MAIN_VOLUME - 0.2, "BOMB_ERROR")

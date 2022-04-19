@@ -29,7 +29,7 @@ class PlayerViking(PlayerPlane):
 class PlayerWeaponViking(PlayerWeapon):
 
     BASIC_DMG = 80
-    INC_DMG = 10
+    INC_DMG = 5
 
     def __init__(self, player: PlayerPlane):
         super().__init__(player)
