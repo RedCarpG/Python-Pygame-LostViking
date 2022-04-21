@@ -37,7 +37,7 @@ class EnemyI(AnimeSprite, BasicEnemy):
         self.add(G_Enemys)
 
         self.attack_speed = self.ATTACK_SPEED
-        self._count_attack_interval = self.ATTACK_SPEED
+        self._count_attack_interval = random.randint(0, self.ATTACK_SPEED)
         self._speed.y = self.MAX_SPEED_Y
         self.drop_supply_chance = self.DROP_SUPPLY_CHANCE
 
@@ -67,7 +67,7 @@ class EnemyI(AnimeSprite, BasicEnemy):
     def _move(self) -> None:
         self.rect.move_ip(self._speed.x, self._speed.y)
 
-    def hit(self, damage=100, **kwargs) -> None:
+    def hit(self, damage=100, target=None) -> None:
         """ This function is called in collision detection
         """
         if self.is_active:
@@ -97,6 +97,7 @@ class EnemyI(AnimeSprite, BasicEnemy):
         self._health = 0
         self.is_active = False
         self._speed.y = int(self._speed.y / 2)
+        self._speed.x = int(self._speed.x / 2)
         self.set_anime_state("DESTROY")
         from src.game.supply import drop_supply_event
         if drop_supply and random.random() < self.drop_supply_chance:
