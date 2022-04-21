@@ -10,7 +10,17 @@ from .PlayerViking import PlayerViking, PlayerWeaponViking, PlayerBulletViking
 
 def load_asset_player():
     from src.helper.image import load_image
-    load_image("PlayerPlane/bullet.png")
+    load_image("PlayerPlane/Bullet.png")
+    load_image("PlayerPlane/Bomb.png")
+    load_image("PlayerPlane/BulletHit.png")
+
+    load_image("PlayerPlane/VikingBase.png")
+    load_image("PlayerPlane/VikingMoveNormal.png")
+    load_image("PlayerPlane/VikingMoveUp.png")
+    load_image("PlayerPlane/VikingMoveNormal.png")
+    load_image("PlayerPlane/VikingDestroy.png")
+    load_image("PlayerPlane/VikingHit.png")
+    load_image("PlayerPlane/VikingInvincible.png")
     # Init sound
     from src.helper.sound import load_sound
     from src.setting import MAIN_VOLUME

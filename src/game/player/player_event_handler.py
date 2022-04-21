@@ -55,7 +55,9 @@ def _handle_player_bomb_explode_event(player: PlayerPlane):
             each.hit(1000)
             if not each.is_active:
                 player.add_score(each.score)
-    G_Enemy_Bullets.empty()
+
+    for each in G_Enemy_Bullets:
+        each.hit()
 
     pygame.event.set_allowed(EVENT_PLAYER_BOMB)
 
