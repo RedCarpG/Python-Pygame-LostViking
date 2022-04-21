@@ -2,12 +2,13 @@ import random
 from pygame import Vector2
 from pygame.transform import rotate
 from pygame.sprite import Group
+from src.game.animation import Effect
 from src.helper.sound.sound_loader import play_sound
 from src.game.enemy import EnemyIII, EnemyBullet
 from src.setting import SCREEN_WIDTH, SCREEN_HEIGHT
 from src.helper.image import get_image
 from src.util.angle import cal_angle
-from src.util.type import Pos
+from src.util.type import Pos, Size
 
 
 class EnemyInterceptor(EnemyIII):
@@ -56,8 +57,8 @@ class EnemyInterceptor(EnemyIII):
         return super().enter_action_idle_phase()
 
     def shoot(self, target):
-        play_sound("INTERCEPTOR_LASER")
         if random.random() < self.ATTACK_CHANCE:
+            play_sound("INTERCEPTOR_LASER")
             self_pos = Pos(self.rect.center)
             angle = cal_angle(self_pos, Pos(target.rect.center))
             BulletInterceptor(self_pos, angle)
@@ -77,14 +78,14 @@ class EnemyInterceptor(EnemyIII):
 class BulletInterceptor(EnemyBullet):
 
     DAMAGE = 35
-    SPEED = 6
+    SPEED = 8
 
     def __init__(self, pos: Pos, angle):
         super().__init__(
             pos,
             speed=Vector2([0, self.SPEED]),
             damage=self.DAMAGE,
-            image=get_image("Enemy/bullet.png")
+            image=get_image("Enemy/Laser2.png")
         )
         self._rotate(angle)
 
@@ -93,3 +94,13 @@ class BulletInterceptor(EnemyBullet):
         self.image = rotate(self.image, angle)
         self.rect = self.image.get_rect(center=temp)
         self.speed = self.speed.rotate(-angle)
+
+    def hit(self, target=None):
+        Effect(
+            Pos(self.rect.center).random_offset(5),
+            frames={
+                "IDLE": get_image("Enemy/LaserHit.png"),
+            },
+            frame_size=Size([19, 19])
+        )
+        return super().hit()

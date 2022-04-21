@@ -23,6 +23,9 @@ class Level1:
 
     def __init__(self, enable_event=True) -> None:
         self.start_time = pygame.time.get_ticks()
+        load_image("Enemy/Laser.png")
+        load_image("Enemy/Laser2.png")
+        load_image("Enemy/LaserHit.png")
         load_image("Enemy/Scout/ScoutBase.png")
         load_image("Enemy/Scout/ScoutNormal.png")
         load_image("Enemy/Scout/ScoutDestroy.png")
