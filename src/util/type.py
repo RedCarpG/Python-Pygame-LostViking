@@ -1,4 +1,5 @@
 
+import random
 from typing import Sequence
 
 
@@ -29,6 +30,11 @@ class Pos(object):
         super().__init__()
         self._x = pos[0]
         self._y = pos[1]
+
+    def random_offset(self, offset):
+        x = self._x + random.randint(-offset, offset)
+        y = self._y + random.randint(-offset, offset)
+        return Pos([x, y])
 
     @property
     def x(self):
