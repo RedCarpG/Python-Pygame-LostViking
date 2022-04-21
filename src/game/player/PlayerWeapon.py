@@ -87,7 +87,7 @@ class PlayerBullet(pygame.sprite.Sprite, ABC):
         self.rect.move_ip(self.speed.x, self.speed.y)
 
     def collide_enemy(self, enemy_group):
-        enemy = spritecollideany(self, enemy_group, collide_detect)
+        enemy = spritecollideany(self, enemy_group, collide_detect(0.8))
         if enemy and enemy.is_active:
             enemy.hit(self.damage)
             if not enemy.is_active:

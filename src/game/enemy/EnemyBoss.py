@@ -25,7 +25,7 @@ class EnemyBoss(EnemyI):
     ATTACK_SPEED = 100
 
     MAX_SPEED_X = 2
-    MAX_SPEED_Y = 3
+    MAX_SPEED_Y = 5
     ACC_X = 0.1
     ACC_Y = 0.1
 

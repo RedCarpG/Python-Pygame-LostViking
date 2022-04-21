@@ -2,7 +2,8 @@
 import pygame
 
 from collections.abc import Sequence
-from src.util.type import Pos
+from src.game.animation.Effect import Effect
+from src.util.type import Pos, Size
 from src.helper.image import get_image
 from .PlayerPlane import PlayerPlane
 from .PlayerWeapon import PlayerWeapon, PlayerBullet
@@ -21,7 +22,8 @@ class PlayerViking(PlayerPlane):
                 "MOVE_DOWN": get_image("PlayerPlane/VikingMoveNormal.png"),
                 "DESTROY": get_image("PlayerPlane/VikingDestroy.png"),
 
-                "HIT": get_image("PlayerPlane/VikingHit.png")
+                "HIT": get_image("PlayerPlane/VikingHit.png"),
+                "INVINCIBLE": get_image("PlayerPlane/VikingInvincible.png")
             },
             frame_size=None)
 
@@ -66,7 +68,7 @@ class PlayerBulletViking(PlayerBullet):
                  player: PlayerPlane,
                  angle=None):
         super().__init__(pos=pos, speed=speed,
-                         image=get_image("PlayerPlane/bullet.png"), player=player)
+                         image=get_image("PlayerPlane/Bullet.png"), player=player)
         self.damage = damage
         if angle:
             self._rotate(angle)
@@ -75,3 +77,13 @@ class PlayerBulletViking(PlayerBullet):
         temp = self.rect.center
         self.image = pygame.transform.rotate(self.image, angle)
         self.rect = self.image.get_rect(center=temp)
+
+    def hit(self):
+        Effect(
+            Pos(self.rect.center).random_offset(5),
+            frames={
+                "IDLE": get_image("PlayerPlane/BulletHit.png"),
+            },
+            frame_size=Size([35, 19])
+        )
+        return super().hit()

@@ -2,9 +2,9 @@ from pygame import Vector2
 from src.game.enemy import EnemyII, EnemyBullet
 from src.helper.image import get_image
 from src.setting import SCREEN_WIDTH
-from src.util.type import Pos
+from src.util.type import Pos, Size
 from pygame.transform import rotate
-from src.game.animation import AttachEffect
+from src.game.animation import AttachEffect, Effect
 from src.helper.sound import play_sound
 
 
@@ -105,14 +105,14 @@ class EnemyPhoenix(EnemyII):
 class BulletPhoenix(EnemyBullet):
 
     DAMAGE = 50
-    SPEED = 10
+    SPEED = 12
 
     def __init__(self, pos: Pos, angle):
         super().__init__(
             pos,
             speed=Vector2([0, self.SPEED]),
             damage=self.DAMAGE,
-            image=get_image("Enemy/laser.png")
+            image=get_image("Enemy/Laser.png")
         )
         self._rotate(angle)
 
@@ -121,3 +121,13 @@ class BulletPhoenix(EnemyBullet):
         self.image = rotate(self.image, angle)
         self.rect = self.image.get_rect(center=temp)
         self.speed = self.speed.rotate(-angle)
+
+    def hit(self, target=None):
+        Effect(
+            Pos(self.rect.center).random_offset(5),
+            frames={
+                "IDLE": get_image("Enemy/LaserHit.png"),
+            },
+            frame_size=Size([19, 19])
+        )
+        return super().hit()

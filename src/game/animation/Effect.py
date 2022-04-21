@@ -21,7 +21,7 @@ class Effect(AnimeSprite):
 
 class AttachEffect(AnimeSprite):
 
-    def __init__(self, ref, frames, frame_size: Size, enable_rotate=True, angle=0, cb_func=None, offset=None) -> None:
+    def __init__(self, ref, frames, frame_size: Size, enable_rotate=True, angle=0, offset=None, cb_func=None, break_cb_func=None, loop: bool = False) -> None:
         super().__init__(frames, frame_size, enable_rotate=enable_rotate, angle=angle)
 
         if offset is not None:
@@ -34,13 +34,18 @@ class AttachEffect(AnimeSprite):
         G_Effects.add(self)
         self.angle = ref.angle
         self.cb_func = cb_func
+        self.break_cb_func = break_cb_func
+        self.loop = loop
 
     def anime_end_loop_hook(self):
         if self.cb_func:
             self.cb_func()
-        self.kill()
+        if not self.loop:
+            self.kill()
 
     def update(self):
+        if self.break_cb_func is not None and self.break_cb_func():
+            self.kill()
         self.anime()
         self.rect.center = self.ref.rect.center
         self.rect = self.rect.move(self.offset)

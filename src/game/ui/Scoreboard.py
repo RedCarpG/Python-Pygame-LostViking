@@ -1,3 +1,4 @@
+import pygame
 from src.helper.font import load_font, FontEntity, get_font
 from src.setting import COLOR
 from src.game.groups import *

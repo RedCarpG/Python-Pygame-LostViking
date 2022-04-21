@@ -1,3 +1,4 @@
+from src.game.animation.Effect import Effect
 from src.util.type import Size, Pos
 from src.helper.image import get_image
 from src.game.player import PlayerPlane
@@ -18,6 +19,13 @@ class SupplyLevel(Supply):
         self.type = SUPPLY_TYPE.Life
 
     def get_by_player(self, player: PlayerPlane):
+        Effect(
+            pos=Pos(self.rect.center),
+            frames={
+                "IDLE": get_image("Supply/SupplyGetLevel.png")
+            },
+            frame_size=Size([50, 50])
+        )
         player.level_up()
         play_sound("SUPPLY_LEVEL")
         return super().get_by_player(player)

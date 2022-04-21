@@ -3,11 +3,12 @@ import random
 
 from pygame.math import Vector2
 from pygame.sprite import Group
+from src.game.animation import Effect
 from src.helper.sound.sound_loader import play_sound
 from src.setting import SCREEN_WIDTH
 from src.game.enemy import EnemyI, EnemyBullet
 from src.helper.image import get_image
-from src.util.type import Pos
+from src.util.type import Pos, Size
 
 
 class EnemyScout(EnemyI):
@@ -60,5 +61,15 @@ class BulletScout(EnemyBullet):
             pos,
             speed=Vector2([0, self.SPEED]),
             damage=self.DAMAGE,
-            image=get_image("Enemy/bullet.png")
+            image=get_image("Enemy/Laser2.png")
         )
+
+    def hit(self, target=None):
+        Effect(
+            Pos(self.rect.center).random_offset(5),
+            frames={
+                "IDLE": get_image("Enemy/LaserHit.png"),
+            },
+            frame_size=Size([19, 19])
+        )
+        return super().hit()

@@ -3,9 +3,10 @@ class COLOR:
     GRAY = (128, 128, 128)
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
-    RED = (255, 0, 0)
+    RED = (246, 38, 39)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
+    BROWN = (216, 158, 120)
 
 
 # 主音量
@@ -14,7 +15,7 @@ MAIN_VOLUME = 0.5
 BG_SPEED = 25
 
 SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 800
+SCREEN_HEIGHT = 1000
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 """

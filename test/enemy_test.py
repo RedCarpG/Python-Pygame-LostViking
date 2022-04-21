@@ -6,7 +6,7 @@ from src.game.groups import *
 from src.game.player import *
 
 from src.helper.font import *
-from src.game.ui import Scoreboard
+from src.game.ui import *
 from src.setting import *
 from src.game.supply import *
 from src.game.level.level1 import *
@@ -56,6 +56,7 @@ class TestGame:
     def __init__(self, screen) -> None:
         load_asset_player()
         load_asset_supply()
+        load_asset_ui()
         self.screen = screen
         self.player = PlayerViking(pos=None)
 
@@ -81,6 +82,11 @@ class TestGame:
                 EnemyCarrier.add_enemy_carrier()
             elif event.key == K_u:
                 EnemyInterceptor(Pos([200, 200]), [[100, 100], [200, 300]])
+            elif event.key == K_f:
+                if self.player.is_invincible:
+                    self.player.remove_invincible()
+                else:
+                    self.player.invincible(continuous=True)
 
         for event in pygame.event.get():
             if detect_player_event(event, player1=self.player):

@@ -1,6 +1,6 @@
 from src.game.animation.AnimeSprite import AnimeSprite
 from src.game.enemy import EnemyBoss
-from src.game.animation import AttachEffect
+from src.game.animation import AttachEffect, Effect
 from src.helper.image import get_image
 from src.helper.sound import play_sound
 from src.util.type import Pos, Size
@@ -148,5 +148,12 @@ class LaserCarrier(AnimeSprite):
             )
             self.kill()
 
-    def hit(self):
-        pass
+    def hit(self, target=None):
+        if target is not None:
+            Effect(
+                Pos(target.rect.midtop).random_offset(15),
+                frames={
+                    "IDLE": get_image("Enemy/LaserHit.png"),
+                },
+                frame_size=Size([19, 19])
+            )

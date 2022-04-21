@@ -22,7 +22,7 @@ class PlayerNucBomb(Sprite):
         play_sound("BOMB_LAUNCH")
         self.player = player
         # Set Image properties
-        self.image = get_image("PlayerPlane/bullet.png")
+        self.image = get_image("PlayerPlane/Bomb.png")
         # Set Rect & Position
         self.rect = self.image.get_rect(center=pos)
 
@@ -63,7 +63,7 @@ class NucExplosion(Effect):
             frames={
                 "IDLE": get_image("Bomb/NucExplosion.png")
             },
-            frame_size=Size([96, 128])
+            frame_size=Size([400, 400])
         )
 
 

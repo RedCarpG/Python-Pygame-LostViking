@@ -32,6 +32,8 @@ class Game:
         # Supply
         load_asset_supply()
         # UI
+        load_asset_ui()
+        self.ui = UI(self.screen, self.player)
         self.scoreboard = Scoreboard(self.screen, self.player)
         self.fps_counter = FPSCounter(
             self.screen, self.clock, [SCREEN_WIDTH-100, 100])
@@ -72,6 +74,7 @@ class Game:
             self.scoreboard.update()
             self.fps_counter.update()
             self.boss_ui.update()
+            self.ui.update()
 
             self.boss_ui.blit()
             self.scoreboard.blit()
@@ -83,6 +86,7 @@ class Game:
             G_Players.draw(self.screen)
             G_Supplies.draw(self.screen)
             G_Effects.draw(self.screen)
+            self.ui.blit()
             # Display
             pygame.display.flip()
 

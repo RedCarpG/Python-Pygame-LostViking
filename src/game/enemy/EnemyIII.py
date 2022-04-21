@@ -27,7 +27,7 @@ class EnemyIII(EnemyI):
     ACC_Y = 0.2
 
     ATTACK_SPEED = 0
-
+    
     STAY_DURATION = 100
 
     DROP_SUPPLY_CHANCE = 0.3

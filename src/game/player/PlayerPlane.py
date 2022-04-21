@@ -42,6 +42,10 @@ class PlayerPlane(AnimeSprite):
     ACC_DOWN = 0.6
     MAX_HEALTH = 100
 
+    INVINCIBLE_DURATION = 100
+
+    LIMIT_BOTTOM = 100
+
     def __init__(self, weapon: PlayerWeapon, pos, frames, frame_size):
         # Init
         super().__init__(frames=frames, frame_size=frame_size)
@@ -50,7 +54,7 @@ class PlayerPlane(AnimeSprite):
             self.start_position = pos
         else:
             self.start_position = (int(pygame.display.get_surface().get_width() // 2),
-                                   int(pygame.display.get_surface().get_height() - self.rect.height // 2 - 30))
+                                   int(pygame.display.get_surface().get_height() - self.rect.height - self.LIMIT_BOTTOM))
 
         # Set bullet type
         ''' Init Weapon '''
@@ -66,6 +70,7 @@ class PlayerPlane(AnimeSprite):
 
         self._attack_speed = 20
         self._count_attack_interval = 0
+        self._count_invincible = 0
 
         ''' States '''
         self.state = None
@@ -83,6 +88,11 @@ class PlayerPlane(AnimeSprite):
         super().update()
         self._reload()
         if self.is_active:
+            if self.is_invincible:
+                if self._count_invincible > 0:
+                    self._count_invincible -= 1
+                elif self._count_invincible == 0:
+                    self.is_invincible = False
             self._move()
             self.collide_enemy(G_Enemys)
             self.collide_enemy_bullet(G_Enemy_Bullets)
@@ -107,8 +117,8 @@ class PlayerPlane(AnimeSprite):
                 self._speed.y = decelerate(self._speed.y, self.ACC_DOWN)
 
             # Restrict the plane inside the screen
-            if self.rect.bottom > SCREEN_HEIGHT:
-                self.rect.bottom = SCREEN_HEIGHT
+            if self.rect.bottom > SCREEN_HEIGHT - self.LIMIT_BOTTOM:
+                self.rect.bottom = SCREEN_HEIGHT - self.LIMIT_BOTTOM
             if self.rect.left < 0:
                 self.rect.left = 0
             if self.rect.right > SCREEN_WIDTH:
@@ -153,14 +163,18 @@ class PlayerPlane(AnimeSprite):
         else:
             return False
 
-    """
-    def invincible(self, ticks, rate=60):
-        if self.is_invincible:
-            if self.current_time < ticks + rate:
-                self.invincible_reset = (self.invincible_reset + 1) % 50
-                if self.invincible_reset == 49:
-                    self.is_invincible = False
-    """
+    def invincible(self, duration: int = None, continuous: bool = False):
+        if continuous:
+            self._count_invincible = -1
+        elif duration is not None:
+            self._count_invincible = duration
+        else:
+            self._count_invincible = self.INVINCIBLE_DURATION
+        self.is_invincible = True
+
+    def remove_invincible(self):
+        self._count_invincible = 0
+        self.is_invincible = False
 
     def attack(self) -> None:
         """
@@ -173,17 +187,18 @@ class PlayerPlane(AnimeSprite):
                 self._count_attack_interval = self._attack_speed
 
     def collide_enemy(self, enemy_group):
-        enemy = spritecollideany(self, enemy_group, collide_detect)
-        if enemy and enemy.is_active:
+        enemy = spritecollideany(self, enemy_group, collide_detect(0.5))
+        if enemy and enemy.is_active and not self.is_invincible:
             self._score += enemy.score
             self.destroy()
             enemy.destroy()
 
     def collide_enemy_bullet(self, enemy_bullet_group):
-        bullet = spritecollideany(self, enemy_bullet_group, collide_detect)
+        bullet = spritecollideany(
+            self, enemy_bullet_group, collide_detect(0.6))
         if bullet:
             self.hit(bullet.damage)
-            bullet.hit()
+            bullet.hit(target=self)
 
     # ------------------ Trigger-Movement-Commands ------------------
     # ------------------ (Instant trigger method called by events) --
@@ -220,12 +235,12 @@ class PlayerPlane(AnimeSprite):
             self._is_moving_y = True
             self.set_anime_state("MOVE_DOWN")
         # If not outside the screen
-        if self.rect.bottom < SCREEN_HEIGHT:
+        if self.rect.bottom < SCREEN_HEIGHT - self.LIMIT_BOTTOM:
             self._speed.y = accelerate(
                 self._speed.y, self.MAX_SPEED_UP, 1, self.ACC_DOWN)
         else:
             self._speed.y = 0
-            self.rect.bottom = SCREEN_HEIGHT
+            self.rect.bottom = SCREEN_HEIGHT - self.LIMIT_BOTTOM
 
     # Trigger Move Left
     def trigger_move_left(self) -> None:
@@ -398,8 +413,22 @@ class PlayerPlane(AnimeSprite):
     # Reset
     def reset(self, point=None) -> None:
         self.is_active = True
+        self.is_invincible = True
+        self._count_invincible = self.INVINCIBLE_DURATION
         self.set_anime_state("IDLE")
         self.set_pos(point)
+
+        def break_cb_func():
+            return not self.is_invincible
+        AttachEffect(
+            self,
+            frames={
+                "IDLE": self.frames["INVINCIBLE"]
+            },
+            frame_size=self.frame_size,
+            break_cb_func=break_cb_func,
+            loop=True
+        )
         # self.is_invincible = True
         self._weapon.reset_level()
         self._health = self.MAX_HEALTH

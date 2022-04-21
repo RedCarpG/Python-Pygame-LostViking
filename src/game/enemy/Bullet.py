@@ -34,7 +34,7 @@ class EnemyBullet(pygame.sprite.Sprite, ABC):
         else:
             self.kill()
 
-    def hit(self):
+    def hit(self, target=None):
         # General get hit method for bullets
         self.kill()
 
