@@ -20,3 +20,7 @@ def load_asset_supply():
     load_image("Supply/SupplyLife.png")
     load_image("Supply/SupplyBomb.png")
     load_image("Supply/SupplyLevel.png")
+    load_image("Supply/SupplyDrop.png")
+    load_image("Supply/SupplyGetBomb.png")
+    load_image("Supply/SupplyGetLevel.png")
+    load_image("Supply/SupplyGetLife.png")

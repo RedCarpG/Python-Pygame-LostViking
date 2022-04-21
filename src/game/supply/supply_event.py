@@ -1,6 +1,8 @@
 import pygame
 import random
-from src.util.type import Pos
+from src.game.animation.Effect import Effect
+from src.helper.image.image_loader import get_image
+from src.util.type import Pos, Size
 from .util import get_supply_type
 from src.setting import SCREEN_WIDTH
 from src.util.type import Pos
@@ -40,10 +42,15 @@ def supply_events_handler(event):
 
         global supply_cooldown_count
         supply_cooldown_count += supply_cooldown_timer.tick()
-        print(f"Timer: {supply_cooldown_count}")
         if supply_cooldown_count < SUPPLY_COOLDOWN:
             return
         elif len(G_Supplies.sprites()) < 2:
+            Effect(
+                pos=event.pos,
+                frames={
+                    "IDLE": get_image("Supply/SupplyDrop.png")
+                },
+                frame_size=Size([50, 50]))
             supply_cooldown_count = 0
             sup = get_supply_type(event.supply_type)
             sup(event.pos)
