@@ -22,6 +22,7 @@ class Game:
 
         self.running = True
         pygame.mouse.set_visible(False)
+        pygame.display.set_icon(load_image("favicon.ico"))
 
         # Player
         load_asset_player()
