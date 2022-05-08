@@ -20,7 +20,7 @@ class BossActionPhase(Enum):
 
 class EnemyBoss(EnemyI):
     MAX_HEALTH = 30000
-    SCORE = 5000
+    SCORE = 15000
 
     ATTACK_SPEED = 100
 
