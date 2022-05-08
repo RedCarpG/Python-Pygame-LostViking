@@ -1,7 +1,5 @@
-from .player_event_handler import (
-    detect_player_event,
-    detect_key_pressed
-)
+
+from .player_event_handler import detect_custom_event
 from .PlayerWeapon import PlayerWeapon
 from .PlayerPlane import PlayerPlane
 from .PlayerBomb import PlayerNucBomb

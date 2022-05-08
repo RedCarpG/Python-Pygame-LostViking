@@ -5,6 +5,7 @@ Includes:
 from enum import Flag
 import pygame
 from pygame.sprite import spritecollideany
+from pygame.locals import *
 
 from src.setting import SCREEN_WIDTH, SCREEN_HEIGHT
 
@@ -17,6 +18,8 @@ from src.helper.sound import play_sound
 from src.game.groups import G_Enemys, G_Enemy_Bullets
 from src.game.animation import AnimeSprite
 from src.game.animation.Effect import AttachEffect
+from src.game.custom_events import EVENT_PLAYER_SHOOT, EVENT_PLAYER_BOMB
+from .player_control import PLAYER1_CONTROL, PLAYER2_CONTROL
 from .PlayerWeapon import PlayerWeapon
 import logging
 import sys
@@ -46,9 +49,15 @@ class PlayerPlane(AnimeSprite):
 
     LIMIT_BOTTOM = 100
 
-    def __init__(self, weapon: PlayerWeapon, pos, frames, frame_size):
+    def __init__(self, weapon: PlayerWeapon, pos, frames, frame_size, id=1):
         # Init
         super().__init__(frames=frames, frame_size=frame_size)
+
+        self.id = id
+        if id == 1:
+            self.controller = PLAYER1_CONTROL
+        else:
+            self.controller = PLAYER2_CONTROL
 
         if pos:
             self.start_position = pos
@@ -237,7 +246,7 @@ class PlayerPlane(AnimeSprite):
         # If not outside the screen
         if self.rect.bottom < SCREEN_HEIGHT - self.LIMIT_BOTTOM:
             self._speed.y = accelerate(
-                self._speed.y, self.MAX_SPEED_UP, 1, self.ACC_DOWN)
+                self._speed.y, self.MAX_SPEED_DOWN, 1, self.ACC_DOWN)
         else:
             self._speed.y = 0
             self.rect.bottom = SCREEN_HEIGHT - self.LIMIT_BOTTOM
@@ -432,3 +441,46 @@ class PlayerPlane(AnimeSprite):
         # self.is_invincible = True
         self._weapon.reset_level()
         self._health = self.MAX_HEALTH
+
+    # ----------------- Event -----------------
+
+    def detect_key_pressed(self):
+        # If Key Pressed
+        key_pressed = pygame.key.get_pressed()
+        if key_pressed[self.controller.MOVE_UP.value]:
+            self.trigger_move_up()
+        elif key_pressed[self.controller.MOVE_DOWN.value]:
+            self.trigger_move_back()
+        elif key_pressed[self.controller.MOVE_LEFT.value]:
+            self.trigger_move_left()
+        elif key_pressed[self.controller.MOVE_RIGHT.value]:
+            self.trigger_move_right()
+
+    def handle_event(self, e):
+        if e.type == KEYDOWN:
+            # Space Button
+            if e.key == self.controller.SHOOT.value:
+                pygame.event.post(pygame.event.Event(
+                    EVENT_PLAYER_SHOOT, {"player": self, "id": self.id}))
+                pygame.time.set_timer(pygame.event.Event(
+                    EVENT_PLAYER_SHOOT, {"player": self, "id": self.id}), self.attack_speed)
+            else:
+                return False
+
+            return True
+        # --------------- Key Up Events ---------------
+        elif e.type == KEYUP:
+            if e.key in [self.controller.MOVE_UP.value, self.controller.MOVE_DOWN.value]:
+                self.trigger_stop_y()
+            elif e.key in [self.controller.MOVE_LEFT.value, self.controller.MOVE_RIGHT.value]:
+                self.trigger_stop_x()
+            elif e.key == self.controller.BOMB.value:
+                pygame.event.post(pygame.event.Event(
+                    EVENT_PLAYER_BOMB, {"player": self, "id": self.id}))
+            elif e.key == self.controller.SHOOT.value:
+                pygame.time.set_timer(pygame.event.Event(
+                    EVENT_PLAYER_SHOOT, {"player": self, "id": self.id}), 0)
+            else:
+                return False
+            return True
+        return False
