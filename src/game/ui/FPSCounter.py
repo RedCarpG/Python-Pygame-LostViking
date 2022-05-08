@@ -7,11 +7,9 @@ class FPSCounter:
 
     def __init__(self, surface, clock, pos):
 
-        load_font("arialbd.ttf", 20, "FPS")
-
         self.surface = surface
         self.clock = clock
-        self.fps_text = FontEntity(surface, get_font("FPS"),
+        self.fps_text = FontEntity(surface, get_font("Scoreboard"),
                                    ("FPS: " + str(int(self.clock.get_fps()))), (10, 30), color=COLOR.WHITE)
         self.fps_text.move_center(pos)
 

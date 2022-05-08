@@ -60,3 +60,7 @@ def load_font(filename, size, label):
 
 def get_font(label):
     return _FONT[label]
+
+
+def del_font(label):
+    del _FONT[label]

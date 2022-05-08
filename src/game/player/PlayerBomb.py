@@ -11,7 +11,7 @@ from src.helper.sound import play_sound
 from src.util.type import Pos, Size
 from src.game.groups import G_Bomb
 from src.game.animation.Effect import Effect
-from .PLAYER_EVENT_TYPE import EVENT_BOMB_EXPLODE
+from src.game.custom_events import EVENT_BOMB_EXPLODE
 
 
 class PlayerNucBomb(Sprite):
@@ -37,7 +37,9 @@ class PlayerNucBomb(Sprite):
             NucExplosion(Pos(self.rect.center))
             PlayerNucBomb._IS_LAUNCHED = False
             play_sound("BOMB_EXPLODE")
-            trigger_bomb_explode_event(self)
+
+            pygame.event.post(pygame.event.Event(
+                EVENT_BOMB_EXPLODE, {"player": self.player}))
             self.kill()
 
     # --------------- Behaviors --------------- #
@@ -65,8 +67,3 @@ class NucExplosion(Effect):
             },
             frame_size=Size([400, 400])
         )
-
-
-def trigger_bomb_explode_event(bomb):
-    pygame.event.post(pygame.event.Event(
-        EVENT_BOMB_EXPLODE, {"bomb": bomb, "player": bomb.player}))

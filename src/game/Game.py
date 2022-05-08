@@ -1,8 +1,8 @@
 from pygame.locals import *
 import pygame
-import pytest
+from .custom_events import EVENT_RESTART, EVENT_RESUME, EVENT_START
 
-
+from src.helper.image import *
 from src.helper.font import *
 from src.helper.sound import *
 from src.setting import *
@@ -21,49 +21,62 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.running = True
+        pygame.mouse.set_visible(False)
+        pygame.display.set_icon(load_image("favicon.ico"))
 
-        load_music("music/bgm1.ogg", MAIN_VOLUME - 0.4)
-        play_music()
         # Player
         load_asset_player()
         self.player = PlayerViking(pos=None)
         G_Player1.add(self.player)
         G_Players.add(self.player)
+
         # Supply
         load_asset_supply()
+
         # UI
         load_asset_ui()
-        self.ui = UI(self.screen, self.player)
-        self.scoreboard = Scoreboard(self.screen, self.player)
+        self.ui = UI(self.screen)
+        self.ui_pause = UIPause(self.screen)
+        self.scoreboard = Scoreboard(self.screen)
         self.fps_counter = FPSCounter(
-            self.screen, self.clock, [SCREEN_WIDTH-100, 100])
-        self.boss_ui = BossUI(self.screen)
-        # Level
-        self.level = Level1()
+            self.screen, self.clock, [SCREEN_WIDTH-100, 30])
+
+        self.level = None
 
     def event(self):
 
+        self.player.detect_key_pressed()
         for event in pygame.event.get():
-            if detect_player_event(event, player1=self.player):
+
+            # if self.pause
+
+            if self.player.handle_event(event):
                 pass
+            elif detect_custom_event(event):
+                self.ui.handle_event(event)
+
             elif event.type == QUIT:
                 self.running = False
             # --------------- Key Down Events ---------------
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.running = False
-            elif self.level.event_handler(event):
-                continue
+            elif event.type == KEYUP:
+                if event.key == K_TAB:
+                    self.ui.toggle_hidden()
+                elif event.key == K_ESCAPE:
+                    self.paused()
             else:
                 supply_events_handler(event)
 
-        detect_key_pressed(self.player)
-
     def run(self):
+
+        self.intro()
+
+        # Level
+        self.level = Level1()
+        self.level.start()
+
         while self.running:
             self.event()
 
-            self.screen.fill(COLOR.BLACK)
             G_Enemy_Bullets.update()
             G_Player_Bullets.update()
             G_Players.update()
@@ -73,10 +86,10 @@ class Game:
             G_Effects.update()
             self.scoreboard.update()
             self.fps_counter.update()
-            self.boss_ui.update()
             self.ui.update()
+            self.level.update()
 
-            self.boss_ui.blit()
+            self.screen.fill(COLOR.BLACK)
             self.scoreboard.blit()
             self.fps_counter.blit()
             G_Bomb.draw(self.screen)
@@ -91,3 +104,69 @@ class Game:
             pygame.display.flip()
 
             self.clock.tick(60)
+
+    def paused(self):
+        self.pause = True
+        while self.pause:
+            for event in pygame.event.get():
+
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                elif self.ui_pause.handle_event(event):
+                    pass
+                elif event.type == EVENT_RESUME:
+                    self.pause = False
+                elif event.type == EVENT_RESTART:
+                    self.restart()
+                    self.pause = False
+                    break
+
+            self.ui_pause.blit()
+            pygame.display.update()
+
+    def intro(self):
+
+        intro = True
+
+        load_music("music/bgm.ogg", MAIN_VOLUME - 0.4)
+        play_music()
+
+        ui_intro = UIIntro(self.screen)
+        while intro:
+            for event in pygame.event.get():
+
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                elif ui_intro.handle_event(event):
+                    pass
+                elif event.type == EVENT_START:
+                    intro = False
+
+            G_Players.update()
+
+            ui_intro.blit()
+
+            self.screen.fill(COLOR.BLACK, self.player.rect)
+            G_Players.draw(self.screen)
+            pygame.display.update(self.player.rect)
+
+            self.clock.tick(60)
+
+    def restart(self):
+
+        G_BOSS.empty()
+        G_Enemy_Bullets.empty()
+        G_Bomb.empty()
+        G_Effects.empty()
+        G_Enemys.empty()
+        G_Player_Bullets.empty()
+        G_Supplies.empty()
+        G_Player1.empty()
+        G_Players.empty()
+        self.player = PlayerViking(pos=None)
+        G_Player1.add(self.player)
+        G_Players.add(self.player)
+
+        self.level.start()

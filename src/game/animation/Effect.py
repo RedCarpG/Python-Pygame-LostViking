@@ -50,3 +50,28 @@ class AttachEffect(AnimeSprite):
         self.rect.center = self.ref.rect.center
         self.rect = self.rect.move(self.offset)
         self.angle = self.ref.angle
+
+
+class UIEffect(AnimeSprite):
+
+    def __init__(self, surface, frames, frame_size: Size, offset=[0, 0], cb_func=None, loop: bool = False, group=None) -> None:
+        super().__init__(frames, frame_size)
+
+        self.cb_func = cb_func
+        self.surface = surface
+        self.rect.move_ip(offset[0], offset[1])
+        if group is not None:
+            group.add(self)
+        self.loop = loop
+
+    def anime_end_loop_hook(self):
+        if self.cb_func:
+            self.cb_func()
+        if not self.loop:
+            self.kill()
+
+    def update(self):
+        self.anime()
+
+    def blit(self):
+        self.surface.blit(self.image, self.rect)

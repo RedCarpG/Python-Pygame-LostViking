@@ -1,3 +1,2 @@
 from .AnimeSprite import AnimeSprite
-from .Effect import Effect, AttachEffect
-from .AttackEffect import AttackEffect
+from .Effect import Effect, AttachEffect, UIEffect

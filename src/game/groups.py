@@ -21,3 +21,4 @@ G_Shield = LayeredDirty()
 G_Supplies = Group()
 
 G_Effects = Group()
+G_UI_Effects = Group()
