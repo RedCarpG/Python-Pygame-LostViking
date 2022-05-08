@@ -80,7 +80,7 @@ class TestGame:
                 s.enter_action_enter_phase()
 
         for event in pygame.event.get():
-            if detect_player_event(event, player1=self.player):
+            if detect_custom_event(event, player1=self.player):
                 pass
             elif event.type == QUIT:
                 self.running = False

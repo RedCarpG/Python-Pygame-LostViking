@@ -1,7 +1,7 @@
 from pygame.locals import *
 import pygame
 import pytest
-from src.game.ui.BossUI import BossUI
+from src.game.ui import *
 from src.game.groups import *
 from src.game.player import *
 
@@ -56,7 +56,6 @@ class TestGame:
     def __init__(self, screen) -> None:
         load_asset_player()
         load_asset_supply()
-        load_asset_ui()
         self.screen = screen
         self.player = PlayerViking(pos=None)
 
@@ -68,11 +67,13 @@ class TestGame:
         self.running = True
         self.scoreboard = Scoreboard(screen, self.player)
         self.testboard = Testboard(screen, self.player)
-        self.bossUI = BossUI(self.screen)
+        self.ui = UI(self.screen)
         Level1(enable_event=False)
 
     def event(self):
-
+        
+        self.player.detect_key_pressed()
+        
         def test_key_event(event):
             if event.key == K_o:
                 EnemyPhoenix(Pos([0, 200]), is_left=True)
@@ -87,19 +88,22 @@ class TestGame:
                     self.player.remove_invincible()
                 else:
                     self.player.invincible(continuous=True)
+            elif event.key == K_TAB:
+                self.ui.toggle_hidden()
 
         for event in pygame.event.get():
-            if detect_player_event(event, player1=self.player):
+            if self.player.handle_event(event):
+                pass
+            elif detect_custom_event(event, player1=self.player):
                 pass
             elif event.type == QUIT:
                 self.running = False
-            elif event.type == KEYDOWN:
+            elif event.type == KEYUP:
                 if event.key == K_ESCAPE:
                     self.running = False
                 else:
                     test_key_event(event)
 
-        detect_key_pressed(self.player)
 
     def run(self):
 
@@ -116,11 +120,10 @@ class TestGame:
             G_Supplies.update()
             self.testboard.update()
             self.scoreboard.update()
-            self.bossUI.update()
+            self.ui.update()
 
             self.testboard.blit()
             self.scoreboard.blit()
-            self.bossUI.blit()
             for each in G_Enemys.sprites():
                 pygame.draw.rect(self.screen, COLOR.RED, each.rect, 3)
                 draw_path(each, self.screen)
@@ -134,6 +137,7 @@ class TestGame:
             G_Bomb.draw(self.screen)
             G_Players.draw(self.screen)
             G_Effects.draw(self.screen)
+            self.ui.blit()
             # Display
             pygame.display.flip()
 
