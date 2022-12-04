@@ -47,6 +47,7 @@ class PlayerPlane(AnimeSprite):
 
     INVINCIBLE_DURATION = 100
 
+    LIMIT_TOP = 50
     LIMIT_BOTTOM = 100
 
     def __init__(self, weapon: PlayerWeapon, pos, frames, frame_size, id=1):
@@ -132,8 +133,8 @@ class PlayerPlane(AnimeSprite):
                 self.rect.left = 0
             if self.rect.right > SCREEN_WIDTH:
                 self.rect.right = SCREEN_WIDTH
-            if self.rect.top < 0:
-                self.rect.top = 0
+            if self.rect.top < 0 + self.LIMIT_TOP:
+                self.rect.top = 0 + self.LIMIT_TOP
 
     def _reload(self):
         if self._count_attack_interval > 0:
